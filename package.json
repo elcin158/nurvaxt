@@ -1,22 +1,56 @@
 {
-  "name": "tbu-mobile-01a10a76",
+  "name": "evtas-mobile",
   "version": "1.0.0",
   "main": "index.ts",
   "dependencies": {
+    "@noble/ciphers": "^2.4.0",
+    "@noble/hashes": "^2.4.0",
     "expo": "~57.0.26",
+    "expo-crypto": "~57.0.3",
+    "expo-dev-client": "~57.0.19",
+    "expo-file-system": "~57.0.7",
+    "expo-local-authentication": "~57.0.3",
+    "expo-screen-capture": "~57.0.3",
+    "expo-secure-store": "~57.0.4",
     "expo-status-bar": "~57.0.1",
+    "expo-web-browser": "~57.0.3",
     "react": "19.2.3",
-    "react-native": "0.86.3"
+    "react-native": "0.86.3",
+    "react-native-nitro-modules": "^0.37.1",
+    "react-native-quick-base64": "^3.0.1",
+    "react-native-quick-crypto": "^1.1.7",
+    "react-native-safe-area-context": "~5.7.0"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
+    "eslint": "^9.39.5",
+    "eslint-config-expo": "~57.0.2",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.3"
   },
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "start": "node scripts/with-env.mjs local start --dev-client --localhost",
+    "start:local": "node scripts/with-env.mjs local start --dev-client --localhost",
+    "start:usb": "node scripts/with-env.mjs local start --dev-client --localhost --usb",
+    "start:dev": "node scripts/with-env.mjs dev start --dev-client --localhost",
+    "start:stage": "node scripts/with-env.mjs stage start --dev-client --localhost",
+    "start:prod": "node scripts/with-env.mjs production start --dev-client --localhost",
+    "android": "node scripts/with-env.mjs local run:android",
+    "android:local": "node scripts/with-env.mjs local run:android",
+    "android:usb": "node scripts/with-env.mjs local run:android --usb",
+    "android:dev": "node scripts/with-env.mjs dev run:android",
+    "android:stage": "node scripts/with-env.mjs stage run:android",
+    "android:prod": "node scripts/with-env.mjs production run:android",
+    "release:dev": "node scripts/with-env.mjs dev run:android --variant release",
+    "release:stage": "node scripts/with-env.mjs stage run:android --variant release",
+    "release:prod": "node scripts/with-env.mjs production run:android --variant release",
+    "ios": "node scripts/with-env.mjs local run:ios",
+    "emulator:hosts": "node scripts/emulator-hosts.mjs",
+    "typecheck": "tsc --noEmit",
+    "test:auth": "node --require tsx/cjs tests/auth.test.mjs",
+    "export:android": "node scripts/with-env.mjs production export --platform android",
+    "export:ios": "node scripts/with-env.mjs production export --platform ios",
+    "lint": "expo lint"
   },
   "private": true
 }

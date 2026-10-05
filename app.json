@@ -1,25 +1,41 @@
 {
   "expo": {
-    "name": "tbu-mobile-01a10a76",
-    "slug": "tbu-mobile-01a10a76",
+    "name": "EVTAS",
+    "slug": "evtas-mobile",
+    "scheme": "evtas",
     "version": "1.0.0",
-    "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "orientation": "default",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "az.rihis.evtas.mobile"
     },
     "android": {
+      "package": "az.rihis.evtas.mobile",
+      "allowBackup": false,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
+        "backgroundColor": "#FFFFFF",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      },
-      "predictiveBackGestureEnabled": false
+      }
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
+    "plugins": [
+      "expo-web-browser",
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": true,
+          "faceIDPermission": "EVTAS tətbiqini təhlükəsiz açmaq üçün Face ID istifadə olunur."
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "EVTAS tətbiqini təhlükəsiz açmaq üçün Face ID istifadə olunur."
+        }
+      ],
+      "react-native-quick-crypto"
+    ]
   }
 }
