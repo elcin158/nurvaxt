@@ -1,7 +1,8 @@
 import { REDIRECT_URI, type MobileUser, type Session, type StartLogin } from './types';
 
 export class ApiError extends Error {
-  constructor(public status: number, message: string) { super(message); }
+  /** `code` and `problem` carry the server's ProblemDetails, e.g. a conflict with the server copy. */
+  constructor(public status: number, message: string, public code?: string, public problem?: Record<string, unknown>) { super(message); }
 }
 
 export class ApiConnectionError extends Error {
@@ -18,10 +19,10 @@ function baseUrl(): string {
   return value;
 }
 
-async function request<T>(method: 'GET' | 'POST', path: string, {
+export async function apiRequest<T>(method: 'GET' | 'POST', path: string, {
   body, accessToken, timeoutMs = 20_000,
 }: { body?: object; accessToken?: string; timeoutMs?: number }): Promise<T> {
-  const url = `${baseUrl()}/api/v1/auth/${path}`;
+  const url = `${baseUrl()}/api/v1/${path}`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   const startedAt = Date.now();
@@ -43,7 +44,10 @@ async function request<T>(method: 'GET' | 'POST', path: string, {
     if (__DEV__) console.log(`[api] ${method} ${url} → ${response.status} (${Date.now() - startedAt} ms)`);
     if (!response.ok) {
       const problem = await response.json().catch(() => null);
-      throw new ApiError(response.status, problem?.title ?? 'Sorğu tamamlanmadı. Yenidən cəhd edin.');
+      const details = problem?.errors && typeof problem.errors === 'object'
+        ? Object.values(problem.errors).flat().filter((value): value is string => typeof value === 'string').join('\n') : '';
+      throw new ApiError(response.status, details || problem?.title || 'Sorğu tamamlanmadı. Yenidən cəhd edin.',
+        typeof problem?.code === 'string' ? problem.code : undefined, problem ?? undefined);
     }
     return response.status === 204 ? undefined as T : await response.json() as T;
   } catch (cause) {
@@ -57,7 +61,7 @@ async function request<T>(method: 'GET' | 'POST', path: string, {
 }
 
 const post = <T>(path: string, body: object, timeoutMs = 20_000) =>
-  request<T>('POST', path, { body, timeoutMs });
+  apiRequest<T>('POST', `auth/${path}`, { body, timeoutMs });
 
 export const api = {
   start: (codeChallenge: string) => post<StartLogin>('digital-login/start', { codeChallenge }),
@@ -65,7 +69,7 @@ export const api = {
     post<Session>('digital-login/exchange', { code, state, codeVerifier }).then(stampSession),
   // A valid local session can open offline; don't hold PIN unlock for 20s.
   refresh: (refreshToken: string) => post<Session>('refresh', { refreshToken }, 3_000).then(stampSession),
-  me: (accessToken: string) => request<MobileUser>('GET', 'me', { accessToken, timeoutMs: 3_000 }),
+  me: (accessToken: string) => apiRequest<MobileUser>('GET', 'auth/me', { accessToken, timeoutMs: 3_000 }),
   logout: (refreshToken: string) => post<void>('logout', { refreshToken }),
 };
 
