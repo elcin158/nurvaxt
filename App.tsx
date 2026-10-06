@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ActivityIndicator, AppState, Image, KeyboardAvoidingView, Platform, Pressable,
   ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -16,7 +16,17 @@ import { REDIRECT_URI, type Session } from './src/auth/types';
 WebBrowser.maybeCompleteAuthSession();
 type Phase = 'loading' | 'login' | 'setup' | 'locked' | 'home';
 
-function AuthApp() {
+type AuthContextValue = {
+  session: Session | null; authenticated: boolean; screen: ReactNode;
+  getAccessToken: () => Promise<string>;
+};
+const AuthContext = createContext<AuthContextValue | null>(null);
+export function useAuth() {
+  const value = useContext(AuthContext);
+  if (!value) throw new Error('Auth provider missing');
+  return value;
+}
+function AuthApp({ children }: { children: ReactNode }) {
   usePreventScreenCapture();
   const [phase, setPhase] = useState<Phase>('loading');
   const [session, setSession] = useState<Session | null>(null);
@@ -28,6 +38,8 @@ function AuthApp() {
   const [biometric, setBiometric] = useState(false);
   const [canBiometric, setCanBiometric] = useState(false);
   const [obscured, setObscured] = useState(false);
+  const refreshInFlight = useRef<Promise<string> | null>(null);
+  const sessionRef = useRef(session); sessionRef.current = session;
   const phaseRef = useRef(phase), epoch = useRef(0), running = useRef(false);
   phaseRef.current = phase;
 
@@ -172,7 +184,35 @@ function AuthApp() {
     await vault.clear(); epoch.current++; setSession(null); setBiometric(false); setPhase('login'); setPin('');
   });
 
-  return <SafeAreaView style={styles.safe}>
+  async function getAccessToken(): Promise<string> {
+    const current = sessionRef.current;
+    if (!current || phaseRef.current !== 'home') throw new Error('Davam etmək üçün tətbiqi açın.');
+    const currentEpoch = epoch.current;
+    await vault.assertSessionValid();
+    if (currentEpoch !== epoch.current) throw new Error('Tətbiq kilidlənib.');
+    if (new Date(current.accessTokenExpiresAt).getTime() > Date.now() + 30_000) return current.accessToken;
+    if (!refreshInFlight.current) {
+      refreshInFlight.current = (async () => {
+        try {
+          const updated = await api.refresh(current.refreshToken);
+          if (currentEpoch !== epoch.current) throw new Error('Tətbiq kilidlənib.');
+          await vault.update(updated);
+          if (currentEpoch !== epoch.current) throw new Error('Tətbiq kilidlənib.');
+          sessionRef.current = updated; setSession(updated); setOffline(false);
+          return updated.accessToken;
+        } catch (cause) {
+          if (cause instanceof ApiError && [401, 403].includes(cause.status) && currentEpoch === epoch.current) {
+            await vault.clear(); setSession(null); setPhase('login');
+            setError('Sessiya bitib. Digital Login ilə yenidən daxil olun.');
+          }
+          throw cause;
+        } finally { refreshInFlight.current = null; }
+      })();
+    }
+    return refreshInFlight.current;
+  }
+
+  const screen = <SafeAreaView style={styles.safe}>
     <StatusBar style="light" />
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={styles.page} keyboardShouldPersistTaps="handled">
@@ -237,6 +277,10 @@ function AuthApp() {
     </KeyboardAvoidingView>
     {obscured && <View style={styles.privacy}><Text style={styles.brandTitle}>EVTAS</Text></View>}
   </SafeAreaView>;
+  return <AuthContext.Provider value={{ session, authenticated: phase === 'home' && !!session, screen, getAccessToken }}>
+    {children}
+    {obscured && <View style={styles.privacy}><Text style={styles.brandTitle}>EVTAS</Text></View>}
+  </AuthContext.Provider>;
 }
 
 function Action({ label, onPress, disabled = false, secondary = false }: {
@@ -250,7 +294,7 @@ function Action({ label, onPress, disabled = false, secondary = false }: {
 function Detail({ label, value }: { label: string; value: string }) {
   return <View style={styles.detail}><Text style={styles.detailLabel}>{label}</Text><Text style={styles.detailValue}>{value}</Text></View>;
 }
-export default function App() { return <SafeAreaProvider><AuthApp /></SafeAreaProvider>; }
+export default function App({ children }: { children: ReactNode }) { return <SafeAreaProvider><AuthApp>{children}</AuthApp></SafeAreaProvider>; }
 
 const styles = StyleSheet.create({
   flex: { flex: 1 }, safe: { flex: 1, backgroundColor: '#102C3D' },

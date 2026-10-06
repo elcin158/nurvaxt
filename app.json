@@ -35,7 +35,10 @@
           "faceIDPermission": "EVTAS tətbiqini təhlükəsiz açmaq üçün Face ID istifadə olunur."
         }
       ],
-      "react-native-quick-crypto"
+      "react-native-quick-crypto",
+      "expo-router",
+      "expo-sqlite",
+      "@react-native-community/datetimepicker"
     ]
   }
 }
