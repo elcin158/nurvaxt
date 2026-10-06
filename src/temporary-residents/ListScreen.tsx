@@ -3,15 +3,15 @@ import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet, Text, TextIn
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { router } from 'expo-router';
-import { useAuth } from '../../App';
 import { Button, Check, colors, ui } from '../components/ResidentControls';
 import { useResidents } from './context';
 import { ServerList } from './ServerList';
+import { HeaderMenu } from './HeaderMenu';
 import { ActionSheet, ConfirmDialog } from '../components/ActionSheet';
 import { draftNotice } from './StateBanner';
 import { editable, newResidentData, pending, type ResidentDraft } from './types';
 export default function ListScreen() {
-  const residents = useResidents(), { session } = useAuth(), { width } = useWindowDimensions();
+  const residents = useResidents(), { width } = useWindowDimensions();
   const [query, setQuery] = useState(''), [filter, setFilter] = useState<'all' | 'pending' | 'synced'>('pending');
   const [selection, setSelection] = useState<string[]>([]), [localError, setLocalError] = useState('');
   const [source, setSource] = useState<'device' | 'server'>('device');
@@ -34,15 +34,14 @@ export default function ListScreen() {
     } catch (cause) { setLocalError(cause instanceof Error ? cause.message : 'Qeyd yaradıla bilmədi.'); }
   }
   return <SafeAreaView style={styles.safe}><StatusBar style="light" />
-    <View style={styles.topbar}><View style={styles.brand}><Image source={require('../../assets/brand-mark.png')} style={styles.logo} /><Text style={styles.brandText}>EVTAS</Text></View>
-      <Pressable accessibilityRole="button" accessibilityLabel="Profil" onPress={() => router.push('/profile')} style={styles.profile}><Text numberOfLines={1} style={styles.profileText}>{session?.user.displayName}  ⌄</Text></Pressable></View>
+    <View style={styles.topbar}><View style={styles.brand}><Image source={require('../../assets/rih-login.png')} style={styles.logo} resizeMode="contain" accessibilityLabel="Rəqəmsal İcra Hakimiyyəti" /></View>
+      <HeaderMenu /></View>
     <View style={styles.page}>
       <Text style={styles.breadcrumb}>Təsərrüfatların uçotu  /  Müvəqqəti yaşayan şəxslər</Text>
       <View style={styles.titleRow}><View style={{ flex: 1, minWidth: 240 }}><Text style={styles.title}>Müvəqqəti yaşayan şəxslər</Text><Text style={styles.subtitle}>{waiting} qeyd sinxronizasiya gözləyir</Text></View>
-        <Button label="+ Yeni şəxs" onPress={create} disabled={!residents.store || !residents.catalog || residents.syncing} /></View>
-      <View style={styles.connection}><View style={[styles.dot, { backgroundColor: residents.online ? '#15803D' : '#C2410C' }]} /><Text style={styles.connectionText}>{residents.online ? 'Onlayn' : 'Oflayn'} · Məlumatlar bu cihazda saxlanılır</Text></View>
-      <View style={styles.catalogRow}><Text style={styles.catalogText}>{residents.catalog ? `Arayışlar: ${new Date(residents.catalog.downloadedAt).toLocaleString('az-AZ')}` : 'İlk istifadədən əvvəl arayışları onlayn yükləyin.'}</Text>
-        <Button small secondary label={residents.refreshing ? 'Yüklənir…' : 'Arayışları yenilə'} disabled={!residents.store || !residents.online || residents.refreshing || residents.syncing} onPress={() => void residents.refreshCatalog()} /></View>
+        <Button label="+ Yeni" onPress={create} disabled={!residents.store || !residents.catalog || residents.syncing} /></View>
+      {!residents.catalog && !residents.loading && <View style={styles.catalogNotice}><Text style={styles.catalogNoticeText}>Formanı doldurmaq üçün əvvəlcə arayışları yükləyin. Bunun üçün internet lazımdır.</Text>
+        <Button small label={residents.refreshing ? 'Yüklənir…' : 'Arayışları yüklə'} disabled={!residents.store || !residents.online || residents.refreshing} onPress={() => void residents.refreshCatalog()} /></View>}
       {!!(residents.error || localError) && <Text accessibilityRole="alert" style={styles.error}>{localError || residents.error}</Text>}
       {!!residents.notice && <Text accessibilityLiveRegion="polite" style={styles.notice}>{residents.notice}</Text>}
       <View style={styles.sources}>{([['device', 'Cihazda'], ['server', 'Serverdə']] as const).map(([value, label]) =>
@@ -107,12 +106,13 @@ export default function ListScreen() {
   </SafeAreaView>;
 }
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.primary }, topbar: { minHeight: 56, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 20 }, brand: { flexDirection: 'row', gap: 9, alignItems: 'center' }, logo: { width: 32, height: 32, backgroundColor: '#FFF', borderRadius: 7 }, brandText: { color: '#FFF', fontWeight: '700', fontSize: 17 }, profile: { flexShrink: 1, minHeight: 48, justifyContent: 'center' }, profileText: { color: '#FFF', fontSize: 13 },
+  safe: { flex: 1, backgroundColor: colors.primary }, topbar: { minHeight: 56, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 20 }, brand: { backgroundColor: '#FFF', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5 }, logo: { width: 104, height: 32 }, profile: { flexShrink: 1, minHeight: 48, justifyContent: 'center' }, profileText: { color: '#FFF', fontSize: 13 },
   page: { flex: 1, backgroundColor: colors.bg, padding: 20, gap: 14 }, breadcrumb: { color: colors.muted, fontSize: 12, lineHeight: 19 }, titleRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, alignItems: 'center' }, title: { fontSize: 23, lineHeight: 31, color: colors.text, fontWeight: '600' }, subtitle: { fontSize: 13, color: colors.muted, marginTop: 4 }, connection: { flexDirection: 'row', alignItems: 'center', gap: 8 }, dot: { height: 7, width: 7, borderRadius: 4 }, connectionText: { color: colors.muted, fontSize: 12, flexShrink: 1 },
   catalogRow: { flexDirection: 'row', gap: 12, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }, catalogText: { color: colors.muted, fontSize: 12, lineHeight: 19 }, card: { flex: 1, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: colors.line, overflow: 'hidden', minHeight: 180 }, toolbar: { padding: 14, gap: 14, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: colors.line }, filters: { flexDirection: 'row', gap: 4, flexWrap: 'wrap' }, tab: { minHeight: 44, paddingHorizontal: 10, justifyContent: 'center', borderRadius: 5 }, activeTab: { backgroundColor: colors.pale }, tabText: { color: colors.muted, fontSize: 12, fontWeight: '500' }, search: { flex: 1, minWidth: 210 }, selectRow: { paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: 1, borderBottomColor: colors.line },
   tableHeader: { flexDirection: 'row', backgroundColor: '#F8FAFC', padding: 16 }, nameColumn: { flex: 1.5, color: colors.muted, fontSize: 12 }, addressColumn: { flex: 1, color: colors.muted, fontSize: 12, paddingHorizontal: 12 }, statusColumn: { width: 180, color: colors.muted, fontSize: 12 }, row: { padding: 16, borderBottomWidth: 1, borderBottomColor: colors.line, gap: 10 }, rowMain: { flexDirection: 'row', gap: 12, alignItems: 'center' }, name: { color: colors.primary, fontSize: 14, fontWeight: '600', lineHeight: 22 }, detail: { fontSize: 12, color: colors.muted, marginTop: 4, lineHeight: 18 }, address: { color: colors.text, fontSize: 13, lineHeight: 21 }, statusBox: { gap: 6, alignItems: 'flex-start' }, badge: { paddingVertical: 5, paddingHorizontal: 9, borderRadius: 5, fontSize: 11, fontWeight: '600' }, errorDetail: { color: '#B91C1C', fontSize: 12, lineHeight: 18 },
   sources: { flexDirection: 'row', alignSelf: 'flex-start', backgroundColor: '#FFF', borderWidth: 1, borderColor: colors.line, borderRadius: 8, padding: 3, gap: 3 }, source: { minHeight: 40, minWidth: 104, paddingHorizontal: 16, justifyContent: 'center', alignItems: 'center', borderRadius: 6 }, activeSource: { backgroundColor: colors.primary }, sourceText: { color: colors.text, fontSize: 13, fontWeight: '600' },
   badgeDone: { color: '#15803D', backgroundColor: '#F0FDF4' }, badgePending: { color: '#9A3412', backgroundColor: '#FFF7ED' }, badgeError: { color: '#B91C1C', backgroundColor: '#FEF2F2' }, badgeInfo: { color: '#1D4ED8', backgroundColor: '#EFF6FF' },
   more: { width: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }, moreText: { color: colors.primary, fontSize: 24, fontWeight: '700' },
+  catalogNotice: { backgroundColor: '#FFF7ED', borderWidth: 1, borderColor: '#FDBA74', borderRadius: 8, padding: 12, gap: 10, alignItems: 'flex-start' }, catalogNoticeText: { color: '#9A3412', fontSize: 13, lineHeight: 20 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 28, gap: 10 }, emptyIcon: { color: '#94A3B8', fontSize: 38 }, emptyTitle: { fontSize: 17, color: colors.text, textAlign: 'center', fontWeight: '500' }, emptyText: { color: colors.muted, fontSize: 13, lineHeight: 21, textAlign: 'center', maxWidth: 420 }, bottom: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 12 }, bottomText: { color: colors.muted, fontSize: 12 }, error: { backgroundColor: '#FEF2F2', padding: 12, borderRadius: 6, color: '#B91C1C', lineHeight: 21 }, notice: { backgroundColor: '#EFF6FF', padding: 12, borderRadius: 6, color: '#1D4ED8', lineHeight: 21 },
 });

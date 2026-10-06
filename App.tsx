@@ -18,7 +18,7 @@ type Phase = 'loading' | 'login' | 'setup' | 'locked' | 'home';
 
 type AuthContextValue = {
   session: Session | null; authenticated: boolean; screen: ReactNode;
-  getAccessToken: () => Promise<string>;
+  getAccessToken: () => Promise<string>; lock(): void; logout(): Promise<void>;
 };
 const AuthContext = createContext<AuthContextValue | null>(null);
 export function useAuth() {
@@ -212,42 +212,44 @@ function AuthApp({ children }: { children: ReactNode }) {
     return refreshInFlight.current;
   }
 
+  // The sign-in card follows Tbu.Web's login page: logo, system name, Digital Login, agency footer.
   const screen = <SafeAreaView style={styles.safe}>
-    <StatusBar style="light" />
+    <StatusBar style="dark" />
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={styles.page} keyboardShouldPersistTaps="handled">
-        <View style={styles.brand}><View style={styles.mark}>
-          <Image source={require('./assets/brand-mark.png')} style={styles.markImage} accessibilityLabel="EVTAS loqosu" />
-        </View>
-          <View><Text style={styles.brandTitle}>EVTAS</Text><Text style={styles.brandSub}>Sahədə işiniz davam edir</Text></View></View>
         <View style={styles.card}>
-          <Text style={styles.eyebrow}>TƏSƏRRÜFATLARIN UÇOTU</Text>
-          <Text style={styles.title}>{phase === 'setup' ? 'PIN yaradın' : phase === 'locked' ? 'Yenidən xoş gördük' :
-            phase === 'home' ? `Salam, ${session?.user.displayName ?? ''}` : 'İş gününə başlayın'}</Text>
-          <Text style={styles.subtitle}>{phase === 'setup' ? 'Bu planşetdə tətbiqi açmaq üçün 4 rəqəmli PIN təyin edin.' :
-            phase === 'locked' ? 'Davam etmək üçün PIN və ya biometrik girişdən istifadə edin.' :
-            phase === 'home' ? 'Şəxsi iş sahəniz hazırdır.' : 'Hesabınızı Digital Login ilə təhlükəsiz təsdiqləyin.'}</Text>
-          {phase === 'loading' && <ActivityIndicator size="large" color="#087C70" style={styles.loader} />}
+          <Image source={require('./assets/rih-login.png')} style={styles.logo} resizeMode="contain" accessibilityLabel="RİHİS loqosu" />
+          <Text style={styles.system}>Rəqəmsal İcra Hakimiyyətləri{'\n'}İnformasiya Sistemi</Text>
+          <Text style={styles.module}>Təsərrüfatların uçotu</Text>
+          <View style={styles.divider} />
+          {phase !== 'login' && phase !== 'loading' && <Text style={styles.title}>{phase === 'setup' ? 'PIN yaradın' : phase === 'locked' ? 'Yenidən xoş gördük' :
+            `Salam, ${session?.user.displayName ?? ''}`}</Text>}
+          {(phase === 'setup' || phase === 'locked') && <Text style={styles.subtitle}>{phase === 'setup' ? 'Bu planşetdə tətbiqi açmaq üçün 4 rəqəmli PIN təyin edin.' :
+            'Davam etmək üçün PIN və ya biometrik girişdən istifadə edin.'}</Text>}
+          {phase === 'loading' && <ActivityIndicator size="large" color={blue} style={styles.loader} />}
           {phase === 'login' && <>
-            <View style={styles.notice}><Text style={styles.noticeTitle}>İlk giriş üçün internet lazımdır</Text>
-              <Text style={styles.noticeText}>Sonrakı açılışlarda yadda saxlanma müddəti ərzində PIN və ya biometrika işləyəcək.</Text></View>
-            <Action label="Digital Login ilə daxil ol" onPress={login} disabled={busy} />
+            <Pressable accessibilityRole="button" accessibilityLabel="Digital Login ilə daxil ol" accessibilityState={{ disabled: busy }} onPress={login} disabled={busy}
+              style={({ pressed }) => [styles.sso, pressed && styles.ssoPressed, busy && styles.dim]}>
+              <Image source={require('./assets/digital-login.jpg')} style={styles.ssoImage} resizeMode="contain" />
+            </Pressable>
+            <Text style={styles.hint}>Sistemə daxil olmaq üçün MyGovID hesabınızdan istifadə edin.</Text>
+            <Text style={styles.hint}>İlk giriş üçün internet lazımdır. Sonrakı açılışlarda PIN və ya biometrika ilə internetsiz daxil olacaqsınız.</Text>
           </>}
-          {(phase === 'locked' || phase === 'setup') && <>
+          {(phase === 'locked' || phase === 'setup') && <View style={styles.form}>
             <Text style={styles.label}>4 rəqəmli PIN</Text>
             <TextInput value={pin} onChangeText={v => setPin(v.replace(/\D/g, '').slice(0, 4))}
               secureTextEntry keyboardType="number-pad" maxLength={4} style={styles.pin} placeholder="••••"
-              placeholderTextColor="#9AA6B3" editable={!busy} autoComplete="off" accessibilityLabel="4 rəqəmli PIN" />
+              placeholderTextColor="#9AA6B5" editable={!busy} autoComplete="off" accessibilityLabel="4 rəqəmli PIN" />
             {phase === 'setup' && <><Text style={styles.label}>PIN-i təkrarlayın</Text>
               <TextInput value={confirmation} onChangeText={v => setConfirmation(v.replace(/\D/g, '').slice(0, 4))}
                 secureTextEntry keyboardType="number-pad" maxLength={4} style={styles.pin} placeholder="••••"
-                placeholderTextColor="#9AA6B3" editable={!busy} autoComplete="off" accessibilityLabel="PIN-i təkrarlayın" /></>}
+                placeholderTextColor="#9AA6B5" editable={!busy} autoComplete="off" accessibilityLabel="PIN-i təkrarlayın" /></>}
             <Action label={phase === 'setup' ? 'PIN-i yadda saxla' : 'PIN ilə aç'} onPress={phase === 'setup' ? setup : () => unlock(false)}
               disabled={busy || pin.length !== 4 || (phase === 'setup' && confirmation.length !== 4)} />
             {phase === 'locked' && biometric && <Action secondary label="Biometrika ilə aç" onPress={() => unlock(true)} disabled={busy} />}
             {phase === 'locked' && <Pressable onPress={reset} disabled={busy}><Text style={styles.link}>PIN-i unutmusunuz? Digital Login ilə daxil olun</Text></Pressable>}
-          </>}
-          {phase === 'home' && session && <>
+          </View>}
+          {phase === 'home' && session && <View style={styles.form}>
             <View style={[styles.badge, offline && styles.offlineBadge]}><View style={[styles.dot, offline && styles.offlineDot]} />
               <Text style={styles.badgeText}>{offline ? 'Offline rejim · lokal giriş' : 'Hesab təsdiqlənib'}</Text></View>
             <View style={styles.details}>
@@ -268,18 +270,19 @@ function AuthApp({ children }: { children: ReactNode }) {
             {biometric && <Text style={styles.biometricNote}>Biometrik giriş aktivdir</Text>}
             <Action label="Tətbiqi kilidlə" onPress={lock} disabled={busy} />
             <Pressable onPress={logout} disabled={busy}><Text style={styles.link}>Hesabdan çıx</Text></Pressable>
-          </>}
-          {busy && <View style={styles.progress}><ActivityIndicator color="#087C70" /><Text style={styles.progressText}>Gözləyin…</Text></View>}
+          </View>}
+          {busy && <View style={styles.progress}><ActivityIndicator color={blue} /><Text style={styles.progressText}>Gözləyin…</Text></View>}
           {!!error && <Text accessibilityRole="alert" style={styles.error}>{error}</Text>}
+          <View style={styles.divider} />
+          <Text style={styles.footer}>© {new Date().getFullYear()}. İnnovasiya və Rəqəmsal İnkişaf Agentliyi</Text>
         </View>
-        <Text style={styles.footer}>EVTAS · Mobil iş sahəsi</Text>
       </ScrollView>
     </KeyboardAvoidingView>
-    {obscured && <View style={styles.privacy}><Text style={styles.brandTitle}>EVTAS</Text></View>}
+    {obscured && <View style={styles.privacy}><Image source={require('./assets/rih-login.png')} style={styles.logo} resizeMode="contain" /></View>}
   </SafeAreaView>;
-  return <AuthContext.Provider value={{ session, authenticated: phase === 'home' && !!session, screen, getAccessToken }}>
+  return <AuthContext.Provider value={{ session, authenticated: phase === 'home' && !!session, screen, getAccessToken, lock, logout }}>
     {children}
-    {obscured && <View style={styles.privacy}><Text style={styles.brandTitle}>EVTAS</Text></View>}
+    {obscured && <View style={styles.privacy}><Image source={require('./assets/rih-login.png')} style={styles.logo} resizeMode="contain" /></View>}
   </AuthContext.Provider>;
 }
 
@@ -296,35 +299,40 @@ function Detail({ label, value }: { label: string; value: string }) {
 }
 export default function App({ children }: { children: ReactNode }) { return <SafeAreaProvider><AuthApp>{children}</AuthApp></SafeAreaProvider>; }
 
+// Tbu.Web login palette: #eef3fb–#dce7f7 page, white card, #007bff Digital Login border.
+const blue = '#007BFF';
 const styles = StyleSheet.create({
-  flex: { flex: 1 }, safe: { flex: 1, backgroundColor: '#102C3D' },
-  page: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 40, alignItems: 'center' },
-  brand: { width: '100%', maxWidth: 560, flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 28 },
-  mark: { width: 52, height: 52, borderRadius: 16, backgroundColor: '#FFF', alignItems: 'center', justifyContent: 'center' },
-  markImage: { width: 36, height: 36 }, brandTitle: { fontSize: 24, fontWeight: '800', color: '#FFF', letterSpacing: 2 },
-  brandSub: { fontSize: 13, color: '#B8CBD6', marginTop: 5 },
-  card: { width: '100%', maxWidth: 560, borderRadius: 24, padding: 28, backgroundColor: '#FFF' },
-  eyebrow: { color: '#087C70', fontSize: 11, fontWeight: '800', letterSpacing: 1.8, marginBottom: 16 },
-  title: { fontSize: 29, fontWeight: '700', color: '#152C3C', lineHeight: 37 },
-  subtitle: { color: '#617282', fontSize: 15, lineHeight: 23, marginTop: 10, marginBottom: 25 },
-  notice: { backgroundColor: '#F2F6F8', padding: 18, borderRadius: 14, marginBottom: 24 },
-  noticeTitle: { color: '#203D4E', fontSize: 14, fontWeight: '600', marginBottom: 7 }, noticeText: { color: '#617282', fontSize: 13, lineHeight: 21 },
-  button: { minHeight: 54, alignItems: 'center', justifyContent: 'center', borderRadius: 12, backgroundColor: '#087C70', marginTop: 12, padding: 12 },
-  secondaryButton: { backgroundColor: '#ECF6F2', borderWidth: 1, borderColor: '#C5DFD4' },
-  buttonText: { color: '#FFF', fontSize: 16, fontWeight: '600', textAlign: 'center' }, secondaryText: { color: '#08665D' }, dim: { opacity: 0.5 },
-  label: { color: '#374D5C', fontSize: 13, fontWeight: '600', marginBottom: 9 },
-  pin: { backgroundColor: '#F5F8FA', borderWidth: 1, borderColor: '#D7E0E6', borderRadius: 12, minHeight: 64,
-    fontSize: 27, letterSpacing: 18, textAlign: 'center', paddingHorizontal: 20, color: '#183344', marginBottom: 20 },
-  link: { color: '#4C687A', fontSize: 13, lineHeight: 21, textAlign: 'center', marginTop: 22, paddingVertical: 6 },
-  error: { color: '#A22F3D', backgroundColor: '#FFF0F1', padding: 14, borderRadius: 10, marginTop: 18, lineHeight: 21 },
-  footer: { color: '#91A9B8', fontSize: 12, marginTop: 24 }, loader: { marginVertical: 30 },
-  progress: { flexDirection: 'row', gap: 9, alignItems: 'center', justifyContent: 'center', marginTop: 20 }, progressText: { color: '#617282' },
+  flex: { flex: 1 }, safe: { flex: 1, backgroundColor: '#E5EDF9' },
+  page: { flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 32 },
+  card: { width: '100%', maxWidth: 420, backgroundColor: '#FFF', borderRadius: 16, paddingHorizontal: 32, paddingTop: 40, paddingBottom: 28, alignItems: 'center',
+    shadowColor: '#152C52', shadowOpacity: 0.12, shadowRadius: 32, shadowOffset: { width: 0, height: 12 }, elevation: 6 },
+  logo: { width: 120, height: 37, marginBottom: 20 },
+  system: { fontSize: 17, fontWeight: '600', lineHeight: 25, color: '#1E2A3A', textAlign: 'center', marginBottom: 6 },
+  module: { fontSize: 13, letterSpacing: 1.1, textTransform: 'uppercase', color: '#8A97A8', textAlign: 'center' },
+  divider: { alignSelf: 'stretch', height: 1, backgroundColor: '#E6EBF2', marginVertical: 24 },
+  title: { fontSize: 20, fontWeight: '600', color: '#1E2A3A', lineHeight: 28, textAlign: 'center' },
+  subtitle: { color: '#6B7A8C', fontSize: 14, lineHeight: 21, marginTop: 6, textAlign: 'center' },
+  sso: { alignSelf: 'stretch', minHeight: 58, alignItems: 'center', justifyContent: 'center', paddingVertical: 12, paddingHorizontal: 16,
+    borderWidth: 2, borderColor: blue, borderRadius: 10, backgroundColor: '#FFF' },
+  ssoPressed: { borderColor: '#0069D9', backgroundColor: '#F5F9FF' }, ssoImage: { width: 182, height: 32 },
+  hint: { fontSize: 13, lineHeight: 20, color: '#8A97A8', marginTop: 14, textAlign: 'center' },
+  form: { alignSelf: 'stretch', marginTop: 20 },
+  button: { minHeight: 50, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: blue, marginTop: 12, padding: 12 },
+  secondaryButton: { backgroundColor: '#FFF', borderWidth: 2, borderColor: blue },
+  buttonText: { color: '#FFF', fontSize: 15, fontWeight: '600', textAlign: 'center' }, secondaryText: { color: blue }, dim: { opacity: 0.5 },
+  label: { color: '#374557', fontSize: 13, fontWeight: '600', marginBottom: 8 },
+  pin: { backgroundColor: '#F7F9FC', borderWidth: 1, borderColor: '#D5DEE9', borderRadius: 10, minHeight: 60,
+    fontSize: 26, letterSpacing: 18, textAlign: 'center', paddingHorizontal: 20, color: '#1E2A3A', marginBottom: 16 },
+  link: { color: '#4F6680', fontSize: 13, lineHeight: 21, textAlign: 'center', marginTop: 18, paddingVertical: 6 },
+  error: { alignSelf: 'stretch', color: '#A22F3D', backgroundColor: '#FFF0F1', padding: 14, borderRadius: 10, marginTop: 18, lineHeight: 21 },
+  footer: { color: '#9AA6B5', fontSize: 12, textAlign: 'center' }, loader: { marginVertical: 24 },
+  progress: { flexDirection: 'row', gap: 9, alignItems: 'center', justifyContent: 'center', marginTop: 20 }, progressText: { color: '#6B7A8C' },
   badge: { flexDirection: 'row', gap: 8, alignItems: 'center', backgroundColor: '#EBF7F0', padding: 12, borderRadius: 10 },
   offlineBadge: { backgroundColor: '#FFF5DE' }, dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#19824E' },
   offlineDot: { backgroundColor: '#AC7817' }, badgeText: { color: '#314C42', fontSize: 13, fontWeight: '600' },
-  details: { marginVertical: 16 }, detail: { borderBottomWidth: 1, borderBottomColor: '#EEF2F5', paddingVertical: 14, gap: 5 },
-  detailLabel: { color: '#6D7E8A', fontSize: 12 }, detailValue: { color: '#213D4E', fontSize: 15, lineHeight: 22, fontWeight: '600' },
+  details: { marginVertical: 12 }, detail: { borderBottomWidth: 1, borderBottomColor: '#EEF2F5', paddingVertical: 14, gap: 5 },
+  detailLabel: { color: '#6D7E8A', fontSize: 12 }, detailValue: { color: '#1E2A3A', fontSize: 15, lineHeight: 22, fontWeight: '600' },
   settlement: { gap: 3, marginTop: 5 },
-  biometricNote: { color: '#087C70', textAlign: 'center', fontSize: 13, marginBottom: 10 },
-  privacy: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: '#102C3D', alignItems: 'center', justifyContent: 'center' },
+  biometricNote: { color: blue, textAlign: 'center', fontSize: 13, marginBottom: 10 },
+  privacy: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: '#E5EDF9', alignItems: 'center', justifyContent: 'center' },
 });
