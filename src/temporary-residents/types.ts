@@ -41,6 +41,8 @@ export type ResidentDraft = {
   /** Last known server state; `changed` means the server moved past `server.version`. */
   status?: ReportState & { changed: boolean; checkedAt: string };
   deleted?: boolean;
+  /** Set when the data was replaced from the server, so an open form reloads instead of overwriting it. */
+  adoptedAt?: string;
   conflict?: SyncConflict;
   lastError?: string;
 };

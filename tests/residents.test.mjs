@@ -6,7 +6,7 @@ const require = createRequire(import.meta.url);
 const { ResidentStore } = require('../src/temporary-residents/store.ts');
 const { ResidentSync } = require('../src/temporary-residents/sync.ts');
 const { newResidentData, pending } = require('../src/temporary-residents/types.ts');
-const { validate, updatePersonal, fieldOptions, animalCount } = require('../src/temporary-residents/schema.ts');
+const { validate, updatePersonal, fieldOptions, animalCount, firstIssue } = require('../src/temporary-residents/schema.ts');
 const { diffResident } = require('../src/temporary-residents/present.ts');
 const { editable } = require('../src/temporary-residents/types.ts');
 const { ApiConnectionError, ApiError } = require('../src/auth/api.ts');
@@ -139,8 +139,10 @@ test('adopting the server copy replaces data, clears the conflict and stays ahea
   store.conflict(a.id, { code: 'VERSION_CONFLICT', message: 'x', server: serverCopy(validData()), at: '' });
   const adopted = store.adopt(a.id, 1, serverCopy({ ...validData(), addressOtherNote: 'server' }, { reportId: 130, version: 12 }));
   assert.equal(adopted.data.addressOtherNote, 'server'); assert.equal(adopted.conflict, undefined); assert.equal(pending(adopted), false);
+  assert.ok(adopted.adoptedAt, 'an open form must see that its data was replaced');
+  const edited0 = store.save(a.id, adopted.data); assert.equal(edited0.adoptedAt, adopted.adoptedAt); store.save(a.id, adopted.data);
   assert.equal(adopted.revision, 2); assert.equal(adopted.server.reportId, 130); assert.equal(adopted.server.version, 12);
-  const edited = store.save(a.id, adopted.data); assert.equal(edited.revision, 3); assert.equal(pending(edited), true);
+  const edited = store.get(a.id); assert.equal(edited.revision, 4); assert.equal(pending(edited), true);
 });
 test('a checked-out report is a synced device record bound to its chain', () => {
   const { store } = fixture();
@@ -170,4 +172,31 @@ test('differences list changed fields, animals and completion in the form wordin
   assert.deepEqual(byLabel['Cinsi'], ['Kişi', 'Qadın']); assert.deepEqual(byLabel['Doğum tarixi'], ['29.02.2000', '01.03.2000']);
   assert.deepEqual(byLabel['Qoyun'], ['12', '10']); assert.deepEqual(byLabel['Bölmə tamamlanıb'], ['Xeyr', 'Bəli']);
   assert.equal(diffResident(local, local, c).length, 0);
+});
+test('local records use AES-256-GCM compatible with the native cipher and still open v1 records', async () => {
+  const crypto = await import('node:crypto');
+  const { seal, open } = require('../src/temporary-residents/cipher.ts');
+  const { gcm } = require('@noble/ciphers/aes.js');
+  const { bytesToHex, utf8ToBytes } = require('@noble/hashes/utils.js');
+  const key = crypto.randomBytes(32), nonce = crypto.randomBytes(12), aad = 'user.1:catalog', text = JSON.stringify({ label: 'Şəki rayonu', n: 1 });
+  const sealed = seal(key, nonce, aad, text);
+  assert.equal(sealed.v, 2);
+  // Node's API is the one react-native-quick-crypto implements, so this mirrors cipher.native.ts.
+  const body = Buffer.from(sealed.data, 'base64'), decipher = crypto.createDecipheriv('aes-256-gcm', key, Buffer.from(sealed.nonce, 'base64'));
+  decipher.setAAD(Buffer.from(aad)); decipher.setAuthTag(body.subarray(body.length - 16));
+  assert.equal(Buffer.concat([decipher.update(body.subarray(0, body.length - 16)), decipher.final()]).toString('utf8'), text);
+  const cipher = crypto.createCipheriv('aes-256-gcm', key, nonce); cipher.setAAD(Buffer.from(aad));
+  const native = { v: 2, nonce: nonce.toString('base64'), data: Buffer.concat([cipher.update(text, 'utf8'), cipher.final(), cipher.getAuthTag()]).toString('base64') };
+  assert.equal(open(key, aad, native), text);
+  const legacy = { nonce: bytesToHex(nonce), data: bytesToHex(gcm(key, nonce, utf8ToBytes(aad)).encrypt(utf8ToBytes(text))) };
+  assert.equal(open(key, aad, legacy), text);
+  assert.throws(() => open(key, 'user.2:catalog', sealed));
+});
+
+test('the first blocking step is reported so the form opens where the record is incomplete', () => {
+  assert.equal(firstIssue(validData(), catalog), null);
+  assert.equal(firstIssue({ ...validData(), adminUnitId: null }, catalog).step, 0);
+  const badFin = { ...validData(), personal: { ...validData().personal, fin: 'abc' } };
+  const issue = firstIssue(badFin, catalog);
+  assert.equal(issue.step, 1); assert.match(issue.errors.fin, /FİN/);
 });

@@ -12,7 +12,7 @@ import { ResidentSync } from './sync';
 
 type Context = {
   store: ResidentStore | null; catalog: Catalog | null; drafts: ResidentDraft[];
-  error: string; online: boolean; loading: boolean; refreshing: boolean; syncing: boolean;
+  error: string; online: boolean; loading: boolean; catalogLoading: boolean; refreshing: boolean; syncing: boolean;
   progress: string; notice: string;
   refreshCatalog(): Promise<void>; sync(ids: string[], options?: { confirmOverwrite?: boolean }): Promise<{ conflicts: number } | void>;
   save(id: string, data: ResidentData): ResidentDraft; create(data: ResidentData): ResidentDraft;
@@ -33,7 +33,7 @@ export function ResidentProvider({ children }: { children: ReactNode }) {
   const [store, setStore] = useState<ResidentStore | null>(null);
   const [catalog, setCatalog] = useState<Catalog | null>(null), [drafts, setDrafts] = useState<ResidentDraft[]>([]);
   const [error, setError] = useState(''), [notice, setNotice] = useState('');
-  const [loading, setLoading] = useState(true), [refreshing, setRefreshing] = useState(false), [syncing, setSyncing] = useState(false);
+  const [loading, setLoading] = useState(true), [catalogLoading, setCatalogLoading] = useState(true), [refreshing, setRefreshing] = useState(false), [syncing, setSyncing] = useState(false);
   const [progress, setProgress] = useState('');
   const live = useRef(true), busy = useRef(false), refreshingRef = useRef(false);
   const authRef = useRef(auth);
@@ -43,12 +43,19 @@ export function ResidentProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     live.current = true;
     let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
     void openResidentStore(owner).then(value => {
       if (cancelled) return;
-      setDrafts(value.list()); setCatalog(value.catalog()); setStore(value);
-    }).catch(cause => { if (!cancelled) setError(cause instanceof Error ? cause.message : 'Lokal məlumatlar açılmadı.'); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; live.current = false; };
+      setDrafts(value.list()); setStore(value); setLoading(false);
+      // The catalogue is several megabytes; records show first and it is read after that paint.
+      timer = setTimeout(() => {
+        if (cancelled) return;
+        try { setCatalog(value.catalog()); }
+        catch (cause) { setError(cause instanceof Error ? cause.message : 'Arayışlar açılmadı.'); }
+        finally { setCatalogLoading(false); }
+      }, 0);
+    }).catch(cause => { if (!cancelled) { setError(cause instanceof Error ? cause.message : 'Lokal məlumatlar açılmadı.'); setLoading(false); setCatalogLoading(false); } });
+    return () => { cancelled = true; live.current = false; clearTimeout(timer); };
   }, [owner]);
   async function refreshCatalog() {
     if (!store || refreshingRef.current) return;
@@ -160,7 +167,7 @@ export function ResidentProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusKey]);
-  return <ResidentContext.Provider value={{ store, catalog, drafts, error, online, loading, refreshing, syncing, progress, notice, refreshCatalog, sync, save, create,
+  return <ResidentContext.Provider value={{ store, catalog, drafts, error, online, loading, catalogLoading, refreshing, syncing, progress, notice, refreshCatalog, sync, save, create,
     accessToken, refreshStatuses, edit, adoptServer, remove, workflow }}>
     {children}
   </ResidentContext.Provider>;

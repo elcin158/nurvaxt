@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 let path = location.hash.slice(1) || '/temporary-residents';
 const listeners = new Set<() => void>();
-function navigate(value: any) { path = typeof value === 'string' ? value : value.params.reportId ? `/temporary-residents/server/${value.params.reportId}` : value.pathname.includes('conflict') ? `/temporary-residents/conflict/${value.params.id}` : `/temporary-residents/${value.params.id}`; location.hash = path; listeners.forEach(l => l()); }
+function navigate(value: any) { path = typeof value === 'string' ? value : value.params.reportId ? `/temporary-residents/server/${value.params.reportId}` : value.pathname.includes('conflict') ? `/temporary-residents/conflict/${value.params.id}` : `/temporary-residents/${value.params.id}${value.params.check ? `?check=${value.params.check}` : ''}`; location.hash = path; listeners.forEach(l => l()); }
 export const router = { push: navigate, replace: navigate, back: () => navigate('/temporary-residents'), canGoBack: () => false };
 export function usePath() { return useSyncExternalStore(l => { listeners.add(l); return () => { listeners.delete(l); }; }, () => path); }
-export function useLocalSearchParams() { const id = usePath().split('/').pop(); return { id, reportId: id }; }
+export function useLocalSearchParams() { const [route, query] = usePath().split('?'); const id = route.split('/').pop(); return { id, reportId: id, ...Object.fromEntries(new URLSearchParams(query ?? '')) }; }

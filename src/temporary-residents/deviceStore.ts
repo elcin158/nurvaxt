@@ -1,8 +1,9 @@
 import * as SQLite from 'expo-sqlite';
 import * as SecureStore from 'expo-secure-store';
 import * as Crypto from 'expo-crypto';
-import { gcm } from '@noble/ciphers/aes.js';
-import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
+import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
+import { open as openEnvelope, seal } from './cipher';
+import type { Envelope } from './envelope';
 import { ResidentStore, type LocalStorage } from './store';
 
 const database = SQLite.openDatabaseAsync('evtas-residents.db').then(async db => {
@@ -32,26 +33,28 @@ async function initializeStore(owner: string): Promise<ResidentStore> {
     await SecureStore.setItemAsync(secretName, keyHex, options);
   }
   const key = hexToBytes(keyHex);
-  const open = (payload: string, recordKey: string) => {
-    const envelope = JSON.parse(payload) as { nonce: string; data: string };
-    return new TextDecoder().decode(gcm(key, hexToBytes(envelope.nonce), utf8ToBytes(`${owner}:${recordKey}`))
-      .decrypt(hexToBytes(envelope.data)));
+  const aad = (recordKey: string) => `${owner}:${recordKey}`;
+  const write = (account: string, recordKey: string, value: string) => {
+    const envelope = seal(key, Crypto.getRandomBytes(12), aad(recordKey), value);
+    db.runSync('INSERT INTO resident_local (owner, key, payload) VALUES (?, ?, ?) ON CONFLICT(owner, key) DO UPDATE SET payload = excluded.payload',
+      account, recordKey, JSON.stringify(envelope));
+  };
+  const open = (account: string, payload: string, recordKey: string) => {
+    const envelope = JSON.parse(payload) as Envelope, value = openEnvelope(key, aad(recordKey), envelope);
+    // Records written before v2 are rewritten once, so later opens read the smaller format.
+    if (envelope.v !== 2) write(account, recordKey, value);
+    return value;
   };
   const storage: LocalStorage = {
     read: (account, recordKey) => {
       const row = db.getFirstSync<{ payload: string }>('SELECT payload FROM resident_local WHERE owner = ? AND key = ?', account, recordKey);
-      return row ? open(row.payload, recordKey) : null;
+      return row ? open(account, row.payload, recordKey) : null;
     },
-    write: (account, recordKey, value) => {
-      const nonce = Crypto.getRandomBytes(12);
-      const data = gcm(key, nonce, utf8ToBytes(`${owner}:${recordKey}`)).encrypt(utf8ToBytes(value));
-      db.runSync('INSERT INTO resident_local (owner, key, payload) VALUES (?, ?, ?) ON CONFLICT(owner, key) DO UPDATE SET payload = excluded.payload',
-        account, recordKey, JSON.stringify({ nonce: bytesToHex(nonce), data: bytesToHex(data) }));
-    },
+    write,
     remove: (account, recordKey) => { db.runSync('DELETE FROM resident_local WHERE owner = ? AND key = ?', account, recordKey); },
     list: account => db.getAllSync<{ key: string; payload: string }>(
       "SELECT key, payload FROM resident_local WHERE owner = ? AND key LIKE 'draft:%'", account)
-      .map(row => open(row.payload, row.key)),
+      .map(row => open(account, row.payload, row.key)),
   };
   return new ResidentStore(storage, owner, () => Crypto.randomUUID());
 }

@@ -13,6 +13,7 @@ const copy = (extra: Partial<ReportState>, firstName: string): ServerResidentDet
   actions: { canEdit: true, canDelete: false, canSubmitForApproval: true, canSubmitForApprovalWhenCompleted: true, canClose: false, closeRequiresDescription: false },
   data: { ...formData, personal: { ...formData.personal, firstName } } });
 store.create(formData);
+store.create({ ...formData, personal: { ...formData.personal, fin: '', firstName: '', lastName: '' } });
 // A downloaded report edited on the device, then returned on the web with changes.
 const returned = store.adopt('preview-returned', 1, copy({ rootReportId: 901, reportId: 901 }, 'Əli'));
 store.save(returned.id, { ...returned.data, personal: { ...returned.data.personal, lastName: 'Məmmədov', firstName: 'Əli' }, counts: { 1: 4 } });
@@ -25,7 +26,7 @@ export function PreviewProvider({ children }: any) {
   const [drafts, setDrafts] = useState(store.list()), [online, setOnline] = useState(false);
   const [notice, setNotice] = useState(''), [syncing, setSyncing] = useState(false);
   const refresh = () => setDrafts(store.list());
-  const value = { store, catalog, drafts, error: '', online, loading: false, refreshing: false, syncing, progress: '', notice,
+  const value = { store, catalog, drafts, error: '', online, loading: false, catalogLoading: false, refreshing: false, syncing, progress: '', notice,
     refreshCatalog: async () => {}, accessToken: async () => 'preview', refreshStatuses: async () => {},
     save: (id: string, data: any) => { const d = store.save(id, data); refresh(); return d; },
     create: (data: any) => { const d = store.create(data); refresh(); return d; },

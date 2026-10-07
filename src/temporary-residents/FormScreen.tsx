@@ -8,14 +8,14 @@ import { DateField } from '../components/DateField';
 import { AddressFields } from './AddressFields';
 import { AnimalsFields } from './AnimalsFields';
 import { useResidents } from './context';
-import { documentSeries, fieldOptions, sections, settlementStatuses, updatePersonal, validate, type Errors } from './schema';
+import { documentSeries, fieldOptions, firstIssue, sections, settlementStatuses, updatePersonal, validate, type Errors } from './schema';
 import { draftNotice, StateBanner } from './StateBanner';
 import { ResidentView } from './ResidentView';
 import { editable, type PersonalData, type ResidentData, type ResidentDraft } from './types';
 const steps = ['Şəxsi hesab', 'Şəxsin məlumatları', 'Heyvanlar'];
 export default function FormScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>(), residents = useResidents();
-  if (residents.loading) return <SafeAreaView style={styles.safe}><ActivityIndicator color={colors.primary} style={{ margin: 40 }} /></SafeAreaView>;
+  const { id, check } = useLocalSearchParams<{ id: string; check?: string }>(), residents = useResidents();
+  if (residents.loading || residents.catalogLoading) return <SafeAreaView style={styles.safe}><ActivityIndicator color={colors.primary} style={{ margin: 40 }} /></SafeAreaView>;
   const draft = residents.drafts.find(item => item.id === id);
   if (!draft || !residents.catalog) return <SafeAreaView style={[styles.safe, { padding: 24, gap: 20 }]}><Text style={styles.title}>{residents.error || (!residents.catalog ? 'Formanı açmaq üçün arayışları onlayn yükləyin.' : 'Qeyd tapılmadı.')}</Text><Button label="Siyahıya qayıt" onPress={() => router.replace('/temporary-residents')} /></SafeAreaView>;
   // A report known to be locked on the server opens read-only; offline the last known state decides.
@@ -29,12 +29,19 @@ export default function FormScreen() {
           {!!draft.conflict && <Button secondary label="Fərqlərə bax və qərar ver" onPress={() => router.push({ pathname: '/temporary-residents/conflict/[id]', params: { id: draft.id } })} />}</View>} />
     </SafeAreaView>;
   }
-  return <FormEditor key={id} id={id} initialDraft={draft} />;
+  // Data adopted from the server remounts the editor, so it never saves its older copy over it.
+  return <FormEditor key={`${id}:${draft.adoptedAt ?? ''}`} id={id} initialDraft={draft} showIssues={check === '1'} />;
 }
-function FormEditor({ id, initialDraft }: { id: string; initialDraft: ResidentDraft }) {
+function FormEditor({ id, initialDraft, showIssues }: { id: string; initialDraft: ResidentDraft; showIssues: boolean }) {
   const residents = useResidents(), { width } = useWindowDimensions();
-  const [draft, setDraft] = useState(initialDraft), [data, setData] = useState(initialDraft.data);
-  const [step, setStep] = useState(0), [errors, setErrors] = useState<Errors>({}), [saveError, setSaveError] = useState('');
+  // The data being edited is local; the record's sync state (conflict, status, account number)
+  // is read live, so a sync or decision made on another screen shows here at once.
+  const [data, setData] = useState(initialDraft.data);
+  const draft = residents.drafts.find(item => item.id === id) ?? initialDraft;
+  // An incomplete record opened from the list starts on its first blocking step, fields marked;
+  // a record just created starts clean on the first step.
+  const [initialIssue] = useState(() => showIssues && residents.catalog ? firstIssue(initialDraft.data, residents.catalog) : null);
+  const [step, setStep] = useState(initialIssue?.step ?? 0), [errors, setErrors] = useState<Errors>(initialIssue?.errors ?? {}), [saveError, setSaveError] = useState('');
   const scroll = useRef<ScrollView>(null), unsaved = useRef(false);
   const wide = width >= 761, twoColumns = width >= 1000, catalog = residents.catalog;
   useEffect(() => {
@@ -47,7 +54,7 @@ function FormEditor({ id, initialDraft }: { id: string; initialDraft: ResidentDr
   }, []);
   function save(next: ResidentData) {
     setData(next);
-    try { const record = residents.save(id, next); setDraft(record); setSaveError(''); unsaved.current = false; }
+    try { residents.save(id, next); setSaveError(''); unsaved.current = false; }
     catch (cause) { unsaved.current = true; setSaveError(cause instanceof Error ? cause.message : 'Məlumat cihazda saxlanmadı.'); }
   }
   function close() {

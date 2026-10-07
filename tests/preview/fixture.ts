@@ -2,7 +2,9 @@ import type { Catalog, ResidentData } from '../../src/temporary-residents/types'
 export const catalog: Catalog = {
   version: 1, downloadedAt: '2026-10-06T06:00:00Z', reportYear: 2026,
   lookups: {
-    country: [{ id: 1031, label: 'Azərbaycan', code: '031' }, { id: 2, label: 'Türkiyə', code: '792' }],
+    country: [{ id: 1031, label: 'Azərbaycan', code: '031' }, { id: 2, label: 'Türkiyə', code: '792' },
+      ...['Gürcüstan', 'Rusiya Federasiyası', 'İran İslam Respublikası', 'Qazaxıstan', 'Özbəkistan', 'Ukrayna', 'Belarus', 'Almaniya', 'Fransa', 'İtaliya', 'Böyük Britaniya və Şimali İrlandiya Birləşmiş Krallığı', 'Amerika Birləşmiş Ştatları', 'Kanada', 'Çin Xalq Respublikası', 'Yaponiya']
+        .map((label, i) => ({ id: 100 + i, label, code: String(100 + i) }))],
     gender: [{ id: 1, label: 'Kişi' }, { id: 2, label: 'Qadın' }], nationality: [{ id: 1, label: 'Azərbaycanlı' }],
     finAbsenceReason: [{ id: 1, label: 'Şəxsiyyət sənədi yoxdur' }], educationLevel: [{ id: 1, label: 'Ali təhsil' }, { id: 12, label: 'Təhsili yoxdur' }],
     educationLevelDetail: [{ id: 1, parentId: 1, label: 'Bakalavriat' }], scientificDegree: [], academicTitle: [],

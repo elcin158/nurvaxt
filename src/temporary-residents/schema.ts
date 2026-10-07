@@ -67,16 +67,26 @@ export const sections: { title: string; fields: Field[] }[] = [
     when(select('positionTypeId', 'Vəzifəsi', 'position'), employed),
   ] },
 ];
+// Dependent lists are filtered from catalogues of up to ~30k rows on every form render; the
+// result depends only on the catalogue and the parent values, so it is cached per catalogue.
+const optionCache = new WeakMap<Catalog, Map<string, Option[]>>();
 export function fieldOptions(field: Field, data: PersonalData, catalog: Catalog): Option[] {
   const items = field.lookup === 'employmentStatus' ? catalog.employmentStatuses : catalog.lookups[field.lookup ?? ''] ?? [];
   if (!field.parent) return items;
   const parentId = data[field.parent];
   if (!parentId) return [];
-  return items.filter(option => {
+  const key = `${field.name}|${parentId}|${field.name === 'educationInstitutionNameId' ? data.educationInstitutionTypeId ?? '' : ''}`;
+  let cache = optionCache.get(catalog);
+  if (!cache) optionCache.set(catalog, cache = new Map());
+  const cached = cache.get(key);
+  if (cached) return cached;
+  const result = items.filter(option => {
     if (field.name === 'educationInstitutionNameId')
       return option.parentId === parentId && (!data.educationInstitutionTypeId || option.parentIds == null || option.parentIds.includes(Number(data.educationInstitutionTypeId)));
     return option.parentIds ? option.parentIds.includes(Number(parentId)) : option.parentId === parentId;
   });
+  cache.set(key, result);
+  return result;
 }
 export function updatePersonal(data: PersonalData, name: string, value: FieldValue, catalog: Catalog): PersonalData {
   const next = { ...data, [name]: value };
@@ -145,4 +155,12 @@ export function animalCount(id: number, catalog: Catalog, counts: Record<string,
   const children = catalog.animals.filter(x => x.parentId === id);
   if (!children.length || (item?.parentId != null && !item.isComputed)) return counts[id] ?? 0;
   return children.reduce((total, child) => total + animalCount(child.id, catalog, counts), 0);
+}
+/** The first form step that blocks syncing, with its errors; null when the record can be sent. */
+export function firstIssue(data: ResidentData, catalog: Catalog): { step: number; errors: Errors } | null {
+  for (const step of [0, 1, 2]) {
+    const errors = validate(data, catalog, step);
+    if (Object.keys(errors).length) return { step, errors };
+  }
+  return null;
 }

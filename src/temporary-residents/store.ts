@@ -58,7 +58,7 @@ export class ResidentStore {
     // Local edits are kept as revisions: the record stays ahead of the server's receipt.
     const nextRevision = Math.max(revision, current?.revision ?? 0);
     return this.put({
-      id, owner: this.owner, createdAt: current?.createdAt ?? now, updatedAt: now, data: report.data,
+      id, owner: this.owner, createdAt: current?.createdAt ?? now, updatedAt: now, data: report.data, adoptedAt: now,
       revision: nextRevision, syncedRevision: nextRevision, syncedAt: now,
       server: { rootReportId: report.state.rootReportId, reportId: report.state.reportId, version: report.state.version,
         personalAccountNumber: report.accountNumber, downloaded: current ? current.server?.downloaded : true },

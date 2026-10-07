@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Alert, Platform, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -21,6 +21,7 @@ export default function ConflictScreen() {
   const [busy, setBusy] = useState(false), [error, setError] = useState('');
   const differences = useMemo(() => draft?.conflict && catalog ? diffResident(draft.data, draft.conflict.server.data, catalog) : [], [draft, catalog]);
   const back = () => router.canGoBack() ? router.back() : router.replace('/temporary-residents');
+  if (residents.catalogLoading) return <SafeAreaView style={styles.safe}><ActivityIndicator color={colors.primary} style={{ margin: 40 }} /></SafeAreaView>;
   if (!draft?.conflict || !catalog) return <SafeAreaView style={[styles.safe, { padding: 24, gap: 20 }]}>
     <Text style={styles.title}>{draft ? 'Bu qeyd üzrə gözləyən qərar yoxdur.' : 'Qeyd tapılmadı.'}</Text><Button label="Siyahıya qayıt" onPress={() => router.replace('/temporary-residents')} /></SafeAreaView>;
   const { conflict } = draft, state = conflict.server.state, locked = conflict.code === 'REPORT_LOCKED';

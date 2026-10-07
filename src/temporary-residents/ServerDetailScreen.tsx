@@ -29,6 +29,7 @@ export default function ServerDetailScreen() {
   const back = () => router.canGoBack() ? router.back() : router.replace('/temporary-residents');
   const message = !detail && (!residents.online ? 'Serverdəki qeydə baxmaq üçün internetə qoşulun.' : error)
     || (!catalog ? 'Məlumatları göstərmək üçün əvvəlcə arayışları onlayn yükləyin.' : '');
+  if (residents.catalogLoading) return <SafeAreaView style={styles.safe}><ActivityIndicator color={colors.primary} style={{ margin: 40 }} /></SafeAreaView>;
   if (message) return <SafeAreaView style={[styles.safe, { padding: 24, gap: 20 }]}><Text style={styles.title}>{message}</Text>
     <View style={styles.actions}>{!!error && residents.online && <Button secondary label="Yenidən cəhd et" onPress={() => { setError(''); setAttempt(x => x + 1); }} />}<Button label="Geri" onPress={back} /></View></SafeAreaView>;
   if (!detail || !catalog) return <SafeAreaView style={styles.safe}><ActivityIndicator color={colors.primary} style={{ margin: 40 }} /></SafeAreaView>;
