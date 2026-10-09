@@ -84,6 +84,51 @@ lazımi faylı oxuyub Expo-nu həmin dəyərlərlə işə salır.
 ayrılır (`metro.config.js`), ona görə mühit dəyişəndə keşi təmizləmək lazım deyil.
 Fayllarda sirr saxlanmır, yalnız ünvanlar var.
 
+## Release imzası
+
+Release APK tətbiqin öz açarı ilə imzalanır (`plugins/withReleaseSigning.js`). Yeni APK köhnəsinin
+üstünə yalnız **eyni açarla** quraşdırılır; açar dəyişsə, tətbiqi silmək lazım gəlir və cihazdakı
+göndərilməmiş məlumatlar itir. Açar olmadan release build dayanır, debug açarına qayıtmır.
+
+Açar və parollar layihənin `credentials/` qovluğundadır. Qovluq `.gitignore`-dadır və **heç vaxt
+commit edilmir**: repoya girişi olan hər kəs açarla tətbiqin "yeniləməsini" imzalaya bilərdi.
+
+```
+credentials/
+  evtas-release.jks          # açar
+  keystore.properties        # yol (layihəyə nisbətən) və parollar
+```
+
+```properties
+EVTAS_RELEASE_STORE_FILE=credentials/evtas-release.jks
+EVTAS_RELEASE_STORE_PASSWORD=…
+EVTAS_RELEASE_KEY_ALIAS=evtas
+EVTAS_RELEASE_KEY_PASSWORD=…
+```
+
+Yeni kompüterdə bu iki fayl təhlükəsiz kanalla alınıb `credentials/`-ə qoyulur.
+`~/.gradle/gradle.properties` və ya `ORG_GRADLE_PROJECT_<AD>` env dəyişəni (məs. CI-da) eyni
+açarlarla `keystore.properties`-dəki dəyəri əvəz edir.
+
+- `.jks` faylı və parollar şirkətin secret manager-ində / ehtiyat nüsxədə saxlanılmalıdır. İtən
+  açarla paylanmış tətbiqi bir daha yeniləmək mümkün deyil.
+- Play Store-a keçiddə Play App Signing-də **"Use existing app signing key"** seçilib bu açar
+  yüklənir; başqa komandaya təhvil verildikdə də paket adı (`az.rihis.evtas.mobile`) və açar eyni qalmalıdır.
+- `app.json`-dakı plugin dəyişdikdə `android/` yenilənməlidir: `npx expo prebuild -p android --no-install`.
+
+### Yeni versiyanın buraxılması
+
+1. `app.json`: `expo.version` (istifadəçiyə görünən, məs. `1.1.0`) və `expo.android.versionCode`
+   (hər build-də **mütləq** artır: 1, 2, 3…) dəyişdirilir, sonra `npx expo prebuild -p android --no-install`.
+2. Build (mühit faylı JS-ə API ünvanını yazır; `-PreactNativeArchitectures=arm64-v8a` yalnız 64-bit cihazlar üçündür):
+   ```bash
+   set -a && source env/dev.env && set +a && cd android && ./gradlew assembleRelease
+   ```
+   Paylanacaq fayl: `android/app/build/outputs/apk/release/evtas-<mühit>-<version>-<versionCode>.apk`
+   (məs. `evtas-dev-1.2.0-5.apk`). Yanındakı `app-release.apk` eyni fayldır; `npm run release:*` onu quraşdırır.
+3. APK paylanır, Mobile API-də `MobileAppVersion__Android__Latest` / `__DownloadUrl` (məcburi olduqda
+   `__MinSupported`) yenilənir — tətbiq "Yeni versiya mövcuddur" bildirişini göstərir.
+
 ## İşə salmaq
 
 ```bash

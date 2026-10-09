@@ -13,6 +13,7 @@
     },
     "android": {
       "package": "az.rihis.evtas.mobile",
+      "versionCode": 1,
       "allowBackup": false,
       "adaptiveIcon": {
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -38,7 +39,8 @@
       "react-native-quick-crypto",
       "expo-router",
       "expo-sqlite",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "./plugins/withReleaseSigning"
     ]
   }
 }

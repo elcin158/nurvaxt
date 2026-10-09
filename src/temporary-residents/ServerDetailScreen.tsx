@@ -1,17 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '../../App';
-import { Button, colors } from '../components/ResidentControls';
+import { DetailPlaceholder } from '../components/DetailPlaceholder';
 import { useResidents } from './context';
-import { ResidentView } from './ResidentView';
-import { StateBanner } from './StateBanner';
+import { FormEditor } from './FormScreen';
+import { StateBanner } from '../components/StateBanner';
 import { getServerResident } from './server';
-import type { ServerResidentDetail } from './types';
+import type { ResidentDraft, ServerResidentDetail } from './types';
 
-/** Read-only view of a server report. It is fetched on open and kept only in memory. */
+/** Tbu.Web's "Ətraflı bax": the server copy in the form's review mode. It is fetched on open and kept only in memory. */
 export default function ServerDetailScreen() {
   const { reportId } = useLocalSearchParams<{ reportId: string }>(), residents = useResidents(), auth = useAuth();
   const [detail, setDetail] = useState<ServerResidentDetail | null>(null), [error, setError] = useState(''), [attempt, setAttempt] = useState(0);
@@ -29,18 +26,14 @@ export default function ServerDetailScreen() {
   const back = () => router.canGoBack() ? router.back() : router.replace('/temporary-residents');
   const message = !detail && (!residents.online ? 'Serverdəki qeydə baxmaq üçün internetə qoşulun.' : error)
     || (!catalog ? 'Məlumatları göstərmək üçün əvvəlcə arayışları onlayn yükləyin.' : '');
-  if (residents.catalogLoading) return <SafeAreaView style={styles.safe}><ActivityIndicator color={colors.primary} style={{ margin: 40 }} /></SafeAreaView>;
-  if (message) return <SafeAreaView style={[styles.safe, { padding: 24, gap: 20 }]}><Text style={styles.title}>{message}</Text>
-    <View style={styles.actions}>{!!error && residents.online && <Button secondary label="Yenidən cəhd et" onPress={() => { setError(''); setAttempt(x => x + 1); }} />}<Button label="Geri" onPress={back} /></View></SafeAreaView>;
-  if (!detail || !catalog) return <SafeAreaView style={styles.safe}><ActivityIndicator color={colors.primary} style={{ margin: 40 }} /></SafeAreaView>;
-  return <SafeAreaView style={styles.safe}><StatusBar style="dark" />
-    <View style={styles.header}><View style={{ flex: 1 }}><Text style={styles.headerTitle}>Təsərrüfat № {detail.accountNumber}</Text>
-      <Text style={styles.headerHint}>Serverdəki qeyd · yalnız baxış · {detail.state.statusName}</Text></View><Button secondary small label="✕  Bağla" onPress={back} /></View>
-    <ResidentView data={detail.data} accountNumber={detail.accountNumber} address={detail.address} catalog={catalog}
-      banner={detail.state.returnReason ? <StateBanner tone="warning" title={`${detail.state.statusName}`} text={`Səbəb: ${detail.state.returnReason}`} /> : null} />
-  </SafeAreaView>;
+  const retry = () => { setError(''); setAttempt(x => x + 1); };
+  if (residents.catalogLoading || message || !detail || !catalog) return <DetailPlaceholder title="Müvəqqəti yaşayan şəxs" attempt={attempt} onClose={back}
+    loadingText={residents.catalogLoading ? 'Arayışlar yüklənir…' : 'Qeyd yüklənir…'} error={residents.online && !residents.catalogLoading ? error : ''}
+    message={residents.catalogLoading || error ? '' : message} onRetry={residents.online ? retry : undefined} />;
+  // A device-side stand-in for the form; its id matches no device record, so nothing is saved or released.
+  const state = detail.state;
+  const draft: ResidentDraft = { id: `server:${state.reportId}`, owner: '', revision: 0, syncedRevision: 0, createdAt: '', updatedAt: '', data: detail.data,
+    server: { rootReportId: state.rootReportId, reportId: state.reportId, version: state.version, personalAccountNumber: detail.accountNumber } };
+  return <FormEditor key={draft.id} initialDraft={draft} review={{ hint: `Serverdəki qeyd · yalnız baxış · ${state.statusName}`, onClose: back,
+    banner: state.returnReason ? <StateBanner tone="warning" title={state.statusName} text={`Səbəb: ${state.returnReason}`} /> : null }} />;
 }
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#FFF' }, title: { color: colors.text, fontSize: 20, lineHeight: 28, fontWeight: '600' }, actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  header: { minHeight: 80, borderBottomWidth: 1, borderBottomColor: colors.line, paddingHorizontal: 24, paddingVertical: 16, flexDirection: 'row', alignItems: 'center', gap: 12 }, headerTitle: { color: colors.text, fontSize: 16, fontWeight: '500', lineHeight: 24 }, headerHint: { color: colors.muted, fontSize: 12, marginTop: 4 },
-});

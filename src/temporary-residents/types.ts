@@ -1,14 +1,11 @@
-export type Option = { id: number; label: string; parentId?: number | null; parentIds?: number[] | null; code?: string | null };
-export type AdminUnit = Option & { countryId: number; canSelectAccount: boolean; hasStreet: boolean };
-export type Street = Option & { adminUnitId: number; hasEntrance: boolean };
-export type Entrance = Option & { adminUnitId: number; throughFareId: number };
+import type { AddressBook, AdminUnit, Entrance, Option, ReferenceCatalog, Street } from '../reference/types';
+
+export type { AddressBook, AdminUnit, Entrance, Option, Street };
 export type Animal = Option & { isComputed?: boolean };
-export type Catalog = {
-  version: 1; downloadedAt: string; reportYear: number;
-  lookups: Record<string, Option[]>;
-  employmentStatuses: (Option & { enablesEmploymentDetails: boolean })[];
-  animals: Animal[]; adminUnits: AdminUnit[]; streets: Street[]; entrances: Entrance[];
-};
+/** The part of the reference data the address blocks read. */
+export type AddressCatalog = { lookups: Record<string, Option[]>; addresses: AddressBook };
+/** The part of the shared reference data the temporary resident form reads. */
+export type Catalog = Pick<ReferenceCatalog, 'downloadedAt' | 'reportYear' | 'lookups' | 'employmentStatuses' | 'accountAdminUnitIds' | 'addresses'> & { animals: Animal[] };
 export type FieldValue = string | number | boolean | null;
 export type PersonalData = Record<string, FieldValue>;
 export type ResidentData = {
@@ -64,5 +61,7 @@ export const newResidentData = (year: number): ResidentData => ({
 export type ServerResidentItem = {
   reportId: number; accountNumber: string; fullName: string; gender: string; birthDate: string;
   permanentResidence: string; arrival: string; workflowStatus: string;
+  /** The status-chip tone Tbu.Web draws the status with. */
+  workflowTone?: string;
 };
 export type ServerResidentPage = { items: ServerResidentItem[]; pageNumber: number; totalCount: number; totalPages: number };

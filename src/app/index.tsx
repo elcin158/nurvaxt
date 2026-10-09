@@ -1,2 +1,2 @@
 import { Redirect } from 'expo-router';
-export default function Home() { return <Redirect href="/temporary-residents" />; }
+export default function Home() { return <Redirect href="/households" />; }

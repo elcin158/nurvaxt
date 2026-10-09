@@ -11,6 +11,9 @@ await build({ entryPoints: ['tests/preview/main.tsx'], bundle: true, outfile: `$
     builder.onResolve({ filter: /expo-status-bar$/ }, () => ({ path: 'status', namespace: 'mock' }));
     builder.onResolve({ filter: /(^|\/)App$/ }, () => ({ path: 'auth', namespace: 'mock' }));
     builder.onResolve({ filter: /^\.\/server$/ }, () => ({ path: path.join(root, 'tests/preview/server.ts') }));
+    builder.onResolve({ filter: /reference\/context$/ }, () => ({ path: path.join(root, 'tests/preview/mock-reference.tsx') }));
+    builder.onResolve({ filter: /notifications\/context$|^\.\/context$/ }, args => args.path.includes('notifications') || args.importer.includes('/notifications/')
+      ? { path: path.join(root, 'tests/preview/mock-notifications.tsx') } : undefined);
     builder.onResolve({ filter: /^\.\/context$/ }, () => ({ path: path.join(root, 'tests/preview/mock-context.tsx') }));
     builder.onLoad({ filter: /.*/, namespace: 'mock' }, args => ({ contents: args.path === 'status' ? 'export const StatusBar = () => null;' : 'export const useAuth = () => ({ session: { user: { displayName: "Sınaq əməkdaşı", executiveName: "Şamaxı rayon İcra Hakimiyyəti" } }, getAccessToken: async () => "preview", lock: () => {}, logout: async () => {} });', loader: 'js' }));
   } }] });

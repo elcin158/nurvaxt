@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useNetworkState } from 'expo-network';
 import { useAuth } from '../../App';
+import { useReference } from '../reference/context';
 import * as Crypto from 'expo-crypto';
-import { ApiError, apiRequest } from '../auth/api';
+import { ApiError } from '../auth/api';
 import { openResidentStore } from './deviceStore';
 import type { ResidentStore } from './store';
 import { ownerKey, pending, type Catalog, type ResidentData, type ResidentDraft, type ServerResidentDetail, type WorkflowAction } from './types';
@@ -12,14 +13,16 @@ import { ResidentSync } from './sync';
 
 type Context = {
   store: ResidentStore | null; catalog: Catalog | null; drafts: ResidentDraft[];
-  error: string; online: boolean; loading: boolean; catalogLoading: boolean; refreshing: boolean; syncing: boolean;
+  error: string; online: boolean; loading: boolean; catalogLoading: boolean; syncing: boolean;
   progress: string; notice: string;
-  refreshCatalog(): Promise<void>; sync(ids: string[], options?: { confirmOverwrite?: boolean }): Promise<{ conflicts: number } | void>;
+  dismiss(): void; sync(ids: string[], options?: { confirmOverwrite?: boolean }): Promise<{ conflicts: number } | void>;
   save(id: string, data: ResidentData): ResidentDraft; create(data: ResidentData): ResidentDraft;
   accessToken(): Promise<string>; refreshStatuses(): Promise<void>;
   /** Opens a server report for editing on this device; returns the device record id. */
   edit(reportId: number): Promise<string>;
   adoptServer(id: string): Promise<void>; remove(id: string, discardChanges?: boolean): void;
+  /** Drops a server record the device has nothing to send for, e.g. one opened and left unchanged. */
+  release(id: string): void;
   workflow(reportId: number, action: WorkflowAction, version: number, description?: string): Promise<string>;
 };
 const ResidentContext = createContext<Context | null>(null);
@@ -28,49 +31,37 @@ export function useResidents() {
   if (!context) throw new Error('Resident provider missing');
   return context;
 }
-export function ResidentProvider({ children }: { children: ReactNode }) {
+/** Mounted above the module routes so switching modules keeps the opened store; `enabled` defers opening it to the first visit. */
+export function ResidentProvider({ children, enabled }: { children: ReactNode; enabled: boolean }) {
   const auth = useAuth(), network = useNetworkState();
   const [store, setStore] = useState<ResidentStore | null>(null);
-  const [catalog, setCatalog] = useState<Catalog | null>(null), [drafts, setDrafts] = useState<ResidentDraft[]>([]);
+  // The reference data is shared by both modules and kept by ReferenceProvider.
+  const reference = useReference(), catalog: Catalog | null = reference.catalog;
+  const [drafts, setDrafts] = useState<ResidentDraft[]>([]);
   const [error, setError] = useState(''), [notice, setNotice] = useState('');
-  const [loading, setLoading] = useState(true), [catalogLoading, setCatalogLoading] = useState(true), [refreshing, setRefreshing] = useState(false), [syncing, setSyncing] = useState(false);
+  const [loading, setLoading] = useState(true), [syncing, setSyncing] = useState(false);
   const [progress, setProgress] = useState('');
-  const live = useRef(true), busy = useRef(false), refreshingRef = useRef(false);
+  const live = useRef(true), busy = useRef(false);
   const authRef = useRef(auth);
   useEffect(() => { authRef.current = auth; }, [auth]);
   const owner = auth.session ? ownerKey(auth.session.user) : '';
   const online = network.isConnected === true && network.isInternetReachable !== false;
   useEffect(() => {
+    if (!owner || !enabled) return;
     live.current = true;
     let cancelled = false;
-    let timer: ReturnType<typeof setTimeout> | undefined;
     void openResidentStore(owner).then(value => {
       if (cancelled) return;
+      // A server record opened and left unchanged (the app closed while its form was open) goes now.
+      value.list().forEach(draft => value.release(draft.id));
       setDrafts(value.list()); setStore(value); setLoading(false);
-      // The catalogue is several megabytes; records show first and it is read after that paint.
-      timer = setTimeout(() => {
-        if (cancelled) return;
-        try { setCatalog(value.catalog()); }
-        catch (cause) { setError(cause instanceof Error ? cause.message : 'Arayışlar açılmadı.'); }
-        finally { setCatalogLoading(false); }
-      }, 0);
-    }).catch(cause => { if (!cancelled) { setError(cause instanceof Error ? cause.message : 'Lokal məlumatlar açılmadı.'); setLoading(false); setCatalogLoading(false); } });
-    return () => { cancelled = true; live.current = false; clearTimeout(timer); };
-  }, [owner]);
-  async function refreshCatalog() {
-    if (!store || refreshingRef.current) return;
-    if (!online) { setError('Arayışları yeniləmək üçün internetə qoşulun.'); return; }
-    refreshingRef.current = true; setRefreshing(true); setError('');
-    try {
-      const accessToken = await authRef.current.getAccessToken();
-      const value = await apiRequest<Catalog>('GET', 'temporary-residents/catalog', { accessToken, timeoutMs: 60_000 });
-      if (!live.current) return;
-      if (value.version !== 1 || !value.lookups || !Array.isArray(value.animals) || !Array.isArray(value.adminUnits) || !Array.isArray(value.streets) || !Array.isArray(value.entrances))
-        throw new Error('Serverdən arayış məlumatları düzgün alınmadı.');
-      store.saveCatalog(value); setCatalog(value); setNotice('Arayışlar cihazda saxlanıldı. Formanı internetsiz doldura bilərsiniz.');
-    } catch (cause) { if (live.current) setError(cause instanceof Error ? cause.message : 'Arayışlar yenilənmədi.'); }
-    finally { refreshingRef.current = false; if (live.current) setRefreshing(false); }
-  }
+    }).catch(cause => { if (!cancelled) { setError(cause instanceof Error ? cause.message : 'Lokal məlumatlar açılmadı.'); setLoading(false); } });
+    return () => {
+      cancelled = true; live.current = false;
+      // Another user's records never stay in memory after a sign-out or account change.
+      setStore(null); setDrafts([]); setError(''); setNotice(''); setLoading(true);
+    };
+  }, [owner, enabled]);
   async function sync(ids: string[], options: { confirmOverwrite?: boolean } = {}) {
     if (!store || !catalog || busy.current) return;
     if (!online) { setError('Sinxronizasiya üçün internetə qoşulun.'); return; }
@@ -86,7 +77,7 @@ export function ResidentProvider({ children }: { children: ReactNode }) {
       }, () => live.current);
       if (live.current) {
         setDrafts(store.list());
-        setNotice(`${result.succeeded} qeyd sinxron edildi.${result.conflicts ? ` ${result.conflicts} qeyd qərar gözləyir.` : ''}${result.remaining - result.conflicts > 0 ? ` ${result.remaining - result.conflicts} qeyd lokalda gözləyir.` : ''}`);
+        setNotice(`${result.succeeded} qeyd sinxron edildi və cihazdan silindi.${result.conflicts ? ` ${result.conflicts} qeyd qərar gözləyir.` : ''}${result.remaining - result.conflicts > 0 ? ` ${result.remaining - result.conflicts} qeyd lokalda gözləyir.` : ''}`);
       }
       return { conflicts: result.conflicts };
     } catch (cause) { if (live.current) setError(cause instanceof Error ? cause.message : 'Sinxronizasiya tamamlanmadı.'); }
@@ -140,6 +131,9 @@ export function ResidentProvider({ children }: { children: ReactNode }) {
     if (!store) throw new Error('Lokal yaddaş hazır deyil.');
     store.remove(id, discardChanges); setDrafts(store.list());
   }
+  function release(id: string) {
+    if (store?.release(id)) setDrafts(store.list());
+  }
   async function workflow(reportId: number, action: WorkflowAction, version: number, description?: string) {
     const local = requireOnline();
     const result = await runWorkflow(await accessToken(), reportId, action, version, description);
@@ -167,8 +161,8 @@ export function ResidentProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusKey]);
-  return <ResidentContext.Provider value={{ store, catalog, drafts, error, online, loading, catalogLoading, refreshing, syncing, progress, notice, refreshCatalog, sync, save, create,
-    accessToken, refreshStatuses, edit, adoptServer, remove, workflow }}>
+  return <ResidentContext.Provider value={{ store, catalog, drafts, error, online, loading, catalogLoading: reference.loading, syncing, progress, notice, dismiss: () => { setError(''); setNotice(''); }, sync, save, create,
+    accessToken, refreshStatuses, edit, adoptServer, remove, release, workflow }}>
     {children}
   </ResidentContext.Provider>;
 }

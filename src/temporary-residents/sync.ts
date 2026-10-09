@@ -20,8 +20,9 @@ export class ResidentSync {
           const error = this.check(draft);
           if (error) throw new Error(error);
           const receipt = await this.send(draft);
-          // A receipt is persisted even if the screen locks during the network call.
-          this.store.acknowledge(draft, receipt); succeeded++;
+          // A receipt is persisted even if the screen locks during the network call; once nothing is
+          // left to send, the record lives on the server only. An edit made during upload keeps it here.
+          this.store.release(this.store.acknowledge(draft, receipt).id); succeeded++;
         } catch (cause) {
           const message = cause instanceof Error ? cause.message : 'Sinxronizasiya tamamlanmadı.';
           // The server refused without writing anything; the operator decides, other records go on.

@@ -10,6 +10,7 @@ const { validate, updatePersonal, fieldOptions, animalCount, firstIssue } = requ
 const { diffResident } = require('../src/temporary-residents/present.ts');
 const { editable } = require('../src/temporary-residents/types.ts');
 const { ApiConnectionError, ApiError } = require('../src/auth/api.ts');
+const { memoryAddressBook } = require('../src/reference/types.ts');
 function fixture() {
   const values = new Map();
   const storage = {
@@ -23,28 +24,30 @@ function fixture() {
 const state = (extra = {}) => ({ rootReportId: 123, reportId: 123, version: 3, status: 1, statusName: 'Formalaşmış', canEdit: true, returnReason: null, ...extra });
 const receipt = draft => ({ clientId: draft.id, revision: draft.revision, personalAccountNumber: 'MY-123', state: state({ version: draft.revision * 3 }) });
 const catalog = {
-  version: 1, downloadedAt: new Date().toISOString(), reportYear: new Date().getUTCFullYear(),
+  downloadedAt: new Date().toISOString(), reportYear: new Date().getUTCFullYear(),
   lookups: { country: [{ id: 1031, label: 'Azərbaycan', code: '031' }, { id: 2, label: 'Xarici ölkə', code: '002' }],
     educationSpecialty: [{ id: 4, code: 'OTHER' }] }, employmentStatuses: [], animals: [],
-  adminUnits: [{ id: 1, countryId: 1031, canSelectAccount: true }], streets: [{ id: 2, adminUnitId: 1 }], entrances: [{ id: 3, adminUnitId: 1, throughFareId: 2 }],
+  accountAdminUnitIds: [1],
+  addresses: memoryAddressBook({ adminUnits: [{ id: 1, countryId: 1031, canSelectAccount: true }], streets: [{ id: 2, adminUnitId: 1 }],
+    entrances: [{ id: 3, adminUnitId: 1, throughFareId: 2 }] }),
 };
 function validData() { return { ...newResidentData(catalog.reportYear), adminUnitId: 1, personal: {
   fin: 'ABC1234', identityDocumentSeries: 'AA', identityDocumentNumber: '1234567', lastName: 'Test', firstName: 'Test', fatherName: 'Test',
   genderTypeId: 1, birthDate: '2000-02-29', birthCountryId: 2, nationalityTypeId: 1, citizenshipCountryId: 1031,
   permanentResidenceCountryId: 2, arrivalDate: '2020-01-01', arrivalFromCountryId: 2, currentlyStudying: false,
 } }; }
-test('drafts and catalog survive reopening and are isolated by user and executive', () => {
-  const { store, storage } = fixture(), draft = store.create(validData()); store.saveCatalog(catalog);
+test('drafts survive reopening and are isolated by user and executive', () => {
+  const { store, storage } = fixture(), draft = store.create(validData());
   const reopened = new ResidentStore(storage, 'user.1', randomUUID);
-  assert.deepEqual(reopened.get(draft.id), draft); assert.deepEqual(reopened.catalog(), catalog);
+  assert.deepEqual(reopened.get(draft.id), draft);
   const other = new ResidentStore(storage, 'user.2', randomUUID);
-  assert.deepEqual(other.list(), []); assert.equal(other.get(draft.id), null); assert.equal(other.catalog(), null);
+  assert.deepEqual(other.list(), []); assert.equal(other.get(draft.id), null);
 });
-test('only explicitly selected pending records upload; successful records are skipped', async () => {
+test('only explicitly selected pending records upload; a record sent in full leaves the device', async () => {
   const { store } = fixture(), a = store.create(validData()), b = store.create(validData()), sent = [];
   const sync = new ResidentSync(store, async d => { sent.push(d.id); return receipt(d); }, () => undefined);
   await sync.selected([a.id, a.id]); assert.deepEqual(sent, [a.id]);
-  assert.equal(pending(store.get(a.id)), false); assert.equal(pending(store.get(b.id)), true);
+  assert.equal(store.get(a.id), null); assert.equal(pending(store.get(b.id)), true);
   await sync.selected([a.id]); assert.deepEqual(sent, [a.id]);
 });
 test('editing during upload acknowledges only the sent revision and preserves the edit', async () => {
@@ -150,6 +153,14 @@ test('a checked-out report is a synced device record bound to its chain', () => 
   assert.equal(draft.server.downloaded, true); assert.equal(draft.server.rootReportId, 50); assert.equal(pending(draft), false);
   assert.equal(store.findByRoot(50).id, 'device-1');
 });
+test('only a server record with nothing left to send is released from the device', () => {
+  const { store } = fixture(), local = store.create(validData());
+  const opened = store.adopt('device-1', 1, serverCopy(validData(), { rootReportId: 50 }));
+  const edited = store.adopt('device-2', 1, serverCopy(validData(), { rootReportId: 51 })); store.save(edited.id, edited.data);
+  assert.equal(store.release(local.id), false); assert.equal(store.release(edited.id), false);
+  assert.equal(store.release(opened.id), true); assert.equal(store.get(opened.id), null);
+  assert.notEqual(store.get(local.id), null); assert.notEqual(store.get(edited.id), null);
+});
 test('removing a record with unsent changes needs explicit discard', () => {
   const { store } = fixture(), a = store.create(validData());
   assert.throws(() => store.remove(a.id), /Göndərilməmiş/); assert.notEqual(store.get(a.id), null);
@@ -175,7 +186,7 @@ test('differences list changed fields, animals and completion in the form wordin
 });
 test('local records use AES-256-GCM compatible with the native cipher and still open v1 records', async () => {
   const crypto = await import('node:crypto');
-  const { seal, open } = require('../src/temporary-residents/cipher.ts');
+  const { seal, open } = require('../src/storage/cipher.ts');
   const { gcm } = require('@noble/ciphers/aes.js');
   const { bytesToHex, utf8ToBytes } = require('@noble/hashes/utils.js');
   const key = crypto.randomBytes(32), nonce = crypto.randomBytes(12), aad = 'user.1:catalog', text = JSON.stringify({ label: 'Şəki rayonu', n: 1 });

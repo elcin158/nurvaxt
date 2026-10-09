@@ -19,9 +19,10 @@ function baseUrl(): string {
   return value;
 }
 
+/** `text: true` returns the body unparsed, for a payload that is handed on rather than read. */
 export async function apiRequest<T>(method: 'GET' | 'POST', path: string, {
-  body, accessToken, timeoutMs = 20_000,
-}: { body?: object; accessToken?: string; timeoutMs?: number }): Promise<T> {
+  body, accessToken, timeoutMs = 20_000, text = false,
+}: { body?: object; accessToken?: string; timeoutMs?: number; text?: boolean }): Promise<T> {
   const url = `${baseUrl()}/api/v1/${path}`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -49,7 +50,7 @@ export async function apiRequest<T>(method: 'GET' | 'POST', path: string, {
       throw new ApiError(response.status, details || problem?.title || 'Sorğu tamamlanmadı. Yenidən cəhd edin.',
         typeof problem?.code === 'string' ? problem.code : undefined, problem ?? undefined);
     }
-    return response.status === 204 ? undefined as T : await response.json() as T;
+    return response.status === 204 ? undefined as T : text ? await response.text() as T : await response.json() as T;
   } catch (cause) {
     // A known HTTP rejection stays authoritative even if its error body stalls.
     if (cause instanceof ApiError) throw cause;

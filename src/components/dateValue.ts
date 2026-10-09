@@ -1,4 +1,4 @@
-export type DateFieldProps = { label: string; value: string; onChange(value: string): void; required?: boolean; error?: string };
+export type DateFieldProps = { label: string; value: string; onChange(value: string): void; required?: boolean; error?: string; number?: string };
 export function localDateValue(value: Date): string {
   return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
 }

@@ -52,8 +52,9 @@ export function ServerActions({ item, onClose, onDone }: { item: ServerResidentI
       // Submitting must act on what the operator entered on this device, so unsent changes go first.
       if (dialog.syncFirst && bound && pending(bound)) {
         const result = await residents.sync([bound.id]);
+        // A record sent in full has left the device; one still here kept something unsent.
         const after = residents.store?.get(bound.id);
-        if (!result || result.conflicts || !after || pending(after))
+        if (!result || result.conflicts || after && pending(after))
           throw new Error(after?.lastError || 'Cihazdakı dəyişikliklər göndərilmədi. Əvvəlcə sinxronizasiyanı tamamlayın.');
         const fresh = await getServerResident(await residents.accessToken(), reportId);
         version = fresh.state.version; reportId = fresh.state.reportId;
@@ -67,7 +68,7 @@ export function ServerActions({ item, onClose, onDone }: { item: ServerResidentI
     { label: 'Ətraflı bax', onPress: () => { onClose(); router.push({ pathname: '/temporary-residents/server/[reportId]', params: { reportId: String(detail.state.reportId) } }); } },
     { label: 'Tarixçə', onPress: () => void openHistory() },
     ...a?.canEdit ? [{ label: bound ? 'Redaktə et (cihazdakı qeyd)' : 'Redaktə et', onPress: () => void openEditor(),
-      hint: bound ? undefined : 'Hesabat cihaza endiriləcək; internetsiz də redaktə edə bilərsiniz.' }] : [],
+      hint: bound ? undefined : 'Hesabat redaktə üçün cihaza endiriləcək. Dəyişiklik etmədən çıxsanız, cihazdan silinəcək.' }] : [],
     ...a?.canSubmitForApprovalWhenCompleted ? [{ label: 'Təsdiqə göndər', disabled: !a.canSubmitForApproval,
       hint: !a.canSubmitForApproval ? 'Bütün bölmələr tamamlanmalıdır.' : bound && pending(bound) ? 'Cihazdakı dəyişikliklər əvvəlcə göndəriləcək.' : undefined,
       onPress: () => setDialog({ action: 'submit-for-approval', title: 'Bu hesabatı təsdiqə göndərməyə əminsiniz?', confirmLabel: 'Bəli, göndər', syncFirst: 'yes' }) }] : [],

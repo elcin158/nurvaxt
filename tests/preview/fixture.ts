@@ -1,6 +1,7 @@
 import type { Catalog, ResidentData } from '../../src/temporary-residents/types';
+import { memoryAddressBook } from '../../src/reference/types';
 export const catalog: Catalog = {
-  version: 1, downloadedAt: '2026-10-06T06:00:00Z', reportYear: 2026,
+  downloadedAt: '2026-10-06T06:00:00Z', reportYear: 2026,
   lookups: {
     country: [{ id: 1031, label: 'Azərbaycan', code: '031' }, { id: 2, label: 'Türkiyə', code: '792' },
       ...['Gürcüstan', 'Rusiya Federasiyası', 'İran İslam Respublikası', 'Qazaxıstan', 'Özbəkistan', 'Ukrayna', 'Belarus', 'Almaniya', 'Fransa', 'İtaliya', 'Böyük Britaniya və Şimali İrlandiya Birləşmiş Krallığı', 'Amerika Birləşmiş Ştatları', 'Kanada', 'Çin Xalq Respublikası', 'Yaponiya']
@@ -12,8 +13,11 @@ export const catalog: Catalog = {
     employmentCategory: [], economicActivitySection: [], economicActivityCode: [], position: [],
   },
   employmentStatuses: [{ id: 1, label: 'Muzdlu işçi', enablesEmploymentDetails: true }, { id: 2, label: 'İşsiz', enablesEmploymentDetails: false }],
-  adminUnits: [{ id: 1, label: 'Şamaxı rayonu, Mədrəsə qəsəbəsi', countryId: 1031, canSelectAccount: true, hasStreet: true }, { id: 2, label: 'Şamaxı rayonu, Meysəri kəndi', countryId: 1031, canSelectAccount: true, hasStreet: true }],
-  streets: [{ id: 1, adminUnitId: 1, label: 'Mərkəz küçəsi', hasEntrance: true }], entrances: [{ id: 1, adminUnitId: 1, throughFareId: 1, label: 'Ev 12' }],
+  accountAdminUnitIds: [1, 2],
+  addresses: memoryAddressBook({
+    adminUnits: [{ id: 1, label: 'Şamaxı rayonu, Mədrəsə qəsəbəsi', countryId: 1031, canSelectAccount: true, hasStreet: true }, { id: 2, label: 'Şamaxı rayonu, Meysəri kəndi', countryId: 1031, canSelectAccount: true, hasStreet: true }],
+    streets: [{ id: 1, adminUnitId: 1, label: 'Mərkəz küçəsi', hasEntrance: true }], entrances: [{ id: 1, adminUnitId: 1, throughFareId: 1, label: 'Ev 12' }],
+  }),
   animals: [{ id: 1, parentId: null, label: 'İribuynuzlu mal-qara' }, { id: 2, parentId: 1, label: 'İnəklər', isComputed: true }, { id: 3, parentId: 2, label: 'Südlük inəklər' }, { id: 4, parentId: 2, label: 'Digər inəklər' }, { id: 5, parentId: null, label: 'Qoyunlar' }, { id: 6, parentId: null, label: 'Keçilər' }],
 };
 export const formData: ResidentData = {

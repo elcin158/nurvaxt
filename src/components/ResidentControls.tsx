@@ -1,34 +1,54 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { FlatList, Keyboard, Modal, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions, type TextInputProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export const colors = { primary: '#0F62FE', pale: '#E5F1FF', bg: '#F1F5F9', border: '#CBD5E1', line: '#E2E8F0', text: '#1E293B', muted: '#64748B' };
-export function Button({ label, onPress, secondary, disabled, small }: { label: string; onPress(): void; secondary?: boolean; disabled?: boolean; small?: boolean }) {
-  return <Pressable accessibilityRole="button" accessibilityState={{ disabled }} disabled={disabled} onPress={onPress}
-    style={({ pressed }) => [ui.button, secondary && ui.secondary, small && { paddingHorizontal: 12 }, (disabled || pressed) && { opacity: 0.5 }]}>
-    <Text style={[ui.buttonText, secondary && { color: colors.text }]}>{label}</Text>
+// Tbu.Web's review mode (?review=true) shows the same form with every control disabled; a form
+// wrapped in <ReadOnly value> does the same, so the view and the editor never drift apart.
+const ReadOnlyContext = createContext(false);
+export const ReadOnly = ReadOnlyContext.Provider;
+export const useReadOnly = () => useContext(ReadOnlyContext);
+/** `compact` fits a one-line notice; its touch area stays 48 px through hitSlop. */
+export function Button({ label, onPress, secondary, disabled, small, compact }: { label: string; onPress(): void; secondary?: boolean; disabled?: boolean; small?: boolean; compact?: boolean }) {
+  return <Pressable accessibilityRole="button" accessibilityState={{ disabled }} disabled={disabled} onPress={onPress} hitSlop={compact ? 8 : undefined}
+    style={({ pressed }) => [ui.button, secondary && ui.secondary, small && { paddingHorizontal: 12 }, compact && ui.compactButton, (disabled || pressed) && { opacity: 0.5 }]}>
+    <Text style={[ui.buttonText, secondary && { color: colors.text }, compact && { fontSize: 13 }]}>{label}</Text>
   </Pressable>;
 }
-export function FieldShell({ label, required, error, children }: { label: string; required?: boolean; error?: string; children: ReactNode }) {
-  return <View style={ui.field}><Text style={ui.label}>{label}{required && <Text style={{ color: '#DC2626' }}> *</Text>}</Text>
+/** The wizard sidebar's fold: the steps start folded to their markers, and this opens them to their names. */
+export function SidebarToggle({ collapsed, onToggle }: { collapsed: boolean; onToggle(): void }) {
+  return <Pressable accessibilityRole="button" accessibilityLabel={collapsed ? 'Addımları aç' : 'Addımları yığ'} accessibilityState={{ expanded: !collapsed }}
+    hitSlop={10} onPress={onToggle} style={({ pressed }) => [ui.sidebarToggle, pressed && { backgroundColor: colors.pale }]}>
+    <Text style={ui.sidebarToggleText}>{collapsed ? '»' : '«'}</Text></Pressable>;
+}
+/** `number` is the field's row number on the paper form, shown at the label's end as Tbu.Web does. */
+export function FieldShell({ label, required, error, number, children }: { label: string; required?: boolean; error?: string; number?: string; children: ReactNode }) {
+  const title = <Text style={[ui.label, !!number && { flex: 1 }]}>{label}{required && <Text style={{ color: '#DC2626' }}> *</Text>}</Text>;
+  return <View style={ui.field}>{number ? <View style={ui.labelRow}>{title}<Text style={ui.lawNumber}>({number})</Text></View> : title}
     {children}{!!error && <Text accessibilityRole="alert" style={ui.errorText}>{error}</Text>}</View>;
 }
-export function Input({ label, required, error, ...props }: TextInputProps & { label: string; required?: boolean; error?: string }) {
-  return <FieldShell label={label} required={required} error={error}><TextInput placeholder="Daxil edin" placeholderTextColor={colors.muted}
-    accessibilityLabel={label} {...props} style={[ui.input, !!error && { borderColor: '#DC2626' }, props.style]} /></FieldShell>;
+export function Input({ label, required, error, number, ...props }: TextInputProps & { label: string; required?: boolean; error?: string; number?: string }) {
+  const readOnly = useReadOnly();
+  return <FieldShell label={label} required={required} error={error} number={number}><TextInput placeholderTextColor={colors.muted}
+    accessibilityLabel={label} {...props} placeholder={readOnly ? undefined : props.placeholder ?? 'Daxil edin'} editable={!readOnly && props.editable !== false}
+    style={[ui.input, !!error && { borderColor: '#DC2626' }, props.style, readOnly && ui.selectDisabled]} /></FieldShell>;
 }
 export type Choice = { id: string | number; label: string };
 // Tbu.Web's custom select: the list opens as a popover attached to the field (below it, or above
 // when there is no room), with a search box for longer lists. Rows have a fixed height so even
 // the 30k-row institution list scrolls smoothly and opens on the current selection.
 const ROW = 44, SEARCH_FROM = 8;
-function Chevron({ up, disabled }: { up?: boolean; disabled?: boolean }) {
-  return <View style={ui.chevronBox}><View style={[ui.chevronMark, up && ui.chevronUp, disabled && { borderColor: '#94A3B8' }]} /></View>;
+/** The select's down arrow, drawn rather than typed so it sits centred on every platform; `up` while its list is open. */
+export function Chevron({ up, disabled, color }: { up?: boolean; disabled?: boolean; color?: string }) {
+  return <View style={ui.chevronBox}><View style={[ui.chevronMark, up && ui.chevronUp, !!color && { borderColor: color }, disabled && { borderColor: '#94A3B8' }]} /></View>;
 }
 type Anchor = { x: number; y: number; width: number; height: number };
-export function Select({ label, value, items, onChange, required, error, disabled }: {
+export function Select({ label, value, items, onChange, required, error, disabled, number, hideLabel }: {
   label: string; value: string | number | null | undefined; items: Choice[];
-  onChange(value: string | number | null): void; required?: boolean; error?: string; disabled?: boolean;
+  onChange(value: string | number | null): void; required?: boolean; error?: string; disabled?: boolean; number?: string;
+  /** For a control whose label is shown elsewhere, such as a column header; it is still read out. */
+  hideLabel?: boolean;
 }) {
+  disabled = useReadOnly() || disabled;
   const [open, setOpen] = useState(false), [query, setQuery] = useState(''), [anchor, setAnchor] = useState<Anchor | null>(null);
   const [keyboard, setKeyboard] = useState(0);
   const trigger = useRef<View>(null), screen = useWindowDimensions(), insets = useSafeAreaInsets();
@@ -61,7 +81,9 @@ export function Select({ label, value, items, onChange, required, error, disable
     panel = { ...panel, left: anchor.x, width: anchor.width };
   }
   const selectedIndex = selected ? rows.indexOf(selected) : -1;
-  return <FieldShell label={label} required={required} error={error}>
+  const field = (children: ReactNode) => hideLabel ? <View style={ui.field}>{children}{!!error && <Text accessibilityRole="alert" style={ui.errorText}>{error}</Text>}</View>
+    : <FieldShell label={label} required={required} error={error} number={number}>{children}</FieldShell>;
+  return field(<>
     <Pressable ref={trigger} accessibilityRole="button" accessibilityLabel={`${label}: ${selected?.label ?? 'Seçim edin'}`} disabled={disabled}
       accessibilityState={{ disabled, expanded: open }} onPress={show}
       style={[ui.input, ui.select, open && ui.selectOpen, disabled && ui.selectDisabled, !!error && ui.selectError]}>
@@ -86,21 +108,27 @@ export function Select({ label, value, items, onChange, required, error, disable
           ListEmptyComponent={<Text style={ui.empty}>{query ? 'Nəticə tapılmadı' : 'Seçim yoxdur. Arayışları yeniləyin.'}</Text>} />
       </View>
     </Modal>
-  </FieldShell>;
+  </>);
 }
 export function Check({ label, checked, onChange, disabled }: { label: string; checked: boolean; onChange(): void; disabled?: boolean }) {
+  disabled = useReadOnly() || disabled;
   return <Pressable accessibilityRole="checkbox" accessibilityLabel={label} accessibilityState={{ checked, disabled }} disabled={disabled} onPress={onChange} style={ui.checkRow}>
-    <View style={[ui.check, checked && { backgroundColor: colors.primary, borderColor: colors.primary }]}>{checked && <Text style={{ color: '#FFF', fontWeight: '700' }}>✓</Text>}</View>
+    <View style={[ui.check, checked && { backgroundColor: colors.primary, borderColor: colors.primary }, disabled && { opacity: 0.6 }]}>{checked && <Text style={{ color: '#FFF', fontWeight: '700' }}>✓</Text>}</View>
     <Text style={[ui.label, { flex: 1 }]}>{label}</Text>
   </Pressable>;
 }
 export function BooleanField({ label, value, onChange, required, error }: { label: string; value: boolean | null | undefined; onChange(value: boolean): void; required?: boolean; error?: string }) {
+  const disabled = useReadOnly();
   return <FieldShell label={label} required={required} error={error}><View style={ui.radios}>{[true, false].map(x =>
-    <Pressable key={String(x)} accessibilityRole="radio" accessibilityState={{ selected: value === x }} accessibilityLabel={`${label}: ${x ? 'Bəli' : 'Xeyr'}`}
-      onPress={() => onChange(x)} style={ui.radio}><View style={[ui.radioDot, value === x && { borderColor: colors.primary, borderWidth: 6 }]} /><Text style={ui.label}>{x ? 'Bəli' : 'Xeyr'}</Text></Pressable>)}</View></FieldShell>;
+    <Pressable key={String(x)} accessibilityRole="radio" accessibilityState={{ selected: value === x, disabled }} disabled={disabled} accessibilityLabel={`${label}: ${x ? 'Bəli' : 'Xeyr'}`}
+      onPress={() => onChange(x)} style={[ui.radio, disabled && ui.selectDisabled]}><View style={[ui.radioDot, value === x && { borderColor: colors.primary, borderWidth: 6 }]} /><Text style={ui.label}>{x ? 'Bəli' : 'Xeyr'}</Text></Pressable>)}</View></FieldShell>;
 }
 export const ui = StyleSheet.create({
+  sidebarToggle: { width: 28, height: 28, borderRadius: 6, borderWidth: 1, borderColor: colors.border, backgroundColor: '#FFF', alignItems: 'center', justifyContent: 'center' },
+  sidebarToggleText: { color: colors.primary, fontSize: 16, lineHeight: 18, fontWeight: '600' },
   field: { gap: 7 }, label: { color: colors.text, fontSize: 14, lineHeight: 21 },
+  labelRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  lawNumber: { color: colors.muted, fontSize: 11, lineHeight: 21, fontStyle: 'italic', fontWeight: '700' },
   input: { minHeight: 48, borderWidth: 1, borderColor: colors.border, borderRadius: 6, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: '#FFF', color: colors.text, fontSize: 14 },
   // Field and list styles follow Tbu.Web's evtas.css custom select.
   select: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, borderColor: '#CBD5E1',
@@ -121,6 +149,7 @@ export const ui = StyleSheet.create({
   optionActive: { backgroundColor: '#EFF6FF' }, optionPressed: { backgroundColor: '#F1F5F9' },
   optionText: { color: '#1E293B', fontSize: 14, lineHeight: 18 }, optionTextActive: { color: '#0F172A', fontWeight: '500' },
   button: { backgroundColor: colors.primary, minHeight: 46, paddingVertical: 12, paddingHorizontal: 18, borderRadius: 6, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.primary },
+  compactButton: { minHeight: 32, paddingVertical: 5, paddingHorizontal: 12 },
   secondary: { backgroundColor: '#FFF', borderColor: colors.border }, buttonText: { color: '#FFF', fontSize: 14, fontWeight: '600', textAlign: 'center' },
   errorText: { fontSize: 12, lineHeight: 18, color: '#B91C1C' }, empty: { padding: 16, textAlign: 'center', color: colors.muted, lineHeight: 21 },
   modal: { flex: 1, padding: 20, gap: 16, backgroundColor: '#FFF' }, modalHeader: { flexDirection: 'row', gap: 16, alignItems: 'center', justifyContent: 'space-between' }, modalTitle: { fontSize: 18, fontWeight: '600', color: colors.text, flex: 1 },

@@ -1,11 +1,7 @@
-import { pending, type Catalog, type ReportState, type ResidentData, type ResidentDraft, type ServerResidentDetail, type SyncConflict, type SyncReceipt, type SyncStatusItem } from './types';
+import { pending, type ReportState, type ResidentData, type ResidentDraft, type ServerResidentDetail, type SyncConflict, type SyncReceipt, type SyncStatusItem } from './types';
+import type { LocalStorage } from '../storage/encryptedStorage';
 
-export interface LocalStorage {
-  read(owner: string, key: string): string | null;
-  write(owner: string, key: string, value: string): void;
-  list(owner: string): string[];
-  remove(owner: string, key: string): void;
-}
+export type { LocalStorage };
 const validState = (state: ReportState | undefined) => !!state && Number.isInteger(state.rootReportId) && state.rootReportId > 0 &&
   Number.isInteger(state.reportId) && state.reportId > 0 && Number.isInteger(state.version) && state.version > 0;
 
@@ -88,6 +84,13 @@ export class ResidentStore {
     if (pending(current) && !discardChanges) throw new Error('Göndərilməmiş dəyişikliklər var. Qeyd cihazdan silinmədi.');
     this.storage.remove(this.owner, `draft:${id}`);
   }
+  /** A record the server holds and the device has nothing more to send for leaves the device. */
+  release(id: string): boolean {
+    const current = this.get(id);
+    if (!current?.server || pending(current) || current.conflict) return false;
+    this.storage.remove(this.owner, `draft:${id}`);
+    return true;
+  }
   findByRoot(rootReportId: number): ResidentDraft | null {
     return this.list().find(x => x.server?.rootReportId === rootReportId) ?? null;
   }
@@ -95,13 +98,4 @@ export class ResidentStore {
     const current = this.get(id);
     if (current) this.put({ ...current, lastError: message });
   }
-  catalog(): Catalog | null {
-    const raw = this.storage.read(this.owner, 'catalog');
-    if (!raw) return null;
-    const value = JSON.parse(raw) as Catalog;
-    if (value.version !== 1 || !value.lookups || !Array.isArray(value.animals) || !Array.isArray(value.adminUnits))
-      throw new Error('Arayış məlumatları uyğun deyil. Onlayn yeniləyin.');
-    return value;
-  }
-  saveCatalog(value: Catalog) { this.storage.write(this.owner, 'catalog', JSON.stringify(value)); }
 }

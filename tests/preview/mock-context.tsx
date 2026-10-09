@@ -26,14 +26,15 @@ export function PreviewProvider({ children }: any) {
   const [drafts, setDrafts] = useState(store.list()), [online, setOnline] = useState(false);
   const [notice, setNotice] = useState(''), [syncing, setSyncing] = useState(false);
   const refresh = () => setDrafts(store.list());
-  const value = { store, catalog, drafts, error: '', online, loading: false, catalogLoading: false, refreshing: false, syncing, progress: '', notice,
-    refreshCatalog: async () => {}, accessToken: async () => 'preview', refreshStatuses: async () => {},
+  const value = { store, catalog, drafts, error: '', online, loading: false, catalogLoading: false, syncing, progress: '', notice,
+    dismiss: () => setNotice(''), accessToken: async () => 'preview', refreshStatuses: async () => {},
     save: (id: string, data: any) => { const d = store.save(id, data); refresh(); return d; },
     create: (data: any) => { const d = store.create(data); refresh(); return d; },
     sync: async (ids: string[]) => { setSyncing(true); for (const id of ids) { const d = store.get(id)!; store.acknowledge(d, { clientId: id, revision: d.revision, personalAccountNumber: 'MY-NÜMUNƏ', state: d.conflict?.server.state ?? state() }); } refresh(); setNotice('Seçilmiş qeydlər sinxron edildi (vizual sınaq).'); setSyncing(false); return { conflicts: 0 }; },
     edit: async (reportId: number) => store.list().find(x => x.server?.reportId === reportId)?.id ?? store.adopt(`preview-edit-${reportId}`, 1, copy({ rootReportId: reportId, reportId }, 'Endirilmiş')).id,
     adoptServer: async (id: string) => { const d = store.get(id)!; store.adopt(id, d.revision, d.conflict!.server); refresh(); },
     remove: (id: string, discard?: boolean) => { store.remove(id, discard); refresh(); },
+    release: (id: string) => { if (store.release(id)) refresh(); },
     workflow: async (_: number, action: string) => action === 'delete' ? 'Müvəqqəti yaşayan şəxs hesabatı silindi.' : 'Hesabat təsdiqə göndərildi.',
   };
   return <Context.Provider value={value}><button id="network-toggle" style={{ position: 'fixed', right: 12, bottom: 4, zIndex: 1000, fontSize: 10, opacity: 0.5 }} onClick={() => setOnline(!online)}>Sınaq: {online ? 'oflayn ol' : 'onlayn ol'}</button>{children}</Context.Provider>;

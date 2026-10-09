@@ -1,26 +1,31 @@
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { router } from 'expo-router';
 import { Button, Check, colors, ui } from '../components/ResidentControls';
 import { useResidents } from './context';
 import { ServerList } from './ServerList';
-import { HeaderMenu } from './HeaderMenu';
+import { AppBrand } from '../components/AppBrand';
+import { HeaderMenu } from '../components/HeaderMenu';
+import { NotificationBell } from '../notifications/NotificationBell';
+import { PageMessages, ReferenceStatus } from '../components/ReferenceStatus';
+import { ModuleTabs } from '../components/ModuleTabs';
 import { ActionSheet, ConfirmDialog } from '../components/ActionSheet';
-import { draftNotice } from './StateBanner';
+import { draftNotice } from '../components/StateBanner';
+import { RecordHeader, RecordRow, type RowChip } from '../components/RecordRow';
+import { residentTone } from '../components/StatusChip';
 import { editable, newResidentData, pending, type ResidentDraft } from './types';
 import { firstIssue } from './schema';
 export default function ListScreen() {
   const residents = useResidents(), { width } = useWindowDimensions();
-  const [query, setQuery] = useState(''), [filter, setFilter] = useState<'all' | 'pending' | 'synced'>('pending');
+  const [query, setQuery] = useState('');
   const [selection, setSelection] = useState<string[]>([]), [localError, setLocalError] = useState('');
   const [source, setSource] = useState<'device' | 'server'>('device');
   const visible = useMemo(() => residents.drafts.filter(draft => {
-    if (filter === 'pending' && !pending(draft) || filter === 'synced' && pending(draft)) return false;
     const p = draft.data.personal;
     return [p.firstName, p.lastName, p.fatherName, p.fin, draft.server?.personalAccountNumber, draft.id].join(' ').toLocaleLowerCase('az-AZ').includes(query.trim().toLocaleLowerCase('az-AZ'));
-  }), [residents.drafts, filter, query]);
+  }), [residents.drafts, query]);
   // A record with unsent changes is checked as the sync would check it, so an incomplete form
   // reads as "to complete" rather than as a failed upload.
   const incomplete = useMemo(() => {
@@ -38,7 +43,8 @@ export default function ListScreen() {
   const [menu, setMenu] = useState<ResidentDraft | null>(null), [removing, setRemoving] = useState<ResidentDraft | null>(null);
   const selected = selection.filter(id => selectable.includes(id));
   const waiting = residents.drafts.filter(pending).length;
-  const wide = width >= 900;
+  // The field tablet is 800 dp wide in portrait; from 720 dp the list is Tbu.Web's table, below it phone cards.
+  const wide = width >= 720;
   function create() {
     if (!residents.catalog) return;
     try {
@@ -47,56 +53,45 @@ export default function ListScreen() {
     } catch (cause) { setLocalError(cause instanceof Error ? cause.message : 'Qeyd yaradıla bilmədi.'); }
   }
   return <SafeAreaView style={styles.safe}><StatusBar style="light" />
-    <View style={styles.topbar}><View style={styles.brand}><Image source={require('../../assets/rih-login.png')} style={styles.logo} resizeMode="contain" accessibilityLabel="Rəqəmsal İcra Hakimiyyəti" /></View>
-      <HeaderMenu /></View>
+    <View style={styles.topbar}><AppBrand />
+      <View style={styles.actions}><NotificationBell /><HeaderMenu /></View></View>
+    <View style={styles.tabs}><ModuleTabs active="/temporary-residents" /></View>
     <View style={styles.page}>
       <Text style={styles.breadcrumb}>Təsərrüfatların uçotu  /  Müvəqqəti yaşayan şəxslər</Text>
       <View style={styles.titleRow}><View style={{ flex: 1, minWidth: 240 }}><Text style={styles.title}>Müvəqqəti yaşayan şəxslər</Text><Text style={styles.subtitle}>{waiting} qeyd sinxronizasiya gözləyir</Text></View>
         <Button label="+ Yeni" onPress={create} disabled={!residents.store || !residents.catalog || residents.syncing} /></View>
-      {!residents.catalog && !residents.loading && !residents.catalogLoading && <View style={styles.catalogNotice}><Text style={styles.catalogNoticeText}>Formanı doldurmaq üçün əvvəlcə arayışları yükləyin. Bunun üçün internet lazımdır.</Text>
-        <Button small label={residents.refreshing ? 'Yüklənir…' : 'Arayışları yüklə'} disabled={!residents.store || !residents.online || residents.refreshing} onPress={() => void residents.refreshCatalog()} /></View>}
-      {!!(residents.error || localError) && <Text accessibilityRole="alert" style={styles.error}>{localError || residents.error}</Text>}
-      {!!residents.notice && <Text accessibilityLiveRegion="polite" style={styles.notice}>{residents.notice}</Text>}
+      <ReferenceStatus />
+      <PageMessages error={localError || residents.error} notice={residents.notice} onClose={() => { setLocalError(''); residents.dismiss(); }} />
       <View style={styles.sources}>{([['device', 'Cihazda'], ['server', 'Serverdə']] as const).map(([value, label]) =>
         <Pressable key={value} accessibilityRole="tab" accessibilityState={{ selected: source === value }} onPress={() => setSource(value)} style={[styles.source, source === value && styles.activeSource]}>
           <Text style={[styles.sourceText, source === value && { color: '#FFF' }]}>{label}</Text></Pressable>)}</View>
       <View style={styles.card}>{source === 'server' ? <ServerList wide={wide} /> : <>
-        <View style={styles.toolbar}><View style={styles.filters}>{([['pending', 'Sinxronlaşmamış'], ['synced', 'Sinxronlaşmış'], ['all', 'Hamısı']] as const).map(([value, label]) =>
-          <Pressable key={value} accessibilityRole="tab" accessibilityState={{ selected: filter === value }} onPress={() => { setFilter(value); setSelection([]); }} style={[styles.tab, filter === value && styles.activeTab]}><Text style={[styles.tabText, filter === value && { color: colors.primary }]}>{label}</Text></Pressable>)}</View>
+        <View style={styles.toolbar}>
           <TextInput accessibilityLabel="Ad, FİN və ya hesab nömrəsinə görə axtarış" placeholder="Ad, FİN və ya hesab №" value={query} onChangeText={value => { setQuery(value); setSelection([]); }} style={[ui.input, styles.search]} placeholderTextColor={colors.muted} /></View>
         <View style={styles.selectRow}><View style={{ flex: 1, minWidth: 0 }}><Check label={selected.length ? `${selected.length} qeyd seçilib` : 'Hamısını seç'} checked={selectable.length > 0 && selected.length === selectable.length}
           disabled={!selectable.length || residents.syncing} onChange={() => setSelection(selected.length === selectable.length ? [] : selectable)} /></View>
           {/* The checkbox label flexes; the count keeps its width so it is never clipped. */}
           <Text numberOfLines={1} style={[styles.catalogText, styles.count]}>{visible.length} qeyd</Text></View>
-        {wide && <View style={styles.tableHeader}><Text style={styles.nameColumn}>Şəxsin məlumatları</Text><Text style={styles.addressColumn}>Ünvan</Text><Text style={styles.statusColumn}>Sinxronizasiya</Text></View>}
+        {wide && <RecordHeader check columns={['Şəxsin məlumatları', 'Ünvan', 'Status']} />}
         {residents.loading ? <ActivityIndicator style={{ margin: 40 }} color={colors.primary} /> : <FlatList data={visible} keyExtractor={item => item.id} style={{ flex: 1 }}
           contentContainerStyle={!visible.length ? { flexGrow: 1 } : undefined}
-          ListEmptyComponent={<View style={styles.empty}><Text style={styles.emptyIcon}>≡</Text><Text style={styles.emptyTitle}>{query ? 'Qeyd tapılmadı' : filter === 'pending' ? 'Sinxronlaşmamış qeyd yoxdur' : 'Hələ qeyd yoxdur'}</Text><Text style={styles.emptyText}>Yeni şəxsi əlavə edin. Qeydləri internet olmadan doldurub daha sonra seçərək sinxron edə bilərsiniz.</Text></View>}
+          ListEmptyComponent={<View style={styles.empty}><Text style={styles.emptyIcon}>≡</Text><Text style={styles.emptyTitle}>{query ? 'Qeyd tapılmadı' : 'Hələ qeyd yoxdur'}</Text><Text style={styles.emptyText}>Yeni şəxsi əlavə edin. Qeydləri internet olmadan doldurub daha sonra seçərək sinxron edə bilərsiniz.</Text></View>}
           renderItem={({ item }) => {
             const p = item.data.personal, name = [p.lastName, p.firstName, p.fatherName].filter(Boolean).join(' ') || 'Yeni müvəqqəti yaşayan şəxs';
             const notice = draftNotice(item), canSelect = selectable.includes(item.id), issue = incomplete.get(item.id);
             const failed = !!item.lastError && !notice && !issue;
-            const syncLabel = issue ? 'Natamamdır' : failed ? 'Sinxronizasiya alınmadı' : pending(item) ? item.server ? 'Dəyişiklik göndərilməyib' : 'Sinxronlaşmayıb' : 'Sinxronlaşıb';
-            const tone = issue ? styles.badgePending : failed ? styles.badgeError : pending(item) ? styles.badgePending : styles.badgeDone;
-            return <View style={[styles.row, wide && { flexDirection: 'row', alignItems: 'center' }]}>
-              <View style={[styles.rowMain, wide && styles.nameColumn]}>
-                <View style={{ width: 28 }}><Check label="" checked={selected.includes(item.id)} disabled={!canSelect || residents.syncing} onChange={() => setSelection(selected.includes(item.id) ? selection.filter(id => id !== item.id) : [...selection, item.id])} /></View>
-                <Pressable accessibilityRole="button" accessibilityLabel={`${name}: formanı aç`} onPress={() => openRecord(item.id)}
-                  onLongPress={() => setMenu(item)} style={{ flex: 1, paddingVertical: 8 }}>
-                  <Text style={styles.name}>{name}</Text><Text style={styles.detail}>FİN: {String(p.fin || '—')} · {item.data.reportYear}</Text><Text style={styles.detail}>Şəxsi hesab № {item.server?.personalAccountNumber || 'sinxronizasiyadan sonra veriləcək'}</Text>
-                </Pressable>
-                {!wide && <Pressable accessibilityRole="button" accessibilityLabel={`${name}: əməliyyatlar`} onPress={() => setMenu(item)} style={styles.more}><Text style={styles.moreText}>⋮</Text></Pressable>}
-              </View>
-              <Text style={[styles.address, wide && styles.addressColumn]}>{residents.catalog?.adminUnits.find(x => x.id === item.data.adminUnitId)?.label || 'Ünvan seçilməyib'}</Text>
-              <View style={[styles.statusBox, wide && styles.statusColumn]}>
-                <Text style={[styles.badge, tone]}>{syncLabel}</Text>
-                {notice && <Text style={[styles.badge, notice.tone === 'danger' ? styles.badgeError : notice.tone === 'warning' ? styles.badgePending : styles.badgeInfo]}>{notice.badge}</Text>}
-                {item.server?.downloaded && <Text style={[styles.badge, styles.badgeInfo]}>Serverdən endirilib</Text>}
-                {!!issue && <Text style={styles.issue}>{issue}</Text>}
-                {failed && <Text style={styles.errorDetail}>{item.lastError}</Text>}
-              </View>
-              {wide && <Pressable accessibilityRole="button" accessibilityLabel={`${name}: əməliyyatlar`} onPress={() => setMenu(item)} style={styles.more}><Text style={styles.moreText}>⋮</Text></Pressable>}
-            </View>;
+            const chips: RowChip[] = [issue ? { label: 'Natamamdır', tone: 'warning' } : failed ? { label: 'Sinxronizasiya alınmadı', tone: 'danger' }
+              : pending(item) ? { label: item.server ? 'Dəyişiklik göndərilməyib' : 'Sinxronlaşmayıb', tone: 'warning' } : { label: 'Sinxronlaşıb', tone: 'success' }];
+            if (item.status) chips.push({ label: item.status.statusName, tone: residentTone(item.status.status) });
+            if (notice && !notice.fromStatus) chips.push({ label: notice.badge, tone: notice.tone === 'danger' ? 'danger' : notice.tone === 'warning' ? 'warning' : 'info' });
+            if (item.server?.downloaded) chips.push({ label: 'Serverdən endirilib', tone: 'neutral' });
+            const toggle = () => setSelection(selected.includes(item.id) ? selection.filter(id => id !== item.id) : [...selection, item.id]);
+            return <RecordRow wide={wide} title={name} chips={chips}
+              meta={`FİN ${String(p.fin || '—')} · Hesab № ${item.server?.personalAccountNumber || '—'} · ${item.data.reportYear}`}
+              address={residents.catalog?.addresses.adminUnit(item.data.adminUnitId)?.label || 'Ünvan seçilməyib'}
+              note={issue ? { text: issue, tone: 'warning' } : failed && item.lastError ? { text: item.lastError, tone: 'danger' } : undefined}
+              check={{ checked: selected.includes(item.id), disabled: !canSelect || residents.syncing, onToggle: toggle }}
+              onOpen={() => openRecord(item.id)} onMenu={() => setMenu(item)} />;
           }} />}
       </>}</View>
       {source === 'device' && <View style={styles.bottom}><Text style={styles.bottomText}>Yalnız seçilmiş qeydlər göndəriləcək.</Text><Button label={residents.syncing ? `Sinxron edilir… ${residents.progress}` : `Seçilənləri sinxron et${selected.length ? ` (${selected.length})` : ''}`}
@@ -122,14 +117,10 @@ export default function ListScreen() {
   </SafeAreaView>;
 }
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.primary }, topbar: { minHeight: 56, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 20 }, brand: { backgroundColor: '#FFF', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5 }, logo: { width: 104, height: 32 }, profile: { flexShrink: 1, minHeight: 48, justifyContent: 'center' }, profileText: { color: '#FFF', fontSize: 13 },
-  page: { flex: 1, backgroundColor: colors.bg, padding: 20, gap: 14 }, breadcrumb: { color: colors.muted, fontSize: 12, lineHeight: 19 }, titleRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, alignItems: 'center' }, title: { fontSize: 23, lineHeight: 31, color: colors.text, fontWeight: '600' }, subtitle: { fontSize: 13, color: colors.muted, marginTop: 4 }, connection: { flexDirection: 'row', alignItems: 'center', gap: 8 }, dot: { height: 7, width: 7, borderRadius: 4 }, connectionText: { color: colors.muted, fontSize: 12, flexShrink: 1 },
-  catalogRow: { flexDirection: 'row', gap: 12, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }, catalogText: { color: colors.muted, fontSize: 12, lineHeight: 19 }, card: { flex: 1, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: colors.line, overflow: 'hidden', minHeight: 180 }, toolbar: { padding: 14, gap: 14, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: colors.line }, filters: { flexDirection: 'row', gap: 4, flexWrap: 'wrap' }, tab: { minHeight: 44, paddingHorizontal: 10, justifyContent: 'center', borderRadius: 5 }, activeTab: { backgroundColor: colors.pale }, tabText: { color: colors.muted, fontSize: 12, fontWeight: '500' }, search: { flex: 1, minWidth: 210 }, count: { flexShrink: 0, marginLeft: 12 }, selectRow: { paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: 1, borderBottomColor: colors.line },
-  tableHeader: { flexDirection: 'row', backgroundColor: '#F8FAFC', padding: 16 }, nameColumn: { flex: 1.5, color: colors.muted, fontSize: 12 }, addressColumn: { flex: 1, color: colors.muted, fontSize: 12, paddingHorizontal: 12 }, statusColumn: { width: 180, color: colors.muted, fontSize: 12 }, row: { padding: 16, borderBottomWidth: 1, borderBottomColor: colors.line, gap: 10 }, rowMain: { flexDirection: 'row', gap: 12, alignItems: 'center' }, name: { color: colors.primary, fontSize: 14, fontWeight: '600', lineHeight: 22 }, detail: { fontSize: 12, color: colors.muted, marginTop: 4, lineHeight: 18 }, address: { color: colors.text, fontSize: 13, lineHeight: 21 }, statusBox: { gap: 6, alignItems: 'flex-start' }, badge: { paddingVertical: 5, paddingHorizontal: 9, borderRadius: 5, fontSize: 11, fontWeight: '600' }, errorDetail: { color: '#B91C1C', fontSize: 12, lineHeight: 18 },
+  tabs: { paddingHorizontal: 20, paddingBottom: 10 },
+  safe: { flex: 1, backgroundColor: colors.primary }, actions: { flexShrink: 1, flexDirection: 'row', alignItems: 'center', gap: 4 }, topbar: { minHeight: 56, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 }, 
+  page: { flex: 1, backgroundColor: colors.bg, padding: 16, gap: 12 }, breadcrumb: { color: colors.muted, fontSize: 12, lineHeight: 19 }, titleRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, alignItems: 'center' }, title: { fontSize: 23, lineHeight: 31, color: colors.text, fontWeight: '600' }, subtitle: { fontSize: 13, color: colors.muted, marginTop: 4 }, 
+  catalogText: { color: colors.muted, fontSize: 12, lineHeight: 19 }, card: { flex: 1, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: colors.line, overflow: 'hidden', minHeight: 180 }, toolbar: { padding: 14, gap: 14, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: colors.line }, search: { flex: 1, minWidth: 210 }, count: { flexShrink: 0, marginLeft: 12 }, selectRow: { paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: 1, borderBottomColor: colors.line },
   sources: { flexDirection: 'row', alignSelf: 'flex-start', backgroundColor: '#FFF', borderWidth: 1, borderColor: colors.line, borderRadius: 8, padding: 3, gap: 3 }, source: { minHeight: 40, minWidth: 104, paddingHorizontal: 16, justifyContent: 'center', alignItems: 'center', borderRadius: 6 }, activeSource: { backgroundColor: colors.primary }, sourceText: { color: colors.text, fontSize: 13, fontWeight: '600' },
-  badgeDone: { color: '#15803D', backgroundColor: '#F0FDF4' }, badgePending: { color: '#9A3412', backgroundColor: '#FFF7ED' }, badgeError: { color: '#B91C1C', backgroundColor: '#FEF2F2' }, badgeInfo: { color: '#1D4ED8', backgroundColor: '#EFF6FF' },
-  more: { width: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }, moreText: { color: colors.primary, fontSize: 24, fontWeight: '700' },
-  catalogNotice: { backgroundColor: '#FFF7ED', borderWidth: 1, borderColor: '#FDBA74', borderRadius: 8, padding: 12, gap: 10, alignItems: 'flex-start' }, catalogNoticeText: { color: '#9A3412', fontSize: 13, lineHeight: 20 },
-  issue: { color: '#9A3412', fontSize: 12, lineHeight: 18 },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 28, gap: 10 }, emptyIcon: { color: '#94A3B8', fontSize: 38 }, emptyTitle: { fontSize: 17, color: colors.text, textAlign: 'center', fontWeight: '500' }, emptyText: { color: colors.muted, fontSize: 13, lineHeight: 21, textAlign: 'center', maxWidth: 420 }, bottom: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 12 }, bottomText: { color: colors.muted, fontSize: 12 }, error: { backgroundColor: '#FEF2F2', padding: 12, borderRadius: 6, color: '#B91C1C', lineHeight: 21 }, notice: { backgroundColor: '#EFF6FF', padding: 12, borderRadius: 6, color: '#1D4ED8', lineHeight: 21 },
+  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 28, gap: 10 }, emptyIcon: { color: '#94A3B8', fontSize: 38 }, emptyTitle: { fontSize: 17, color: colors.text, textAlign: 'center', fontWeight: '500' }, emptyText: { color: colors.muted, fontSize: 13, lineHeight: 21, textAlign: 'center', maxWidth: 420 }, bottom: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 12 }, bottomText: { color: colors.muted, fontSize: 12 },
 });

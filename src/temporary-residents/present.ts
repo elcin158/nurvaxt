@@ -1,15 +1,14 @@
 import { documentSeries, sections, settlementStatuses, type Field } from './schema';
-import type { Animal, Catalog, PersonalData, ResidentData } from './types';
+import type { AddressCatalog, Catalog, PersonalData, ResidentData } from './types';
 
 // Turns stored ids and flags into the labels the operator reads. Shared by the read-only
 // views and the conflict comparison, so both show a value the same way.
 const same = (a: unknown, b: unknown) => a != null && b != null && String(a) === String(b);
-export function addressText(prefix: string, data: PersonalData, catalog: Catalog) {
+export function addressText(prefix: string, data: PersonalData, catalog: AddressCatalog) {
   const key = (suffix: string) => prefix ? `${prefix}${suffix}` : suffix[0].toLowerCase() + suffix.slice(1);
   if (data[key('AddressIsOther')] === true) return String(data[key('AddressOtherNote')] || 'Digər ünvan');
-  return [catalog.adminUnits.find(x => same(x.id, data[key('AdminUnitId')]))?.label,
-    catalog.streets.find(x => same(x.id, data[key('ThroughFareId')]))?.label,
-    catalog.entrances.find(x => same(x.id, data[key('EntranceId')]))?.label].filter(Boolean).join(', ');
+  return [catalog.addresses.adminUnit(data[key('AdminUnitId')])?.label, catalog.addresses.street(data[key('ThroughFareId')])?.label,
+    catalog.addresses.entrance(data[key('EntranceId')])?.label].filter(Boolean).join(', ');
 }
 export const accountAddress = (data: ResidentData, catalog: Catalog) => addressText('', data as unknown as PersonalData, catalog);
 export function display(field: Field, data: PersonalData, catalog: Catalog): string {
@@ -31,19 +30,6 @@ export function visibleFields(personal: PersonalData, catalog: Catalog) {
     (field.kind !== 'address' || catalog.lookups.country?.find(x => same(x.id, personal[`${field.name}CountryId`]))?.code === '031')) }));
 }
 export const fieldLabel = (field: Field) => field.kind === 'address' ? `${field.label} (ünvan)` : field.label;
-/** Non-zero animal counts as an indented tree; branches show their computed totals. */
-export function animalLines(data: ResidentData, catalog: Catalog, count: (id: number) => number) {
-  const lines: { id: number; label: string; count: number; depth: number }[] = [];
-  const walk = (item: Animal, depth: number) => {
-    const children = catalog.animals.filter(x => x.parentId === item.id);
-    const value = children.length ? count(item.id) : data.counts[item.id] ?? 0;
-    if (!value) return;
-    lines.push({ id: item.id, label: item.label.replace(/:$/, ''), count: value, depth });
-    children.forEach(child => walk(child, depth + 1));
-  };
-  catalog.animals.filter(x => x.parentId == null && !x.label.includes('Digər')).forEach(x => walk(x, 0));
-  return lines;
-}
 
 export type Difference = { section: string; label: string; local: string; server: string };
 /** Whole-record comparison shown before the operator overwrites or adopts the server copy. */

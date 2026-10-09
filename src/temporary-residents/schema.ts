@@ -1,4 +1,4 @@
-import type { Catalog, FieldValue, Option, PersonalData, ResidentData } from './types';
+import type { AddressCatalog, Animal, Catalog, FieldValue, Option, PersonalData, ResidentData } from './types';
 export type Field = {
   name: string; label: string; kind?: 'text' | 'date' | 'select' | 'boolean' | 'address';
   lookup?: string; required?: boolean; full?: boolean; maxLength?: number; parent?: string;
@@ -111,7 +111,7 @@ export function validate(data: ResidentData, catalog: Catalog, step?: number): E
   const errors: Errors = {};
   if (step === undefined || step === 0) {
     if (!data.adminUnitId) errors.adminUnitId = 'İnzibati ərazi seçilməlidir.';
-    else if (!catalog.adminUnits.some(x => x.id === data.adminUnitId && x.canSelectAccount)) errors.adminUnitId = 'Bu ərazi üzrə qeyd yaratmaq icazəniz yoxdur.';
+    else if (!catalog.accountAdminUnitIds.includes(Number(data.adminUnitId))) errors.adminUnitId = 'Bu ərazi üzrə qeyd yaratmaq icazəniz yoxdur.';
     if (data.reportYear !== catalog.reportYear) errors.reportYear = 'Hesabat ilini onlayn yeniləyin.';
     validateAddress('', data as unknown as PersonalData, catalog, errors);
   }
@@ -141,16 +141,20 @@ export function validate(data: ResidentData, catalog: Catalog, step?: number): E
   }
   return errors;
 }
-function validateAddress(prefix: string, data: PersonalData, catalog: Catalog, errors: Errors) {
+/** Checks one address block against the catalogue; a `domestic` block has no country and is always in Azerbaijan. */
+export function validateAddress(prefix: string, data: PersonalData, catalog: AddressCatalog, errors: Errors, domestic = false) {
   const key = (suffix: string) => prefix ? `${prefix}${suffix}` : suffix[0].toLowerCase() + suffix.slice(1);
   const country = catalog.lookups.country?.find(c => c.id === data[key('CountryId')]);
-  if (prefix && country?.code !== '031') return;
+  if (prefix && !domestic && country?.code !== '031') return;
   const admin = data[key('AdminUnitId')], street = data[key('ThroughFareId')], entrance = data[key('EntranceId')];
-  if (prefix && !admin) errors[key('AdminUnitId')] = 'İnzibati ərazi seçilməlidir.';
-  if (street && !catalog.streets.some(x => x.id === street && x.adminUnitId === admin)) errors[key('ThroughFareId')] = 'Küçə seçilmiş inzibati əraziyə aid deyil.';
-  if (entrance && !catalog.entrances.some(x => x.id === entrance && x.adminUnitId === admin && x.throughFareId === street)) errors[key('EntranceId')] = 'Bina seçilmiş küçəyə aid deyil.';
+  if (prefix && !domestic && !admin) errors[key('AdminUnitId')] = 'İnzibati ərazi seçilməlidir.';
+  // Before the register is downloaded the parts cannot be checked; the server checks them on sync.
+  if (!catalog.addresses.ready) return;
+  const found = street ? catalog.addresses.street(street) : null, building = entrance ? catalog.addresses.entrance(entrance) : null;
+  if (street && (!found || found.adminUnitId !== admin)) errors[key('ThroughFareId')] = 'Küçə seçilmiş inzibati əraziyə aid deyil.';
+  if (entrance && (!building || building.adminUnitId !== admin || building.throughFareId !== street)) errors[key('EntranceId')] = 'Bina seçilmiş küçəyə aid deyil.';
 }
-export function animalCount(id: number, catalog: Catalog, counts: Record<string, number>): number {
+export function animalCount(id: number, catalog: { animals: Animal[] }, counts: Record<string, number>): number {
   const item = catalog.animals.find(x => x.id === id);
   const children = catalog.animals.filter(x => x.parentId === id);
   if (!children.length || (item?.parentId != null && !item.isComputed)) return counts[id] ?? 0;

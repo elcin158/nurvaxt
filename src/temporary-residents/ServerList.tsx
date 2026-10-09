@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '../../App';
 import { Button, colors, ui } from '../components/ResidentControls';
 import { useResidents } from './context';
 import { listServerResidents } from './server';
+import { RecordHeader, RecordRow, type RowChip } from '../components/RecordRow';
+import { chipTone } from '../components/StatusChip';
 import { ServerActions } from './ServerActions';
 import type { ServerResidentItem } from './types';
 
@@ -51,35 +53,27 @@ export function ServerList({ wide }: { wide: boolean }) {
       <Text style={styles.muted}>{page ? `${total} qeyd` : ''}</Text></View>
     {!!notice && <Text accessibilityLiveRegion="polite" style={styles.notice}>{notice}</Text>}
     {!!error && <View style={styles.errorBox}><Text accessibilityRole="alert" style={styles.error}>{error}</Text><Button small secondary label="Yenidən cəhd et" onPress={() => void load(page && items.length ? page + 1 : 1)} /></View>}
-    {wide && <View style={styles.tableHeader}><Text style={styles.nameColumn}>Şəxsin məlumatları</Text><Text style={styles.addressColumn}>Daimi yaşadığı yer</Text><Text style={styles.statusColumn}>Status</Text></View>}
+    {wide && <RecordHeader columns={['Şəxsin məlumatları', 'Daimi yaşadığı yer', 'Status']} />}
     <FlatList data={items} keyExtractor={item => String(item.reportId)} style={{ flex: 1 }} contentContainerStyle={!items.length ? { flexGrow: 1 } : undefined}
       refreshing={loading && page <= 1 && items.length > 0} onRefresh={() => void load(1)}
       onEndReachedThreshold={0.4} onEndReached={() => { if (!loading && !error && page < totalPages) void load(page + 1); }}
       ListEmptyComponent={loading ? <ActivityIndicator style={{ margin: 40 }} color={colors.primary} /> : error ? null : <View style={styles.empty}><Text style={styles.emptyIcon}>≡</Text>
         <Text style={styles.emptyTitle}>{search ? 'Qeyd tapılmadı' : 'Serverdə qeyd yoxdur'}</Text></View>}
       ListFooterComponent={loading && items.length ? <ActivityIndicator style={{ margin: 16 }} color={colors.primary} /> : null}
-      renderItem={({ item }) => <View style={styles.rowWrap}><Pressable accessibilityRole="button" accessibilityLabel={`${item.fullName || item.accountNumber}: ətraflı bax`}
-        onPress={() => router.push({ pathname: '/temporary-residents/server/[reportId]', params: { reportId: String(item.reportId) } })}
-        onLongPress={() => { setNotice(''); setMenu(item); }}
-        style={[styles.row, wide && { flexDirection: 'row', alignItems: 'center' }]}>
-        <View style={wide && styles.nameColumn}><Text style={styles.name}>{item.fullName || 'Şəxsin məlumatları daxil edilməyib'}</Text>
-          <Text style={styles.detail}>Şəxsi hesab № {item.accountNumber}{item.birthDate ? ` · ${item.birthDate}` : ''}{item.gender ? ` · ${item.gender}` : ''}</Text></View>
-        <Text style={[styles.address, wide && styles.addressColumn]}>{item.permanentResidence || '—'}</Text>
-        <View style={[styles.statusBox, wide && styles.statusColumn]}><Text style={styles.badge}>{item.workflowStatus}</Text>
-          {onDevice.has(item.reportId) && <Text style={[styles.badge, styles.deviceBadge]}>Bu cihazda var</Text>}</View>
-      </Pressable>
-        <Pressable accessibilityRole="button" accessibilityLabel={`${item.fullName || item.accountNumber}: əməliyyatlar`} onPress={() => { setNotice(''); setMenu(item); }} style={styles.more}>
-          <Text style={styles.moreText}>⋮</Text></Pressable></View>} />
+      renderItem={({ item }) => {
+        const chips: RowChip[] = [{ label: item.workflowStatus, tone: chipTone(item.workflowTone) }];
+        if (onDevice.has(item.reportId)) chips.push({ label: 'Bu cihazda var', tone: 'neutral' });
+        return <RecordRow wide={wide} title={item.fullName || 'Şəxsin məlumatları daxil edilməyib'} chips={chips}
+          meta={[`Hesab № ${item.accountNumber}`, item.birthDate, item.gender].filter(Boolean).join(' · ')} address={item.permanentResidence || '—'}
+          onOpen={() => router.push({ pathname: '/temporary-residents/server/[reportId]', params: { reportId: String(item.reportId) } })}
+          onMenu={() => { setNotice(''); setMenu(item); }} />;
+      }} />
     {menu && <ServerActions item={menu} onClose={() => setMenu(null)} onDone={text => { setMenu(null); setNotice(text); void load(1); }} />}
   </>;
 }
 const styles = StyleSheet.create({
   toolbar: { padding: 14, gap: 14, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: 1, borderBottomColor: colors.line }, search: { flex: 1, minWidth: 210 }, muted: { color: colors.muted, fontSize: 12 },
   errorBox: { margin: 14, gap: 10, alignItems: 'flex-start' }, error: { backgroundColor: '#FEF2F2', padding: 12, borderRadius: 6, color: '#B91C1C', lineHeight: 21, alignSelf: 'stretch' },
-  tableHeader: { flexDirection: 'row', backgroundColor: '#F8FAFC', padding: 16 }, nameColumn: { flex: 1.5, color: colors.muted, fontSize: 12 }, addressColumn: { flex: 1, color: colors.muted, fontSize: 12, paddingHorizontal: 12 }, statusColumn: { width: 180, color: colors.muted, fontSize: 12 },
-  rowWrap: { flexDirection: 'row', alignItems: 'stretch', borderBottomWidth: 1, borderBottomColor: colors.line }, row: { flex: 1, padding: 16, minHeight: 64, gap: 10 },
-  more: { width: 52, alignItems: 'center', justifyContent: 'center' }, moreText: { color: colors.primary, fontSize: 24, fontWeight: '700' },
-  notice: { margin: 14, marginBottom: 0, backgroundColor: '#EFF6FF', padding: 12, borderRadius: 6, color: '#1D4ED8', lineHeight: 21 }, name: { color: colors.primary, fontSize: 14, fontWeight: '600', lineHeight: 22 }, detail: { fontSize: 12, color: colors.muted, marginTop: 4, lineHeight: 18 }, address: { color: colors.text, fontSize: 13, lineHeight: 21 },
-  statusBox: { gap: 6, alignItems: 'flex-start' }, badge: { paddingVertical: 5, paddingHorizontal: 9, borderRadius: 5, fontSize: 11, fontWeight: '600', color: '#1D4ED8', backgroundColor: '#EFF6FF' }, deviceBadge: { color: '#15803D', backgroundColor: '#F0FDF4' },
+  notice: { margin: 14, marginBottom: 0, backgroundColor: '#EFF6FF', padding: 12, borderRadius: 6, color: '#1D4ED8', lineHeight: 21 }, 
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 28, gap: 10 }, emptyIcon: { color: '#94A3B8', fontSize: 38 }, emptyTitle: { fontSize: 17, color: colors.text, textAlign: 'center', fontWeight: '500' }, emptyText: { color: colors.muted, fontSize: 13, lineHeight: 21, textAlign: 'center', maxWidth: 420 },
 });

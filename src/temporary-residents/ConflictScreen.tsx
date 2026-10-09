@@ -6,7 +6,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Button, colors } from '../components/ResidentControls';
 import { useResidents } from './context';
 import { diffResident } from './present';
-import { StateBanner } from './StateBanner';
+import { StateBanner } from '../components/StateBanner';
 
 // Alert.alert has no buttons on web; the preview harness and web builds confirm with the browser dialog.
 function confirm(title: string, text: string, action: string, onConfirm: () => void) {
@@ -32,8 +32,9 @@ export default function ConflictScreen() {
   const sendMine = () => confirm('Server versiyası əvəz olunsun?', 'Serverdəki məlumat bu cihazdakı ilə tam əvəz olunacaq, aşağıdakı fərqlər daxil olmaqla.', 'Mənimkini göndər',
     () => void run(async () => {
       const result = await residents.sync([draft.id], { confirmOverwrite: true });
-      // A newer server change during the decision opens this screen again with the new differences.
-      if (result && !result.conflicts) back();
+      // A newer server change during the decision opens this screen again with the new differences;
+      // once sent, the record has left the device, so the list is shown rather than its form.
+      if (result && !result.conflicts) router.replace('/temporary-residents');
     }));
   const takeServer = () => confirm('Cihazdakı dəyişikliklər silinsin?', 'Bu cihazda edilmiş və göndərilməmiş dəyişikliklər silinəcək, serverdəki məlumat yüklənəcək. Bu geri qaytarıla bilməz.', 'Server versiyasını götür',
     () => void run(async () => { await residents.adoptServer(draft.id); back(); }));

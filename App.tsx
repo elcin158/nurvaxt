@@ -7,11 +7,14 @@ import * as Crypto from 'expo-crypto';
 import * as WebBrowser from 'expo-web-browser';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
+import { getNetworkStateAsync } from 'expo-network';
 import { usePreventScreenCapture } from 'expo-screen-capture';
 import { api, ApiConnectionError, ApiError, parseCallback } from './src/auth/api';
 import { vault } from './src/auth/deviceStore';
 import { VaultError } from './src/auth/vault';
 import { REDIRECT_URI, type Session } from './src/auth/types';
+import { UpdateNotice } from './src/update/UpdateNotice';
+import { versionLabel } from './src/update/useAppUpdate';
 
 WebBrowser.maybeCompleteAuthSession();
 type Phase = 'loading' | 'login' | 'setup' | 'locked' | 'home';
@@ -145,8 +148,11 @@ function AuthApp({ children }: { children: ReactNode }) {
     await perform(async (currentEpoch) => {
       const local = useBiometric ? await vault.unlockBiometric() : await vault.unlockPin(pin);
       if (currentEpoch !== epoch.current) { vault.lock(); return; }
-      let restored = local, isOffline = false;
-      try { restored = await api.refresh(local.refreshToken); }
+      // Offline the refresh cannot succeed, so the local session opens without a request.
+      const network = await getNetworkStateAsync().catch(() => null);
+      let restored = local, isOffline = network?.isConnected === false || network?.isInternetReachable === false;
+      if (isOffline) await vault.assertSessionValid();
+      else try { restored = await api.refresh(local.refreshToken); }
       catch (cause) {
         const unavailable = cause instanceof ApiConnectionError || cause instanceof TypeError ||
           (cause instanceof Error && cause.name === 'AbortError') ||
@@ -191,6 +197,8 @@ function AuthApp({ children }: { children: ReactNode }) {
     await vault.assertSessionValid();
     if (currentEpoch !== epoch.current) throw new Error('Tətbiq kilidlənib.');
     if (new Date(current.accessTokenExpiresAt).getTime() > Date.now() + 30_000) return current.accessToken;
+    const network = await getNetworkStateAsync().catch(() => null);
+    if (network?.isConnected === false || network?.isInternetReachable === false) throw new ApiConnectionError(false);
     if (!refreshInFlight.current) {
       refreshInFlight.current = (async () => {
         try {
@@ -275,6 +283,7 @@ function AuthApp({ children }: { children: ReactNode }) {
           {!!error && <Text accessibilityRole="alert" style={styles.error}>{error}</Text>}
           <View style={styles.divider} />
           <Text style={styles.footer}>© {new Date().getFullYear()}. İnnovasiya və Rəqəmsal İnkişaf Agentliyi</Text>
+          {!!versionLabel && <Text style={styles.version}>Versiya {versionLabel}</Text>}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -282,6 +291,7 @@ function AuthApp({ children }: { children: ReactNode }) {
   </SafeAreaView>;
   return <AuthContext.Provider value={{ session, authenticated: phase === 'home' && !!session, screen, getAccessToken, lock, logout }}>
     {children}
+    <UpdateNotice />
     {obscured && <View style={styles.privacy}><Image source={require('./assets/rih-login.png')} style={styles.logo} resizeMode="contain" /></View>}
   </AuthContext.Provider>;
 }
@@ -327,7 +337,7 @@ const styles = StyleSheet.create({
     fontSize: 26, letterSpacing: 18, textAlign: 'center', paddingHorizontal: 20, color: '#1E2A3A', marginBottom: 16 },
   link: { color: '#4F6680', fontSize: 13, lineHeight: 21, textAlign: 'center', marginTop: 18, paddingVertical: 6 },
   error: { alignSelf: 'stretch', color: '#A22F3D', backgroundColor: '#FFF0F1', padding: 14, borderRadius: 10, marginTop: 18, lineHeight: 21 },
-  footer: { alignSelf: 'stretch', color: '#9AA6B5', fontSize: 12, textAlign: 'center' }, loader: { marginVertical: 24 },
+  footer: { alignSelf: 'stretch', color: '#9AA6B5', fontSize: 12, textAlign: 'center' }, version: { alignSelf: 'stretch', color: '#B4BECA', fontSize: 11, textAlign: 'center', marginTop: 6 }, loader: { marginVertical: 24 },
   progress: { flexDirection: 'row', gap: 9, alignItems: 'center', justifyContent: 'center', marginTop: 20 }, progressText: { color: '#6B7A8C' },
   badge: { flexDirection: 'row', gap: 8, alignItems: 'center', backgroundColor: '#EBF7F0', padding: 12, borderRadius: 10 },
   offlineBadge: { backgroundColor: '#FFF5DE' }, dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#19824E' },

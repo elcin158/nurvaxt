@@ -30,7 +30,9 @@ if (!values.EXPO_PUBLIC_API_URL) {
   process.exit(1);
 }
 
-const adbReverse = (port) => spawnSync('adb', ['reverse', `tcp:${port}`, `tcp:${port}`], { stdio: 'ignore' });
+// With --usb, adb commands target the USB device (-d) so a running emulator does not make them ambiguous.
+const adbReverse = (port) =>
+  spawnSync('adb', [...(usb ? ['-d'] : []), 'reverse', `tcp:${port}`, `tcp:${port}`], { stdio: 'ignore' });
 
 if (usb) {
   if (name !== 'local') {
@@ -44,6 +46,14 @@ if (usb) {
     process.exit(1);
   }
   adbReverse(8081);
+  // Install on the same USB device, otherwise Expo may pick the emulator or prompt.
+  // Expo matches --device against the `model:` field of `adb devices -l`, not the serial.
+  const serial = spawnSync('adb', ['-d', 'get-serialno'], { encoding: 'utf8' }).stdout.trim();
+  const listing = spawnSync('adb', ['devices', '-l'], { encoding: 'utf8' }).stdout;
+  const model = listing.split('\n').find((line) => line.startsWith(`${serial} `))?.match(/model:(\S+)/)?.[1];
+  if (expoArgs[0] === 'run:android' && model && !expoArgs.includes('--device')) {
+    expoArgs.push('--device', model);
+  }
 }
 
 console.log(`Mühit: ${name}${usb ? ' (USB)' : ''} → ${values.EXPO_PUBLIC_API_URL}`);
