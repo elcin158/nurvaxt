@@ -1,0 +1,50 @@
+# Architecture
+
+Expo Router owns navigation; feature modules own prayer logic, reminders, locations and
+settings. Strict TypeScript and Zod separate source input from application records.
+
+| Concern                  | Implementation                                                                                             |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| Offline records          | `src/database/repository.ts`, indexed `(locationId,date)` SQLite primary key                               |
+| Schema                   | SQLite `user_version=1`, forward-only migration gate and metadata table                                    |
+| Dataset install          | Semantic validation + SHA-256 before an exclusive replacement transaction                                  |
+| Source acquisition       | Node/TypeScript CLI; no parsing/network in normal mobile use                                               |
+| Query lifetime           | TanStack Query by city/date range; permanent local-package freshness                                       |
+| Preferences              | Zustand persist + AsyncStorage; validated hydration and safe defaults                                      |
+| Countdown                | Luxon absolute Asia/Baku timestamps, five-prayer domain engine                                             |
+| Countdown rendering      | Only hero component ticks each second while focused/active                                                 |
+| Android status countdown | Native minute icon updates, system chronometer, durable verified timetable and next urgency-boundary alarm |
+| Date rollover            | Local next-midnight timeout + foreground refresh, independent of displayed day                             |
+| Android reminders        | Local Expo module, persistent native plan, next 32 AlarmManager timestamps                                 |
+| iOS reminders            | Expo local notifications, maximum 60 future requests, diff reconciliation                                  |
+| Theme                    | Shared token/context palette with system appearance and bundled Manrope                                    |
+
+Startup copies the prebuilt `prayer-times.db` asset when missing or when its bundle id differs from the app's, then verifies SQLite integrity, schema version and record count.
+Invalid packages fail before deleting the old year's records; SQL errors roll back. Dataset
+metadata is written in the same transaction. A future remote updater must apply a trusted
+package, then invalidate `prayer-days` query keys and request reconciliation; no live remote
+updater is enabled. Dataset bytes are trusted app assets, not unsigned downloaded data.
+
+Canonical keys and reminders use Gregorian dates and Asia/Baku, regardless of device timezone.
+Displayed historical navigation never changes notification preferences or the scheduling date.
+After today's İşa the engine considers tomorrow's first daily prayer; a missing tomorrow stays
+unavailable rather than jumping across a gap. Optional Hijri uses Intl `islamic-civil`, ±2 days,
+is display-only and never affects alarms.
+
+Android receives the complete future plan for available records, but registers at most 32
+distinct timestamps. Native receivers consume due events and refill while JS is absent.
+Coincident reminders combine into one message, preventing duplicate alarms at that timestamp.
+Sound/vibration-specific immutable channel identities are versioned. Serialization avoids
+overlapping preference/city reconciliation; foreground/startup provides eventual latest state.
+At-time alerts for all five prayers default on independently of selected advance offsets.
+The optional silent `CountdownService` uses a separate durable five-prayer timetable, native
+minute updates and a system chronometer. It does not drive prayer-notification delivery.
+Its status icon changes shape at 30/15 minutes; disabling it removes only that service and its
+next threshold alarm. Boot/time/package receivers restore both native plans independently.
+
+Browser preview has a separate repository using the same checked-in validated records. It is
+not a native storage/scheduling test. Source assets remain developer evidence; normal users
+see coverage, source attribution and readable missing-data states.
+
+No backend, microservices, account, analytics, background GPS,
+push token registration or paid API dependency. Widgets/Qibla/backup are future features.

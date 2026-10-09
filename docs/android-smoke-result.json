@@ -1,0 +1,10 @@
+{
+  "platform": "Android emulator",
+  "serial": "emulator-5556",
+  "appInstalled": true,
+  "homeOpened": true,
+  "officialDataVisible": true,
+  "physicalDeviceTested": false,
+  "notificationDeliveryVerified": false,
+  "rebootVerified": false
+}

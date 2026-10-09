@@ -1,0 +1,3 @@
+# Tested source-image transcription tools; not mobile/runtime dependencies.
+numpy==2.3.5
+Pillow==12.1.1

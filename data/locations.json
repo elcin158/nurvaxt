@@ -1,0 +1,446 @@
+[
+  {
+    "id": "qmi-79",
+    "name": "Abşeron",
+    "sourceName": "Abşeron",
+    "sourceValue": "79"
+  },
+  {
+    "id": "qmi-4",
+    "name": "Ağcabədi",
+    "sourceName": "Ağcabədi",
+    "sourceValue": "4"
+  },
+  {
+    "id": "qmi-2",
+    "name": "Ağdam",
+    "sourceName": "Ağdam",
+    "sourceValue": "2"
+  },
+  {
+    "id": "qmi-3",
+    "name": "Ağdaş",
+    "sourceName": "Ağdaş",
+    "sourceValue": "3"
+  },
+  {
+    "id": "qmi-5",
+    "name": "Ağstafa",
+    "sourceName": "Ağstafa",
+    "sourceValue": "5"
+  },
+  {
+    "id": "qmi-67",
+    "name": "Ağsu",
+    "sourceName": "Ağsu",
+    "sourceValue": "67"
+  },
+  {
+    "id": "qmi-6",
+    "name": "Astara",
+    "sourceName": "Astara",
+    "sourceValue": "6"
+  },
+  {
+    "id": "qmi-7",
+    "name": "Babək",
+    "sourceName": "Babək",
+    "sourceValue": "7"
+  },
+  {
+    "id": "qmi-1",
+    "name": "Bakı",
+    "sourceName": "Bakı",
+    "sourceValue": "1"
+  },
+  {
+    "id": "qmi-8",
+    "name": "Balakən",
+    "sourceName": "Balakən",
+    "sourceValue": "8"
+  },
+  {
+    "id": "qmi-10",
+    "name": "Beyləqan",
+    "sourceName": "Beyləqan",
+    "sourceValue": "10"
+  },
+  {
+    "id": "qmi-11",
+    "name": "Bərdə",
+    "sourceName": "Bərdə",
+    "sourceValue": "11"
+  },
+  {
+    "id": "qmi-9",
+    "name": "Biləsuvar",
+    "sourceName": "Biləsuvar",
+    "sourceValue": "9"
+  },
+  {
+    "id": "qmi-13",
+    "name": "Cəbrayıl",
+    "sourceName": "Cəbrayıl",
+    "sourceValue": "13"
+  },
+  {
+    "id": "qmi-12",
+    "name": "Cəlilabad",
+    "sourceName": "Cəlilabad",
+    "sourceValue": "12"
+  },
+  {
+    "id": "qmi-14",
+    "name": "Culfa",
+    "sourceName": "Culfa",
+    "sourceValue": "14"
+  },
+  {
+    "id": "qmi-15",
+    "name": "Daşkəsən",
+    "sourceName": "Daşkəsən",
+    "sourceValue": "15"
+  },
+  {
+    "id": "qmi-18",
+    "name": "Füzuli",
+    "sourceName": "Füzuli",
+    "sourceValue": "18"
+  },
+  {
+    "id": "qmi-21",
+    "name": "Gədəbəy",
+    "sourceName": "Gədəbəy",
+    "sourceValue": "21"
+  },
+  {
+    "id": "qmi-20",
+    "name": "Gəncə",
+    "sourceName": "Gəncə",
+    "sourceValue": "20"
+  },
+  {
+    "id": "qmi-22",
+    "name": "Goranboy",
+    "sourceName": "Goranboy",
+    "sourceValue": "22"
+  },
+  {
+    "id": "qmi-19",
+    "name": "Göyçay",
+    "sourceName": "Göyçay",
+    "sourceValue": "19"
+  },
+  {
+    "id": "qmi-25",
+    "name": "Göygöl",
+    "sourceName": "Göygöl",
+    "sourceValue": "25"
+  },
+  {
+    "id": "qmi-24",
+    "name": "Hacıqabul",
+    "sourceName": "Hacıqabul",
+    "sourceValue": "24"
+  },
+  {
+    "id": "qmi-28",
+    "name": "İmişli",
+    "sourceName": "İmişli",
+    "sourceValue": "28"
+  },
+  {
+    "id": "qmi-27",
+    "name": "İsmayıllı",
+    "sourceName": "İsmayıllı",
+    "sourceValue": "27"
+  },
+  {
+    "id": "qmi-29",
+    "name": "Kəlbəcər",
+    "sourceName": "Kəlbəcər",
+    "sourceValue": "29"
+  },
+  {
+    "id": "qmi-68",
+    "name": "Kəngərli",
+    "sourceName": "Kəngərli",
+    "sourceValue": "68"
+  },
+  {
+    "id": "qmi-30",
+    "name": "Kürdəmir",
+    "sourceName": "Kürdəmir",
+    "sourceValue": "30"
+  },
+  {
+    "id": "qmi-37",
+    "name": "Laçın",
+    "sourceName": "Laçın",
+    "sourceValue": "37"
+  },
+  {
+    "id": "qmi-39",
+    "name": "Lerik",
+    "sourceName": "Lerik",
+    "sourceValue": "39"
+  },
+  {
+    "id": "qmi-38",
+    "name": "Lənkəran",
+    "sourceName": "Lənkəran",
+    "sourceValue": "38"
+  },
+  {
+    "id": "qmi-40",
+    "name": "Masallı",
+    "sourceName": "Masalli",
+    "sourceValue": "40"
+  },
+  {
+    "id": "qmi-42",
+    "name": "Mingəçevir",
+    "sourceName": "Mingəçevir",
+    "sourceValue": "42"
+  },
+  {
+    "id": "qmi-73",
+    "name": "Naftalan",
+    "sourceName": "Naftalan",
+    "sourceValue": "73"
+  },
+  {
+    "id": "qmi-44",
+    "name": "Naxçıvan",
+    "sourceName": "Naxçıvan",
+    "sourceValue": "44"
+  },
+  {
+    "id": "qmi-45",
+    "name": "Neftçala",
+    "sourceName": "Neftçala",
+    "sourceValue": "45"
+  },
+  {
+    "id": "qmi-46",
+    "name": "Oğuz",
+    "sourceName": "Oğuz",
+    "sourceValue": "46"
+  },
+  {
+    "id": "qmi-47",
+    "name": "Ordubad",
+    "sourceName": "Ordubad",
+    "sourceValue": "47"
+  },
+  {
+    "id": "qmi-31",
+    "name": "Qax",
+    "sourceName": "Qax",
+    "sourceValue": "31"
+  },
+  {
+    "id": "qmi-32",
+    "name": "Qazax",
+    "sourceName": "Qazax",
+    "sourceValue": "32"
+  },
+  {
+    "id": "qmi-33",
+    "name": "Qəbələ",
+    "sourceName": "Qəbələ",
+    "sourceValue": "33"
+  },
+  {
+    "id": "qmi-77",
+    "name": "Qobustan",
+    "sourceName": "Qobustan",
+    "sourceValue": "77"
+  },
+  {
+    "id": "qmi-34",
+    "name": "Quba",
+    "sourceName": "Quba",
+    "sourceValue": "34"
+  },
+  {
+    "id": "qmi-36",
+    "name": "Qubadlı",
+    "sourceName": "Qubadlı",
+    "sourceValue": "36"
+  },
+  {
+    "id": "qmi-35",
+    "name": "Qusar",
+    "sourceName": "Qusar",
+    "sourceValue": "35"
+  },
+  {
+    "id": "qmi-48",
+    "name": "Saatlı",
+    "sourceName": "Saatlı",
+    "sourceValue": "48"
+  },
+  {
+    "id": "qmi-49",
+    "name": "Sabirabad",
+    "sourceName": "Sabirabad",
+    "sourceValue": "49"
+  },
+  {
+    "id": "qmi-50",
+    "name": "Salyan",
+    "sourceName": "Salyan",
+    "sourceValue": "50"
+  },
+  {
+    "id": "qmi-74",
+    "name": "Samux",
+    "sourceName": "Samux",
+    "sourceValue": "74"
+  },
+  {
+    "id": "qmi-75",
+    "name": "Sədərək",
+    "sourceName": "Sədərək",
+    "sourceValue": "75"
+  },
+  {
+    "id": "qmi-51",
+    "name": "Siyəzən",
+    "sourceName": "Siyəzən",
+    "sourceValue": "51"
+  },
+  {
+    "id": "qmi-52",
+    "name": "Sumqayıt",
+    "sourceName": "Sumqayıt",
+    "sourceValue": "52"
+  },
+  {
+    "id": "qmi-16",
+    "name": "Şabran",
+    "sourceName": "Şabran",
+    "sourceValue": "16"
+  },
+  {
+    "id": "qmi-54",
+    "name": "Şahbuz",
+    "sourceName": "Şahbuz",
+    "sourceValue": "54"
+  },
+  {
+    "id": "qmi-53",
+    "name": "Şamaxı",
+    "sourceName": "Şamaxı",
+    "sourceValue": "53"
+  },
+  {
+    "id": "qmi-55",
+    "name": "Şəki",
+    "sourceName": "Şəki",
+    "sourceValue": "55"
+  },
+  {
+    "id": "qmi-56",
+    "name": "Şəmkir",
+    "sourceName": "Şəmkir",
+    "sourceValue": "56"
+  },
+  {
+    "id": "qmi-57",
+    "name": "Şərur",
+    "sourceName": "Şərur",
+    "sourceValue": "57"
+  },
+  {
+    "id": "qmi-17",
+    "name": "Şirvan",
+    "sourceName": "Şirvan",
+    "sourceValue": "17"
+  },
+  {
+    "id": "qmi-58",
+    "name": "Şuşa",
+    "sourceName": "Şuşa",
+    "sourceValue": "58"
+  },
+  {
+    "id": "qmi-59",
+    "name": "Tərtər",
+    "sourceName": "Tərtər",
+    "sourceValue": "59"
+  },
+  {
+    "id": "qmi-60",
+    "name": "Tovuz",
+    "sourceName": "Tovuz",
+    "sourceValue": "60"
+  },
+  {
+    "id": "qmi-63",
+    "name": "Ucar",
+    "sourceName": "Ucar",
+    "sourceValue": "63"
+  },
+  {
+    "id": "qmi-26",
+    "name": "Xaçmaz",
+    "sourceName": "Xaçmaz",
+    "sourceValue": "26"
+  },
+  {
+    "id": "qmi-80",
+    "name": "Xankəndi",
+    "sourceName": "Xankəndi",
+    "sourceValue": "80"
+  },
+  {
+    "id": "qmi-76",
+    "name": "Xızı",
+    "sourceName": "Xızı",
+    "sourceValue": "76"
+  },
+  {
+    "id": "qmi-81",
+    "name": "Xocalı",
+    "sourceName": "Xocalı",
+    "sourceValue": "81"
+  },
+  {
+    "id": "qmi-82",
+    "name": "Xocəvənd",
+    "sourceName": "Xocəvənd",
+    "sourceValue": "82"
+  },
+  {
+    "id": "qmi-61",
+    "name": "Yardımlı",
+    "sourceName": "Yardımlı",
+    "sourceValue": "61"
+  },
+  {
+    "id": "qmi-62",
+    "name": "Yevlax",
+    "sourceName": "Yevlax",
+    "sourceValue": "62"
+  },
+  {
+    "id": "qmi-64",
+    "name": "Zaqatala",
+    "sourceName": "Zaqatala",
+    "sourceValue": "64"
+  },
+  {
+    "id": "qmi-65",
+    "name": "Zəngilan",
+    "sourceName": "Zəngilan",
+    "sourceValue": "65"
+  },
+  {
+    "id": "qmi-66",
+    "name": "Zərdab",
+    "sourceName": "Zərdab",
+    "sourceValue": "66"
+  }
+]

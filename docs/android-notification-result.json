@@ -1,0 +1,13 @@
+{
+  "platform": "Android 15 / API 35 emulator",
+  "serial": "emulator-5556",
+  "prayerPlanEvents": 118,
+  "registeredTimestamps": 32,
+  "exactAccessGrantedByAdb": true,
+  "notificationPermissionGrantedByAdb": true,
+  "nativeAlarmNotificationDelivered": true,
+  "consumedTestNotDuplicated": true,
+  "physicalDeviceTested": false,
+  "backgroundProcessDeathVerified": false,
+  "rebootVerified": false
+}

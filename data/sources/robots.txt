@@ -1,0 +1,5 @@
+User-agent: *
+Crawl-delay: 40 # задает таймаут в 40 секунд для всех поисковых роботов
+Allow: /
+User-agent: Mediapartners-Google
+Disallow: /AdminIstration/

@@ -1,0 +1,18 @@
+{
+  "serial": "emulator-5556",
+  "version": "1.0.2",
+  "physicalDeviceTested": false,
+  "atTimeDailyPrayersScheduled": true,
+  "systemChronometerVerified": true,
+  "30-minutes": true,
+  "15-minutes": true,
+  "ordinaryTaskRemovalCountdownSurvived": true,
+  "backgroundPrayerAtTimeDelivered": true,
+  "nextPrayerRolloverVerified": true,
+  "countdownOffKeepsPrayerAlarms": true,
+  "foregroundServiceActiveInBackground": true,
+  "apkSha256": "b5f01cd39cac59b82454af9ef6dcc68e0509966b770cda227d1f85c37708648f",
+  "testOnlyAdbPermissionGrants": true,
+  "dozeVerified": false,
+  "rebootVerified": false
+}

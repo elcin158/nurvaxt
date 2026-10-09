@@ -1,0 +1,1778 @@
+[
+  {
+    "reference": "data/sources/baku-2026-10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Baki/10.jpg",
+    "checksum": "97104be740df37bbd0e13f98e7a4b6cc970850ec148f237df8df4658c520aaf6",
+    "locationId": "qmi-1",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-1/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Baki/11.jpg",
+    "checksum": "ed89d81bbb8d90b0766ff5bb5d8209f9dfcd5e267e73e290c0be0b6468d601e7",
+    "locationId": "qmi-1",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-1/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Baki/12.jpg",
+    "checksum": "aab490005446c8402f827569a8897689802b75859425ebc394df34ecbb04bfb1",
+    "locationId": "qmi-1",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-79/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Absheron/10.jpg",
+    "checksum": "63d685218726b026989fee7afbd85b6d7aa18fe0bca72db6c56af96d7562025e",
+    "locationId": "qmi-79",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-79/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Absheron/11.jpg",
+    "checksum": "94b98e3bb757a8024ad6594c07abbe867b58677028d89430ff90c95797b1b915",
+    "locationId": "qmi-79",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-79/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Absheron/12.jpg",
+    "checksum": "9ae1d1f37da34d3008c9f35b87e34fc8f9aace4cebbd3ee1c78b99ee07320203",
+    "locationId": "qmi-79",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-4/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Agcabedi/10.jpg",
+    "checksum": "75df44e02108d0b35f4b1e346045639d8a7775737852a84526d62d80d4a9d1d5",
+    "locationId": "qmi-4",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-4/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Agcabedi/11.jpg",
+    "checksum": "03da3013853a9216180178de93ba770bf57f1be9d0dcef0b14bde54c3c8017fa",
+    "locationId": "qmi-4",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-4/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Agcabedi/12.jpg",
+    "checksum": "c48fb9d4d789c4932e8e358cf2df01d59d5ab17702cf2d315112d58729a68fbb",
+    "locationId": "qmi-4",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-2/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Agdam/10.jpg",
+    "checksum": "cdd2f2daf25fdb5e8193ac475f54102a9332abefd90989e5e0af6e7ed54c5ca1",
+    "locationId": "qmi-2",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-2/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Agdam/11.jpg",
+    "checksum": "72938d182bfaf4b53ea25c50ae725eba8142885f4564ff0cd63ea9b7f4af982d",
+    "locationId": "qmi-2",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-2/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Agdam/12.jpg",
+    "checksum": "60911aa9642ff0d319f21d4acf70788e33f1bef36fd95e29973e108be124362c",
+    "locationId": "qmi-2",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-3/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Agdas/10.jpg",
+    "checksum": "3385fad548c8d57a9d242a1d8982530f23fd5762842fbe6fc51c08503d46e446",
+    "locationId": "qmi-3",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-3/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Agdas/11.jpg",
+    "checksum": "f5b159d4f587f9c01fc4c9a5fd55ee57fc8634105b5cd0c1cdcb1b8bce6189d0",
+    "locationId": "qmi-3",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-3/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Agdas/12.jpg",
+    "checksum": "329378912e1b445d9fa885790bdc9b45bc25075b502d2ba5ebabc62e48d9f5ad",
+    "locationId": "qmi-3",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-5/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Agstafa/10.jpg",
+    "checksum": "f9bed4eb1a1f9a4a1f429adfb671cdd84e614171568bd882b944e72c5220fdc0",
+    "locationId": "qmi-5",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-5/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Agstafa/11.jpg",
+    "checksum": "fb077a96b12538b47a8f7fa25ffe6bf1e7762da7cef76daea531af522329fcca",
+    "locationId": "qmi-5",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-5/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Agstafa/12.jpg",
+    "checksum": "c5adc14a645d88e2daffb9ffc709a4616d0d9a262c5344719ff65acf405b43c5",
+    "locationId": "qmi-5",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-67/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Agsu/10.jpg",
+    "checksum": "3ed403832f937378dcefca0c11d81e30005932bc198b2e658c5ae34097d87216",
+    "locationId": "qmi-67",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-67/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Agsu/11.jpg",
+    "checksum": "8bf9cf6eba0021c8f5893c4baa1a381a92ea0f42de2eb44c6b74196e8acd412f",
+    "locationId": "qmi-67",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-67/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Agsu/12.jpg",
+    "checksum": "6942a8be9612787107c9d873fe2618ebbd64ae4c926beef4a7e59a6e87872c9c",
+    "locationId": "qmi-67",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-6/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Astara/10.jpg",
+    "checksum": "1151c9e3c7751bfcd242f67975257816c9b1e47e26e283b2e51fb50d4afe3464",
+    "locationId": "qmi-6",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-6/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Astara/11.jpg",
+    "checksum": "2623cbd574d26fd0697dc5ff6de2cabbe21cbcea962461e3a80ab19086d4c02d",
+    "locationId": "qmi-6",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-6/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Astara/12.jpg",
+    "checksum": "863b66e71efae0015d57c0a9b39a4dfead843a979904f7d01f04be71d44b8f4e",
+    "locationId": "qmi-6",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-7/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Babek/10.jpg",
+    "checksum": "ce0dbcab0604cdaca484d7b55ad699485e3115be56a6abb893493065d13a92ce",
+    "locationId": "qmi-7",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-7/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Babek/11.jpg",
+    "checksum": "4ff7d1865692cad20e894d9e954dc4dec252fbcd150bd0403c81b0db0dfffb32",
+    "locationId": "qmi-7",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-7/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Babek/12.jpg",
+    "checksum": "0a74db6d3f59cd567747f671af86b27391d7235386330cd4e20aa842addbea7d",
+    "locationId": "qmi-7",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-8/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Balaken/10.jpg",
+    "checksum": "754a45a4b266906b2f24da55cd2918aac77ae45b3ca53d1e67bf620049b0a0e5",
+    "locationId": "qmi-8",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-8/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Balaken/11.jpg",
+    "checksum": "01e5cd0dcb7c56043c8f78f9a830485a492e3c75d620d7e24a4925af3b624e63",
+    "locationId": "qmi-8",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-8/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Balaken/12.jpg",
+    "checksum": "d07c8e15286cda7fdd2edd96932ddee3431413030fd1df043b4ed4f07fc793d4",
+    "locationId": "qmi-8",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-10/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Beyleqan/10.jpg",
+    "checksum": "e6cd7d1a786dc8701e9449f3b86db16e44453ae4fd9f949f99d04b15d694de99",
+    "locationId": "qmi-10",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-10/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Beyleqan/11.jpg",
+    "checksum": "d650e9c683c083726883014effea9e4b168a6f40a81ac852408b13b1e668b89e",
+    "locationId": "qmi-10",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-10/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Beyleqan/12.jpg",
+    "checksum": "3a9fe85301d8c2406ef3e58f9d8e6e076d8ad2c0940be41503efe26f6004d7b9",
+    "locationId": "qmi-10",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-11/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Berde/10.jpg",
+    "checksum": "17b6b4eadf759df15e3dce75f8fc0ded88173d199f1ba54f911c208bfea9206b",
+    "locationId": "qmi-11",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-11/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Berde/11.jpg",
+    "checksum": "2ec0a53b42e8961b4618e0ede304bdb3ff685fc3c48bc2f557a081fb0185c83a",
+    "locationId": "qmi-11",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-11/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Berde/12.jpg",
+    "checksum": "cab19f363ffe757f5e1ea5539e0d824e95cd955ea4bd0afc124f6e37055f11d0",
+    "locationId": "qmi-11",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-9/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Bilesuvar/10.jpg",
+    "checksum": "86b4e263895304fe8982c11ce3e0d2840794f804d8b0423433eebcb78e299355",
+    "locationId": "qmi-9",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-9/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Bilesuvar/11.jpg",
+    "checksum": "a851e56aba63f6b9202ea752cc33d11e8a606992d156d9c687d2a0a7a284d442",
+    "locationId": "qmi-9",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-9/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Bilesuvar/12.jpg",
+    "checksum": "099c2eb4b8127fd7d00e1210a93b12eb2f6ec44681b7354caa80f0969ad6c363",
+    "locationId": "qmi-9",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-13/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Cebrayil/10.jpg",
+    "checksum": "4ec06adc476c7f530dc2de804fc158994545760f4062e0ab07c079e5aed25107",
+    "locationId": "qmi-13",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-13/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Cebrayil/11.jpg",
+    "checksum": "09af0af1600b45962012b1774055b338d9084dbc144b289088b7088f79028848",
+    "locationId": "qmi-13",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-13/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Cebrayil/12.jpg",
+    "checksum": "898dd6beb1d981f18776bc68395c4fa8e81ceea0dda18feb1545797e3cbb74a7",
+    "locationId": "qmi-13",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-12/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Celilabad/10.jpg",
+    "checksum": "bcac16a773ed5f96b1a842575619b86f0455aa90175bad0e6b4f5d413c9763d3",
+    "locationId": "qmi-12",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-12/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Celilabad/11.jpg",
+    "checksum": "62686d1208149e1e329ebf9c78c259ac8e7213ababb1cb75248994bc7efc77c5",
+    "locationId": "qmi-12",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-12/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Celilabad/12.jpg",
+    "checksum": "2d09e68e4d09f1786dbb73812fd481eed92754d7af869db6d6e7f34fedf0bc95",
+    "locationId": "qmi-12",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-14/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Culfa/10.jpg",
+    "checksum": "40d58c836f550671f5db019a1b3f6f8de1add0b2da41dfcab55ea47b2b482791",
+    "locationId": "qmi-14",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-14/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Culfa/11.jpg",
+    "checksum": "bfe1156bcf0d4c93fe3a647f2c35a184acef3434360604653e21b9a790cb76fa",
+    "locationId": "qmi-14",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-14/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Culfa/12.jpg",
+    "checksum": "8551be19237c9df6310160d6af7d6bd3ef3804d60fac94b7019dd236528e4c4c",
+    "locationId": "qmi-14",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-15/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Daskesen/10.jpg",
+    "checksum": "7228da31fc9f43abd4a60e7bef5ac602442fd00d92b2d5d4beb9762e99b719e3",
+    "locationId": "qmi-15",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-15/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Daskesen/11.jpg",
+    "checksum": "f2c4e311d0812d782b263e463e8fd1aca7494d67ad09c06666281ea4690d326f",
+    "locationId": "qmi-15",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-15/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Daskesen/12.jpg",
+    "checksum": "4073dae66d24de6005e9b13f1921bcc35b5bd449a3162354823d4a9f1bf172e3",
+    "locationId": "qmi-15",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-18/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Fizuli/10.jpg",
+    "checksum": "bb83d5547cab22c29a3f17d9e77f7b8764ffbda9a61bba0e07562449253e6d74",
+    "locationId": "qmi-18",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-18/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Fizuli/11.jpg",
+    "checksum": "506e859ddf4e2b26576b575ed4094c82568ad34e25c87b7859462bf5fe20786b",
+    "locationId": "qmi-18",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-18/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Fizuli/12.jpg",
+    "checksum": "f6b3dbf695b3fcffcac0b6e20755b0d504d76fdcd33936192f0f2dd260e682b6",
+    "locationId": "qmi-18",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-21/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Gedebey/10.jpg",
+    "checksum": "83181c39a932728e132209d9722be6ce0b328d6f621f05abbbee18147e5bd9e1",
+    "locationId": "qmi-21",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-21/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Gedebey/11.jpg",
+    "checksum": "27da10e1ed3aec58f1770c09d97af6b973611e5a6c759f89db8c5af0f18c74ee",
+    "locationId": "qmi-21",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-21/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Gedebey/12.jpg",
+    "checksum": "1b4a8bd00b773262e0eeb93920b86b704b1a9d85e66624565f1c35adcc66c837",
+    "locationId": "qmi-21",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-20/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Gence/10.jpg",
+    "checksum": "aa788318a549f3daeed225ff309ddc4b92cf64c8cc1e1bcde2b86aecdd30427a",
+    "locationId": "qmi-20",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-20/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Gence/11.jpg",
+    "checksum": "c09308a749f55feef124e597ae161b1dd05345b3343f550a6409906d5846d585",
+    "locationId": "qmi-20",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-20/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Gence/12.jpg",
+    "checksum": "c7bda417a098cbb75e83ef18b22aa3551f2d22083148f716acd01ad9882472df",
+    "locationId": "qmi-20",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-22/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Goranboy/10.jpg",
+    "checksum": "e2c24463132fd4128cf448bddbafe252d6cea233727ae2619c6a962beed24efb",
+    "locationId": "qmi-22",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-22/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Goranboy/11.jpg",
+    "checksum": "311da135853227d2810f9d058dd28223bcd407753fba3e54e2e23c7fe6e1fd09",
+    "locationId": "qmi-22",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-22/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Goranboy/12.jpg",
+    "checksum": "94658a7e4158f392d71b5c63fedec0128b1320bcdde20950ab296ed6dfafc19e",
+    "locationId": "qmi-22",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-19/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Goycay/10.jpg",
+    "checksum": "bd0473fcef68d9dd24272b42cbe3ad9612980ef3a8e2157db654835d64d58583",
+    "locationId": "qmi-19",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-19/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Goycay/11.jpg",
+    "checksum": "b41b7cb5e88104f9fcd26fd73b51b295995bcb5f3cb1030eab53dda6852b0a0e",
+    "locationId": "qmi-19",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-19/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Goycay/12.jpg",
+    "checksum": "b545a5cc1a5a4b3a7e756c42f9b51c89be22c887ef85dc5d423708e4c6fa0716",
+    "locationId": "qmi-19",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-25/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Goygol/10.jpg",
+    "checksum": "b3a9f44efdc009cebaae58dee56b43c3d4f216bd9df71d479f38250859c119fe",
+    "locationId": "qmi-25",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-25/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Goygol/11.jpg",
+    "checksum": "1c9bdcb277e1a8373c39677fa6578fc61a8abad10881e1931166fca8bdd41fa7",
+    "locationId": "qmi-25",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-25/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Goygol/12.jpg",
+    "checksum": "72d693cc5d094e2c863927a23b2c1a30e22c133e37f3d8d031af34fd15fa8f5e",
+    "locationId": "qmi-25",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-24/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Haciqabul/10.jpg",
+    "checksum": "ac5703e5a1b928448d7a91445fa7d80a0b911a75b6627ff257815d2d0e81a806",
+    "locationId": "qmi-24",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-24/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Haciqabul/11.jpg",
+    "checksum": "424c2f04908d052aa059b55c32ba2a89ed7b077bc33981e605242a25ea158fb2",
+    "locationId": "qmi-24",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-24/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Haciqabul/12.jpg",
+    "checksum": "0b2a13d08efbe43480d2a59b46146d661ce0985b6431c2b48d7be923ff59cb0d",
+    "locationId": "qmi-24",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-28/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Imisli/10.jpg",
+    "checksum": "0e837c3ab852e1c949b8715ff5e8321d943ee1c639c7cca62cdd8d63b1e53743",
+    "locationId": "qmi-28",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-28/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Imisli/11.jpg",
+    "checksum": "35fad5d8221541cb7f9617e6a4e681c06092d0d663e05f8183192b1becfef8e5",
+    "locationId": "qmi-28",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-28/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Imisli/12.jpg",
+    "checksum": "1953e9d1e0b7c4e611602f62b9484b6faf8e3e8a9b529191707e2088a1f6f067",
+    "locationId": "qmi-28",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-27/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Ismayilli/10.jpg",
+    "checksum": "22aafce7fcddc3b7ce42fb86a02b8e99038a9592c3d3f913ad67ae48a818819e",
+    "locationId": "qmi-27",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-27/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Ismayilli/11.jpg",
+    "checksum": "9933a3d982c64311b2cd6c176a96bc3be88a139b4eda5dcfe0dd2e6168aeb439",
+    "locationId": "qmi-27",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-27/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Ismayilli/12.jpg",
+    "checksum": "1f9dec60879d10563f3a01e04ec52d26daa99575c859593bdbafe5ab7a416e70",
+    "locationId": "qmi-27",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-29/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Kelbecer/10.jpg",
+    "checksum": "271ad409bfb5a37c2a000829e22fad0e9bcd1d2bad7eee29e924cfaeaa62b8c3",
+    "locationId": "qmi-29",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-29/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Kelbecer/11.jpg",
+    "checksum": "b6f703a6aa81cdac90cdb7abe6573b9c3c5926437f0d921daa99f349e113c158",
+    "locationId": "qmi-29",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-29/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Kelbecer/12.jpg",
+    "checksum": "d926a43450b3eee69e5e4d484a18a8cf777d949efe67fb743298343a8f30f18a",
+    "locationId": "qmi-29",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-68/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Kengerli/10.jpg",
+    "checksum": "41fb50602ff69507e43b1819a3c78c8d8610ef60b933950c02758c96bf277e4b",
+    "locationId": "qmi-68",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-68/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Kengerli/11.jpg",
+    "checksum": "12036135476b9cac511f0020d4cdacbcca0430eeb2df065ff4c9c916b6375f4e",
+    "locationId": "qmi-68",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-68/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Kengerli/12.jpg",
+    "checksum": "6ed4c30a27989a2b66a58e36e0028e398de37ebc80ff20582bceac832b62a7ca",
+    "locationId": "qmi-68",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-30/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Kurdemir/10.jpg",
+    "checksum": "03afbc0edd1d2f9efc29021395d872a2a3262a28a1f007e4bbf845f6761c2da5",
+    "locationId": "qmi-30",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-30/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Kurdemir/11.jpg",
+    "checksum": "f882fc59f4b17a86869f6210cc7c936528c269ab27d7c8ce4f7e048d7d74136c",
+    "locationId": "qmi-30",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-30/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Kurdemir/12.jpg",
+    "checksum": "4be7eb2810e005381dd52dc2a52a03f1098e470a7394947aae5c99d1f2b5743e",
+    "locationId": "qmi-30",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-37/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Lacin/10.jpg",
+    "checksum": "ab508ec717cd4f50a3ce99f7bb64b6348753f18f394547b341f0831e56508c21",
+    "locationId": "qmi-37",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-37/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Lacin/11.jpg",
+    "checksum": "6ce418b741a024b834fb32e8fa7cc19166a6aad367f59f7a4cbe665d6cbb7961",
+    "locationId": "qmi-37",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-37/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Lacin/12.jpg",
+    "checksum": "fc4c3a6ba3a9b712105aac161d8872149a98907fafca4ef5065a49d381cb1261",
+    "locationId": "qmi-37",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-39/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Lerik/10.jpg",
+    "checksum": "f5fe595a6fc6206aff8c6378b7022a6148c50168212621ba3dd52629d7e7dcd9",
+    "locationId": "qmi-39",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-39/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Lerik/11.jpg",
+    "checksum": "f556bffbba099ce6ee8fee2af527eec9b61d8ca57689eab9dbb73fb51737c26f",
+    "locationId": "qmi-39",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-39/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Lerik/12.jpg",
+    "checksum": "f88b39ce7c5201f6fd0c0a66b5f471d20283d891d5c7aea64e2e67109e021688",
+    "locationId": "qmi-39",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-38/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Lenkeran/10.jpg",
+    "checksum": "b4dcbc1934ba1a39e10636b1033996f5c20b2a7b53d1e93e1a26f16eb7278dd8",
+    "locationId": "qmi-38",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-38/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Lenkeran/11.jpg",
+    "checksum": "a78a143be03176dd0a17553a25ae5f8b1030b6017261360ab2f65172ba415ba2",
+    "locationId": "qmi-38",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-38/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Lenkeran/12.jpg",
+    "checksum": "447f8d6ad8a1d22bb4a6a3453277de4c832aa1130b3d61a8cb1847b678e99110",
+    "locationId": "qmi-38",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-40/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Masalli/10.jpg",
+    "checksum": "4cacfbb0f2ff2a3cc61df78c214363c9fe0c25713f62714559a479fa77ddc4b2",
+    "locationId": "qmi-40",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-40/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Masalli/11.jpg",
+    "checksum": "c18482d425bbbfe6f069383637610aa2d420b4c5717bac1da99317fa610578dd",
+    "locationId": "qmi-40",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-40/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Masalli/12.jpg",
+    "checksum": "f6329ec18183ac20a4a1fe1d326c3e6c1c6434ff34d7964274ca22029f880c4a",
+    "locationId": "qmi-40",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-42/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Mingecevir/10.jpg",
+    "checksum": "133e38d37ab595f9fa5e1a1785bceafd6697c40f00ad076903103ca170db46eb",
+    "locationId": "qmi-42",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-42/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Mingecevir/11.jpg",
+    "checksum": "490c7963f40a313ba9dee0516be15d9b32b88e45bdac3e1b3db2be6b8417104e",
+    "locationId": "qmi-42",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-42/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Mingecevir/12.jpg",
+    "checksum": "88e1acb47fcc3f798889a6c70058228b0c825d5353692f823f81ea9ff21e3920",
+    "locationId": "qmi-42",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-73/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Naftalan/10.jpg",
+    "checksum": "03c15d46582d1abe75899aae10636bd4677e427e01dafdcd51433b528fa4d0d9",
+    "locationId": "qmi-73",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-73/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Naftalan/11.jpg",
+    "checksum": "58c615e8a08e42c5fd4eb1f8c08864933d63f309b5a03cc3a780badd0893c69e",
+    "locationId": "qmi-73",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-73/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Naftalan/12.jpg",
+    "checksum": "cd511bdf2deecb43b53d163bf4794690cabd48d4689d859c3eff0eb1259ec784",
+    "locationId": "qmi-73",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-44/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Naxcivan/10.jpg",
+    "checksum": "7e633f383da34aa56c2c69da5417b99e7949e86ea89616c6930503c27ff286fc",
+    "locationId": "qmi-44",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-44/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Naxcivan/11.jpg",
+    "checksum": "f16b3232c64ca734485bf5e3bcbedd387ca6a83243ad513e2e3b57777a2d98f5",
+    "locationId": "qmi-44",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-44/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Naxcivan/12.jpg",
+    "checksum": "63db8243263d4f22153ad73b7892fd9e1532814ccf46e1c72b0190890cae6277",
+    "locationId": "qmi-44",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-45/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Neftcala/10.jpg",
+    "checksum": "90cafc731c2f75e879418b204f32eb229256b81d856f3d379ab02b78f1321081",
+    "locationId": "qmi-45",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-45/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Neftcala/11.jpg",
+    "checksum": "d107c88a73bf8b27cc066ff667de3578a91601b3b9ddc45427d49310bef59ab3",
+    "locationId": "qmi-45",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-45/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Neftcala/12.jpg",
+    "checksum": "579746a2fa4651ed4478987d2828b21328ee337d4daa47cd6e287b9aa80e4dcf",
+    "locationId": "qmi-45",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-46/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Oguz/10.jpg",
+    "checksum": "f91298a9e79c216c83336af8e672d0be59831a302546ae76bbd9663e75a6fbfa",
+    "locationId": "qmi-46",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-46/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Oguz/11.jpg",
+    "checksum": "08a016c1cfed83bd545daae3e9c9d4f115cbe4334fdb9a83a69627d68591e9bf",
+    "locationId": "qmi-46",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-46/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Oguz/12.jpg",
+    "checksum": "6d53d6d2357b18012de7204d3ae533a417f8c41f1f29b6488bc17b92905d2751",
+    "locationId": "qmi-46",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-47/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Ordubad/10.jpg",
+    "checksum": "8906d47cdc87574be90d00f5a0cdbbb8716c9e23174991db0cd748679ad6b0c7",
+    "locationId": "qmi-47",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-47/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Ordubad/11.jpg",
+    "checksum": "5ed12157c91d7ab790895b384a293f01d468b99135fbb1c5a3d07f46c61e0ac0",
+    "locationId": "qmi-47",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-47/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Ordubad/12.jpg",
+    "checksum": "db3b7570277828a84acc80c12f417c1661c2eff88581c0c85799828db3bfe25d",
+    "locationId": "qmi-47",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-31/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qax/10.jpg",
+    "checksum": "9e842f0ea559a88abb9c3141ab7370c3fe572c71e23df6781be7637609b8ee97",
+    "locationId": "qmi-31",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-31/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qax/11.jpg",
+    "checksum": "65e5c28387ceddc53d9e42049802166b243b05b344d1225c0b36d478d336dadd",
+    "locationId": "qmi-31",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-31/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qax/12.jpg",
+    "checksum": "77e84fc1528b10920b53da9b1736d3b96e374424683823572b176c2e5d96ad52",
+    "locationId": "qmi-31",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-32/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qazax/10.jpg",
+    "checksum": "4c95e3567307f4b78c4120966b62bf12003ec520940af4af4dc8f0fc9fbc3f01",
+    "locationId": "qmi-32",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-32/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qazax/11.jpg",
+    "checksum": "fa4af4cd11bb80f577b3cdaa5c8a663ffc6789f740810337197038eec75b5bf0",
+    "locationId": "qmi-32",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-32/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qazax/12.jpg",
+    "checksum": "6d8244178c4da1fe46198a2f30f94beb23c23d4991053e2e9b1cb512ab6c807d",
+    "locationId": "qmi-32",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-33/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qebele/10.jpg",
+    "checksum": "0004fe1970739951717e6296d35f25fdd82cb0b9850fc1d84099cd1a6ba31d67",
+    "locationId": "qmi-33",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-33/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qebele/11.jpg",
+    "checksum": "3ceb21508d70a8ea3c434d5673b670328c9efaeeb52ee652bdbd3b2c9f82716b",
+    "locationId": "qmi-33",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-33/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qebele/12.jpg",
+    "checksum": "605463a306e1524b207729fcc577237f5456463dc4e67ce346dfac7050f55e53",
+    "locationId": "qmi-33",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-77/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qobustan/10.jpg",
+    "checksum": "b25210b154ce2c7ed042a8e7cfbaad8ce0a1a3fb412ead6b3edfc2dd23050de1",
+    "locationId": "qmi-77",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-77/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qobustan/11.jpg",
+    "checksum": "58ca3fa1844cb4c3c6a4d88ee909268a8812a25f99cc595f4e28d66cff2548a6",
+    "locationId": "qmi-77",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-77/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qobustan/12.jpg",
+    "checksum": "593c226ec154a0845eb99756fa20dfa1eddeda32b2ac099128fae38b83919f61",
+    "locationId": "qmi-77",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-34/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Quba/10.jpg",
+    "checksum": "ead7bb90e5b39ec75f20967b212cbc1934d444d852dd5e2a45befb4476f23d0c",
+    "locationId": "qmi-34",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-34/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Quba/11.jpg",
+    "checksum": "5d7a42fbcdf6166e5143805ec84d38f400ce622f803968e3e5c620afd76a85da",
+    "locationId": "qmi-34",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-34/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Quba/12.jpg",
+    "checksum": "9ebb88cd2d6ff2d984a6b99842babbec1185a0199d1e42fb99168302b0b15a0d",
+    "locationId": "qmi-34",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-36/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qubadli/10.jpg",
+    "checksum": "b06b4ad00b0c6707d64784cf5aae2829e3c99f318768f2037c16758af601427f",
+    "locationId": "qmi-36",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-36/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qubadli/11.jpg",
+    "checksum": "89514123ed327a21f3a4246b433164dcbe47e2241c764f4814a6b774b81abf71",
+    "locationId": "qmi-36",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-36/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qubadli/12.jpg",
+    "checksum": "f9fd4cb13304fddfae36e6af0a445aa52daf0f305d134b3c24f28c21dce60e83",
+    "locationId": "qmi-36",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-35/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qusar/10.jpg",
+    "checksum": "b07570adec259c466ebf487aee5785cc68b657273c29391caa66f1f5a442879e",
+    "locationId": "qmi-35",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-35/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qusar/11.jpg",
+    "checksum": "7a710c2ecd99bb5133ad7db28dec01910d050e0b190b896afdf52b777e66fcbb",
+    "locationId": "qmi-35",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-35/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Qusar/12.jpg",
+    "checksum": "77f1858b94143455d36c83dab3a847ad1e291ecbd110d7edb8c9148ec8ee5504",
+    "locationId": "qmi-35",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-48/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Saatli/10.jpg",
+    "checksum": "aa911caecc65d0c474de0889ca2bc09aa9b715a2da5cdd3421e7528e5ca2a361",
+    "locationId": "qmi-48",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-48/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Saatli/11.jpg",
+    "checksum": "c62d2d0696290916a84a31949978b9da6a09a53ff2a609fcd5adecef95d99c22",
+    "locationId": "qmi-48",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-48/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Saatli/12.jpg",
+    "checksum": "84d473fd7849abaff2ac238cc0e4a136e8fb817d939ca96af619582539b65412",
+    "locationId": "qmi-48",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-49/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sabirabad/10.jpg",
+    "checksum": "c7884d88de146d98e57be406a779de39b366190b4a5b169a5293054b8b90a398",
+    "locationId": "qmi-49",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-49/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sabirabad/11.jpg",
+    "checksum": "ab53d705fecc4bb5011beb876d984710546c8f7c39a35e5e73ca3a30e8cb3182",
+    "locationId": "qmi-49",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-49/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sabirabad/12.jpg",
+    "checksum": "65165edb397ff851d03cdbe8a6331dafe7aa9a1a6fb427802e4051185d5dc635",
+    "locationId": "qmi-49",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-50/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Salyan/10.jpg",
+    "checksum": "ff16967c3ec7630dbff22c08fa287e4e73cfe54fc4ad6922d617a6eeb2ed1115",
+    "locationId": "qmi-50",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-50/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Salyan/11.jpg",
+    "checksum": "909c1310c31bc43a8e5a9193bc28da89ca339642026abcaa84a59a290ff789e3",
+    "locationId": "qmi-50",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-50/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Salyan/12.jpg",
+    "checksum": "eb5ea1189698f10ec76c6594690364fcc0f37444d5e6289e0695c9b326abdd1a",
+    "locationId": "qmi-50",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-74/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Samux/10.jpg",
+    "checksum": "7dd612fc295ef7006335912f0a1aa87bd6fb88014e102914b49a12746e8723f9",
+    "locationId": "qmi-74",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-74/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Samux/11.jpg",
+    "checksum": "9271ab92104f3291617e1688b4d2282f91df37e15df3fc27db02cf2a5534dc07",
+    "locationId": "qmi-74",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-74/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Samux/12.jpg",
+    "checksum": "536f528e62875736d7c4468fd835c8c3ee68731e507b34dcd00eb4c107587082",
+    "locationId": "qmi-74",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-75/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sederek/10.jpg",
+    "checksum": "8a3b0246ed58ab53707f82c1f1513eb6c44bdb541802b62e60713133adf9f7f4",
+    "locationId": "qmi-75",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-75/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sederek/11.jpg",
+    "checksum": "dbcb193615acc4c155a25e454ff21b57be43d535b73cd6daf8e2bd94642b4987",
+    "locationId": "qmi-75",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-75/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sederek/12.jpg",
+    "checksum": "4fd7b963415133fe0a2b19796d13e7a70aebd0def493b7d95b71cda913b7722f",
+    "locationId": "qmi-75",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-51/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Siyezen/10.jpg",
+    "checksum": "e6bc41770334b6db2ee39060f4b02eaa192544d7c82368a3310ce2def1ebda04",
+    "locationId": "qmi-51",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-51/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Siyezen/11.jpg",
+    "checksum": "2aa427b64450276d7267bf384562b27c18d28b0f5310193266138396e911e06a",
+    "locationId": "qmi-51",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-51/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Siyezen/12.jpg",
+    "checksum": "7d3a5b8ce6b4c8ca36c5c5759082355ffd3d1739312279d39ca240a41a5456df",
+    "locationId": "qmi-51",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-52/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sumqayit/10.jpg",
+    "checksum": "5bc68b3358bdde12874f58adf9f2bfc023f658320b4dc873d72ef89edddfa43d",
+    "locationId": "qmi-52",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-52/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sumqayit/11.jpg",
+    "checksum": "beb39c7f37bccb055d419fccdc9c08619ed2bc4c044bf7ef3c1f541aa42aa512",
+    "locationId": "qmi-52",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-52/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sumqayit/12.jpg",
+    "checksum": "27403ab91d9b3a54feab7d2f3d9a579cf32ea3713cbc30c27f956f68c743c5f1",
+    "locationId": "qmi-52",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-16/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sabran/10.jpg",
+    "checksum": "429687a3e1f3bf3bc5e6eac167a3426eca3dc33beed24f251d1ef4e280eaead7",
+    "locationId": "qmi-16",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-16/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sabran/11.jpg",
+    "checksum": "a80c76c5b4b80fc40fd45200dd81723bf5220b552a9370a1c216d933d07342df",
+    "locationId": "qmi-16",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-16/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sabran/12.jpg",
+    "checksum": "bf25b556b38a1b75c69c15678fd7e0f39749b60424b37d6c6c7c2d6e7760d650",
+    "locationId": "qmi-16",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-54/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sahbuz/10.jpg",
+    "checksum": "8b4170ab7c26c6b3b3b18396d625f22a59f27809f71406e20c81a82c14c08ca3",
+    "locationId": "qmi-54",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-54/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sahbuz/11.jpg",
+    "checksum": "e0a503cd37b4d6bdf3318139c3407510e6b78ae62f02ce77c91e28975370327f",
+    "locationId": "qmi-54",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-54/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sahbuz/12.jpg",
+    "checksum": "0146f2cb145bf15a79f6c657d12739b6389917f3c074fc51c00efda61315ff5b",
+    "locationId": "qmi-54",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-53/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Samaxi/10.jpg",
+    "checksum": "2d99a942151f518a658bcbf80a60f731819dd2d44334db0b98601076e9360066",
+    "locationId": "qmi-53",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-53/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Samaxi/11.jpg",
+    "checksum": "561a2f6ae8ed0b9532ade34a4c21186bbb05cc700b093614bea9ae370653848d",
+    "locationId": "qmi-53",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-53/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Samaxi/12.jpg",
+    "checksum": "6c069e52f9c6a433ff80aec3875e54d946936461faf6ea999c96ed06f2c7b9fd",
+    "locationId": "qmi-53",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-55/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Seki/10.jpg",
+    "checksum": "98bf71c715390e09a9c8f3a1b59f66b90a1f5c2eb7b4278e6c2281c6693fde50",
+    "locationId": "qmi-55",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-55/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Seki/11.jpg",
+    "checksum": "8eb24664e5fec162d1aa444da46e6757e5cc576e7b800a5cc05cf880b71a596a",
+    "locationId": "qmi-55",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-55/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Seki/12.jpg",
+    "checksum": "1b066ab55b18a7206b780142a9e8b23fb347f233f13d6d7ae333599d4f5ecf24",
+    "locationId": "qmi-55",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-56/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Semkir/10.jpg",
+    "checksum": "37094c0ac5c11b6e3065ad18d2ad922acf6a94e74b8c4cd819a6507ea5d44aa4",
+    "locationId": "qmi-56",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-56/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Semkir/11.jpg",
+    "checksum": "ad8dfc436f76ab1ab285d04d43d22553cc3b42128808af7a00846c9ec787bb5c",
+    "locationId": "qmi-56",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-56/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Semkir/12.jpg",
+    "checksum": "a0cbb415f8808c56999a6d96b45c82c4a9e327a289b620fae463f6189cd0fb60",
+    "locationId": "qmi-56",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-57/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Serur/10.jpg",
+    "checksum": "03d72a305b1fad02d56081dc0477290c9498e485481c43eeee74ce32f0b239d2",
+    "locationId": "qmi-57",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-57/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Serur/11.jpg",
+    "checksum": "40f43bb45e9618769da34203626f0424759cc02f4be917c120153f073fbaabf4",
+    "locationId": "qmi-57",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-57/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Serur/12.jpg",
+    "checksum": "b9ff962baf684045695ba0590db7ad0b718fe67e727c6eaf231c9d8a76377c61",
+    "locationId": "qmi-57",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-17/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sirvan/10.jpg",
+    "checksum": "93952dc9c9d8128e12d48b9306bbbf46ea3cd7b01c7e3433816f1139b42c5830",
+    "locationId": "qmi-17",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-17/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sirvan/11.jpg",
+    "checksum": "83a4b38dbe08dbfe9c15c53a41863d19988f27f0c5c0e82944a94379922a5c45",
+    "locationId": "qmi-17",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-17/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Sirvan/12.jpg",
+    "checksum": "64d736d0a9be90a1ca12c861675b03822efd62aab544c6fefa0e09128d580224",
+    "locationId": "qmi-17",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-58/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Susa/10.jpg",
+    "checksum": "9f749537c18cc9e8d9e42d84d5bf62d807ca39ceb6bf04e8b2d22f657e593f88",
+    "locationId": "qmi-58",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-58/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Susa/11.jpg",
+    "checksum": "90d9bd6861a489728ea57a6b1f53bc5dee96d31899b2aa8e9c7f5331e8133ce0",
+    "locationId": "qmi-58",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-58/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Susa/12.jpg",
+    "checksum": "dd51041893dad75fbaf61278b718f89a8d2d05bc1cf5a67f6f9ebda70aab93ba",
+    "locationId": "qmi-58",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-59/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Terter/10.jpg",
+    "checksum": "8e663a9c66c721396fd205fad79024a573e60bafa8bf32cbe4e405c2c0370742",
+    "locationId": "qmi-59",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-59/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Terter/11.jpg",
+    "checksum": "aedd4581132ff44dc6eeb4a74f4d2f42fe12bcb225b60a0fb0acac29e81247ae",
+    "locationId": "qmi-59",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-59/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Terter/12.jpg",
+    "checksum": "b42ebefd88f2859fe231c0860fdfcf249309946ec5f143ca1458686c9e9beb30",
+    "locationId": "qmi-59",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-60/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Tovuz/10.jpg",
+    "checksum": "2b7a9dfd6eeaea00d6c6170a491d2c150c9d76fa5ef32ca3f96e4633916774d1",
+    "locationId": "qmi-60",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-60/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Tovuz/11.jpg",
+    "checksum": "a11e65bed7dbe4d972f52729fa843a4719f86c2deb9e5cbc55ee226aac1ba222",
+    "locationId": "qmi-60",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-60/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Tovuz/12.jpg",
+    "checksum": "3c3c7501414ba462e9c80442541a15eca7176b8150ffe1c0b34c39d7fa1b0ac7",
+    "locationId": "qmi-60",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-63/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Ucar/10.jpg",
+    "checksum": "a2484709a5af273ef91435c0a1cc75e5cb4b2a8e1d4079c1920713c1f6423f30",
+    "locationId": "qmi-63",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-63/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Ucar/11.jpg",
+    "checksum": "9ab2c2c3199fa9bce74715d15a1d8ab8406b496d6bb7c7732cfde87127225072",
+    "locationId": "qmi-63",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-63/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Ucar/12.jpg",
+    "checksum": "4ba5ffa6e02548c1dc1258fd121246f7a610e498320d8b7d0d2acd52a976ecc9",
+    "locationId": "qmi-63",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-26/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Xacmaz/10.jpg",
+    "checksum": "d59e7d1a61456e6de6dcc4ad04b4e6bc58a8864aeb36b9c068ce61733dbd9d79",
+    "locationId": "qmi-26",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-26/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Xacmaz/11.jpg",
+    "checksum": "5efb5671387ad9e78334ba86b91063414e1c13a84b4d85c04b440eaa562fe82e",
+    "locationId": "qmi-26",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-26/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Xacmaz/12.jpg",
+    "checksum": "12da346b975d9d06ffd1eb7bf48eeb43f1945e98240b7016c92951b5766b731e",
+    "locationId": "qmi-26",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-80/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Xankendi/10.jpg",
+    "checksum": "cf1b6375cea4a221b797f794f20f917c3c452ec1b8ff07663b98d4283d73f5a4",
+    "locationId": "qmi-80",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-80/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Xankendi/11.jpg",
+    "checksum": "59df62193c7423c1c720434c821640d45d998571b3434a7a3afca1104de2c206",
+    "locationId": "qmi-80",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-80/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Xankendi/12.jpg",
+    "checksum": "970682edbfb197243fad77599d93e50ade127e79f72cf338c270220101a5e605",
+    "locationId": "qmi-80",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-76/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Xizi/10.jpg",
+    "checksum": "1e6f16b6bdd21cb6e8a2e6d140bde51269821597e28fbf10902fdefacbcd77b2",
+    "locationId": "qmi-76",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-76/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Xizi/11.jpg",
+    "checksum": "be21c66a1431d2eb440d5c6e4b004b22f61f969df824971ab76280e5369fdfd4",
+    "locationId": "qmi-76",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-76/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Xizi/12.jpg",
+    "checksum": "d0598f1dc747acb8b6d79d133b60a169474f125bfe0f521114a33a3d99f35a5a",
+    "locationId": "qmi-76",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-81/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Xocali/10.jpg",
+    "checksum": "1ffa0ca7afbaad81c9c27d181a9483dd5518562ecd6069ee519e53541e43e742",
+    "locationId": "qmi-81",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-81/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Xocali/11.jpg",
+    "checksum": "1e3764f576dc195a2422b17cc03941273372118fddcf12dfefdf4916a97c32fe",
+    "locationId": "qmi-81",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-81/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Xocali/12.jpg",
+    "checksum": "ecf1b00fb413a4e27ac87a19926ed1d209dc32c5f32f2da849071d6121a60c78",
+    "locationId": "qmi-81",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-82/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Xocevend/10.jpg",
+    "checksum": "4ad2da11f37248f84e413c8b01922c845fb09129eea1a874f8de6833111d1fb6",
+    "locationId": "qmi-82",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-82/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Xocevend/11.jpg",
+    "checksum": "cc6216bc8dddff7efb0236eab5942fdae664d783f9970b44a816d741cccd5b7d",
+    "locationId": "qmi-82",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-82/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Xocevend/12.jpg",
+    "checksum": "a2d255677992c0497af0da3217311297789c0e9d19a3b15e9bd02a9a2115f213",
+    "locationId": "qmi-82",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-61/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Yardimli/10.jpg",
+    "checksum": "20543fd431d319327af1bca965c27f0e303424551ad20ae45a74acf39c05cd1d",
+    "locationId": "qmi-61",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-61/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Yardimli/11.jpg",
+    "checksum": "7b10e4069faa59a53910558c149ef40917888f4b2b0d5f81451c8db14add800f",
+    "locationId": "qmi-61",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-61/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Yardimli/12.jpg",
+    "checksum": "e2b8c8d6ee323c584ae54217bd96b2be47a3f05b65398901eeb1ac5cd0f9bb20",
+    "locationId": "qmi-61",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-62/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Yevlax/10.jpg",
+    "checksum": "f60328ad7251fafd083ddf961dd7182e3d96a8ccb25f8bbf2ceb1bc51d3ceac2",
+    "locationId": "qmi-62",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-62/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Yevlax/11.jpg",
+    "checksum": "c7f52304009965c53fe7b3315026ed58ec9c0b734a62741141f9a20702a57fa7",
+    "locationId": "qmi-62",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-62/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Yevlax/12.jpg",
+    "checksum": "2579ad9b8ba6e4c0f2ca93d8c1d4ec720c483a4857d5fcb59081e041a1a29ec9",
+    "locationId": "qmi-62",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-64/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Zaqatala/10.jpg",
+    "checksum": "62a6defacdd9bcceb9729985a2e6dda801047e4bb58932ffc2a4246f7f24ad5c",
+    "locationId": "qmi-64",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-64/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Zaqatala/11.jpg",
+    "checksum": "7e29dee6f3598275c9bf3b765a8111d19d53a8a0e1dd9ee46fd2a4d0d4cc36ea",
+    "locationId": "qmi-64",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-64/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Zaqatala/12.jpg",
+    "checksum": "7f9cbf97486735361add9f83b9225df020e22c21aa912d1ffea5ecc66ff21a6f",
+    "locationId": "qmi-64",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-65/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Zengilan/10.jpg",
+    "checksum": "24b12fa67d267b1d49df53aacfeb2b4df7d45b9295940af2caaa88e0087a670e",
+    "locationId": "qmi-65",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-65/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Zengilan/11.jpg",
+    "checksum": "7c127afc0cd94bc4d85f6825a448b7d916c2e0f51d0a8c1eaa24420b214bc188",
+    "locationId": "qmi-65",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-65/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Zengilan/12.jpg",
+    "checksum": "8ff8e49f7d9ff736d4a5590b6a5f48c1f792eed4e05f4bfe5f5671c1d4f892b4",
+    "locationId": "qmi-65",
+    "year": 2026,
+    "month": 12
+  },
+  {
+    "reference": "data/sources/2026/qmi-66/10.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Zerdab/10.jpg",
+    "checksum": "206667154a1b343db01a15f8f140e8dfd4488adccc583bc7ed6857b9045bba59",
+    "locationId": "qmi-66",
+    "year": 2026,
+    "month": 10
+  },
+  {
+    "reference": "data/sources/2026/qmi-66/11.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Zerdab/11.jpg",
+    "checksum": "ceee1f6544396eefcf25b5f6e23199bda225d430628130c66ea2e2fc34c5064e",
+    "locationId": "qmi-66",
+    "year": 2026,
+    "month": 11
+  },
+  {
+    "reference": "data/sources/2026/qmi-66/12.jpg",
+    "url": "https://www.qafqazislam.com/teqvim/2026/Zerdab/12.jpg",
+    "checksum": "fc3d1b06f18eb3a14e259bd73252f65fd337dde64b5916eac09fffedcea9970d",
+    "locationId": "qmi-66",
+    "year": 2026,
+    "month": 12
+  }
+]

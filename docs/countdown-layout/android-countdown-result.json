@@ -1,0 +1,30 @@
+{
+  "serial": "emulator-5556",
+  "version": "1.0.4",
+  "physicalDeviceTested": false,
+  "atTimeDailyPrayersScheduled": true,
+  "systemChronometerVerified": true,
+  "systemChronometerSecondsAdvance": true,
+  "30-minutes": true,
+  "15-minutes": true,
+  "ordinaryTaskRemovalCountdownSurvived": true,
+  "backgroundPrayerAtTimeDelivered": true,
+  "nextPrayerRolloverVerified": true,
+  "countdownOffKeepsPrayerAlarms": true,
+  "foregroundServiceActiveInBackground": true,
+  "apkSha256": "85c91343bed50c50530d94104e14450896d9cdb5b4d21ae19710cf567420eb30",
+  "testOnlyAdbPermissionGrants": true,
+  "dozeVerified": false,
+  "rebootVerified": false,
+  "compact200PercentFontVisuallyVerified": true,
+  "expanded200PercentFontVisuallyVerified": true,
+  "nightModeVisuallyVerified": true,
+  "hourLongCountdownVisuallyVerified": true,
+  "visualEvidence": [
+    "screenshots/android-countdown-normal.png",
+    "screenshots/android-countdown-30-minutes.png",
+    "screenshots/android-countdown-15-minutes.png",
+    "screenshots/android-countdown-compact-night-200-percent.png",
+    "screenshots/android-countdown-expanded-night-200-percent.png"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "platform": "Android API 35 emulator",
+  "database": "native expo-sqlite runtime database",
+  "quickCheck": "ok",
+  "schemaVersion": 1,
+  "rows": 31,
+  "allPublishedValuesMatchBundledRecords": true,
+  "physicalDeviceTested": false
+}

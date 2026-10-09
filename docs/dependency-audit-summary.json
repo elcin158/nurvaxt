@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-10-08",
+  "command": "npm audit --omit=dev --json",
+  "vulnerabilities": {
+    "info": 0,
+    "low": 0,
+    "moderate": 15,
+    "high": 40,
+    "critical": 0,
+    "total": 55
+  },
+  "direct": [
+    {
+      "name": "expo",
+      "severity": "high",
+      "fixAvailable": {
+        "name": "expo",
+        "version": "44.0.6",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "name": "expo-router",
+      "severity": "moderate",
+      "fixAvailable": {
+        "name": "expo-router",
+        "version": "58.0.16",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "name": "expo-splash-screen",
+      "severity": "moderate",
+      "fixAvailable": {
+        "name": "expo-splash-screen",
+        "version": "57.0.9",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "name": "jest",
+      "severity": "high",
+      "fixAvailable": {
+        "name": "jest",
+        "version": "30.5.2",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "name": "react-native",
+      "severity": "high",
+      "fixAvailable": {
+        "name": "react-native",
+        "version": "0.87.1",
+        "isSemVerMajor": true
+      }
+    }
+  ],
+  "note": "Many findings are in Expo/Metro/Jest build tooling included transitively. Review before public release; no incompatible forced SDK upgrade was applied."
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "sourceReference": "data/sources/2026/qmi-68/10.jpg",
+    "sourceChecksum": "41fb50602ff69507e43b1819a3c78c8d8610ef60b933950c02758c96bf277e4b",
+    "locationId": "qmi-68",
+    "date": "2026-10-23",
+    "field": "midnight",
+    "publishedValue": "01:04",
+    "neighborValues": {
+      "2026-10-22": "00:04",
+      "2026-10-24": "00:04"
+    },
+    "reviewedAt": "2026-10-09",
+    "reviewer": "Codex: full original and enlarged source rows inspected separately",
+    "note": "The one-hour jump is present in the published source. Preserve 01:04; do not silently replace it with a calculated or neighboring value."
+  }
+]

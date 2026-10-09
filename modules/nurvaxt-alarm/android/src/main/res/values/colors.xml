@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="countdown_normal">#155E4B</color>
+    <color name="countdown_soon">#805900</color>
+    <color name="countdown_imminent">#A83D2C</color>
+</resources>

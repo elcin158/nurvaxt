@@ -1,0 +1,18 @@
+{
+  "platform": "Android 15/API 35 emulator",
+  "variant": "release",
+  "serial": "emulator-5556",
+  "schemaVersion": 1,
+  "quickCheck": "ok",
+  "rows": 92,
+  "publishedTimesMatched": 828,
+  "allRowsMatchBundle": true,
+  "datasetVersion": "2026.10-12-baku.2",
+  "dateRange": {
+    "start": "2026-10-01",
+    "end": "2026-12-31"
+  },
+  "datasetChecksum": "5232789d558327909e5f2b9771626ca66b87aed0b3ef5b73fc03615dbdc16143",
+  "unpublished2027Rows": 0,
+  "physicalDeviceTested": false
+}
