@@ -8,8 +8,8 @@ import { colors, FieldShell, ui, useReadOnly } from './ResidentControls';
 // opens under the field (above it when there is no room) and browses the tree level by level from
 // "Bütün ərazilər", with the path as breadcrumbs, ✕ to start over, and a search over the current
 // level. A unit that cannot be chosen only leads to its children.
-export function AdminUnitPicker({ label, required, error, value, book, scope, onChange }: {
-  label: string; required?: boolean; error?: string; value: number | null; book: AddressBook; scope: AdminScope; onChange(id: number): void;
+export function AdminUnitPicker({ label, number, required, error, value, book, scope, onChange }: {
+  label: string; number?: string; required?: boolean; error?: string; value: number | null; book: AddressBook; scope: AdminScope; onChange(id: number): void;
 }) {
   const [open, setOpen] = useState(false), [trail, setTrail] = useState<AdminUnit[]>([]), [query, setQuery] = useState('');
   const [keyboard, setKeyboard] = useState(0), [anchor, setAnchor] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
@@ -41,7 +41,7 @@ export function AdminUnitPicker({ label, required, error, value, book, scope, on
     maxHeight = Math.max(220, Math.min(420, up ? above : below));
     place = { ...up ? { bottom: screen.height - anchor.y + 4 } : { top: anchor.y + anchor.height + 4 }, left: anchor.x, width: anchor.width };
   }
-  return <FieldShell label={label} required={required} error={error}>
+  return <FieldShell label={label} number={number} required={required} error={error}>
     <Pressable ref={trigger} accessibilityRole="button" accessibilityLabel={`${label}: ${text || 'İnzibati ərazi seçin'}`} accessibilityState={{ expanded: open, disabled }} disabled={disabled} onPress={show}
       style={[ui.input, ui.select, open && ui.selectOpen, disabled && ui.selectDisabled, !!error && ui.selectError]}>
       <Text numberOfLines={2} style={[ui.selectText, !text && { color: colors.muted }]}>{text || (disabled ? '' : 'İnzibati ərazi seçin')}</Text>

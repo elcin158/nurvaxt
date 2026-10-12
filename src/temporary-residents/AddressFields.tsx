@@ -32,8 +32,8 @@ function streetOptions(streets: Street[]): Choice[] {
 }
 
 /** `domestic` is a block with no country of its own: always inside Azerbaijan, as the household return address. */
-export function AddressFields({ prefix = '', label = 'Ünvan', data, catalog, onChange, errors = {}, domestic = false, required = !domestic }: {
-  prefix?: string; label?: string; data: PersonalData; catalog: AddressCatalog; onChange(value: PersonalData): void; errors?: Errors; domestic?: boolean; required?: boolean;
+export function AddressFields({ prefix = '', label = 'Ünvan', number, data, catalog, onChange, errors = {}, domestic = false, required = !domestic }: {
+  prefix?: string; label?: string; number?: string; data: PersonalData; catalog: AddressCatalog; onChange(value: PersonalData): void; errors?: Errors; domestic?: boolean; required?: boolean;
 }) {
   const key = (suffix: string) => prefix ? `${prefix}${suffix}` : suffix[0].toLowerCase() + suffix.slice(1);
   const country = domestic ? catalog.lookups.country?.find(x => x.code === '031') : catalog.lookups.country?.find(x => x.id === data[key('CountryId')]);
@@ -47,7 +47,7 @@ export function AddressFields({ prefix = '', label = 'Ünvan', data, catalog, on
   const entrances = useMemo(() => admin && street ? [...book.entrances(admin, street), { id: OTHER, label: 'Digər' }] : [], [book, admin, street]);
   if (prefix && country?.code !== '031') return null;
   if (!book.ready) return <View style={{ gap: 8 }}>
-    <Select label={`${label} (inzibati ərazi)`} required={required} value={null} items={[]} disabled error={errors[key('AdminUnitId')]} onChange={() => {}} />
+    <Select label={`${label} (inzibati ərazi)`} number={number} required={required} value={null} items={[]} disabled error={errors[key('AdminUnitId')]} onChange={() => {}} />
     <Text style={{ color: colors.muted, fontSize: 13, lineHeight: 19 }}>Ünvanlar hələ bu cihaza yüklənməyib. Menyudakı «Arayışlar» bölməsindən yükləyin.</Text>
   </View>;
   // As on the web form, the birth place is an admin unit only: no street, entrance or note.
@@ -63,7 +63,7 @@ export function AddressFields({ prefix = '', label = 'Ünvan', data, catalog, on
     entranceIsOther ? null : book.entrance(entrance)?.label, isOther ? String(data[key('AddressOtherNote')] ?? '').trim() : null]
     .filter(Boolean).join(', ');
   return <View style={{ gap: 16 }}>
-    <AdminUnitPicker label={`${label} (inzibati ərazi)`} required={required} value={admin} book={book} scope={scope} error={errors[key('AdminUnitId')]}
+    <AdminUnitPicker label={`${label} (inzibati ərazi)`} number={number} required={required} value={admin} book={book} scope={scope} error={errors[key('AdminUnitId')]}
       onChange={value => { if (value !== admin) set({ [key('AdminUnitId')]: value, [key('ThroughFareId')]: null, [key('EntranceId')]: null, [key('AddressIsOther')]: false, [key('AddressOtherNote')]: '' }); }} />
     {showStreets && <Select label="Küçə / prospekt / yol" value={streetIsOther ? OTHER : street} items={streets} error={errors[key('ThroughFareId')]}
       onChange={value => value === OTHER

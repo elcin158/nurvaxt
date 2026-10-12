@@ -172,7 +172,7 @@ export function LivestockStep({ livestock, catalog, errors, onChange }: { livest
   </View>;
 }
 /** A root card of the web trees: closed until opened, the total on the header's right. */
-function Fold({ title, number, total, initiallyOpen = false, info, error, children }: {
+export function Fold({ title, number, total, initiallyOpen = false, info, error, children }: {
   title: string; number?: string; total?: ReactNode; initiallyOpen?: boolean; info?: string; error?: string; children: ReactNode;
 }) {
   const [open, setOpen] = useState(initiallyOpen);
@@ -186,7 +186,7 @@ function Fold({ title, number, total, initiallyOpen = false, info, error, childr
  * A branch inside a card: its own toggle, open by default, and its content indented under it.
  * A `tree` branch holds a <Tree>, whose spine starts under the toggle (its centre is 10 px in, its foot 24 px down).
  */
-function Branch({ title, number, initiallyOpen = true, total, info, tree = false, children }: {
+export function Branch({ title, number, initiallyOpen = true, total, info, tree = false, children }: {
   title: string; number?: string; initiallyOpen?: boolean; total?: ReactNode; info?: string; tree?: boolean; children: ReactNode;
 }) {
   const [open, setOpen] = useState(initiallyOpen);

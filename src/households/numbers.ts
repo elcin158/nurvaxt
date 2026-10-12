@@ -45,7 +45,20 @@ const ANIMAL = new Set(['1.1.2', '1.1.2.1', '1.1.3', '1.1.4', '1.1.4.1', '1.1.5'
 // Pig and horse codes are data keys; the form numbers them by the document instead.
 const ANIMAL_DISPLAY: Record<string, string> = { 4.1: '3.1', 4.2: '3.2', 4.3: '3.3', 4.4: '3.4', 5.1: '4.1', 5.2: '4.2', 5.3: '4.3', 5.4: '4.4' };
 
+// HouseholdInputNumbers.TemporaryResident: the member rows the temporary resident form shares, and its own few.
+const TEMPORARY: Record<string, string> = {
+  ...Object.fromEntries(['lastName', 'firstName', 'fatherName', 'fin', 'hasNoFin', 'finAbsenceReasonId', 'genderTypeId', 'birthDate',
+    'birthCountryId', 'birthPlaceNote', 'citizenshipCountryId', 'nationalityTypeId', 'educationLevelId', 'educationLevelDetailId',
+    'scientificDegreeId', 'academicTitleId', 'educationInstitutionCountryId', 'educationInstitutionTypeId', 'educationGradeId',
+    'educationSpecialtyId', 'employmentStatusId', 'employmentCategoryId', 'economicActivitySectionId', 'economicActivityCodeId']
+    .map(name => [name, MEMBER[name]])),
+  birth: MEMBER_ADDRESS.birth, educationInstitution: MEMBER_ADDRESS.educationInstitution,
+  currentlyStudying: '13.1', educationInstitutionNameId: '13.5', workplaceName: '14.3', positionTypeId: '14.6',
+};
+
 export const numbers = {
+  /** A temporary resident field, or an address block by its prefix. */
+  temporary: (name: string) => TEMPORARY[name],
   member: (name: string) => MEMBER[name],
   memberAddress: (block: string) => MEMBER_ADDRESS[block],
   building: (name: string) => BUILDING[name],
