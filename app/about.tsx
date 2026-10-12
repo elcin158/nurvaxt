@@ -1,19 +1,20 @@
 import { useState } from 'react';
 import Constants from 'expo-constants';
-import { Pressable, View } from 'react-native';
+import { Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '../src/components/layout/Screen';
-import { AppText, Card, IconButton } from '../src/components/ui';
+import { ScreenHeader } from '../src/components/layout/ScreenHeader';
+import { AppText, Card } from '../src/components/ui';
 import { useTheme } from '../src/theme';
+import { BrandLockup } from '../src/components/brand/Brand';
 export default function About() {
   const [taps, setTaps] = useState(0);
   const { colors } = useTheme();
   return (
-    <Screen>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <AppText variant="title">NurVaxt haqqında</AppText>
-        <IconButton name="close" label="Bağla" onPress={() => router.back()} />
-      </View>
+    <Screen
+      bottomSafeArea
+      header={<ScreenHeader title="NurVaxt haqqında" action="close" onBack={() => router.back()} />}
+    >
       <Card>
         <Pressable
           onPress={() => {
@@ -23,8 +24,8 @@ export default function About() {
           accessibilityRole="button"
           accessibilityLabel="NurVaxt versiyası"
         >
-          <AppText variant="title">NurVaxt.</AppText>
-          <AppText variant="caption" style={{ color: colors.muted }}>
+          <BrandLockup subtitle="Hər gün, vaxtında." />
+          <AppText variant="caption" style={{ color: colors.muted, marginTop: 16 }}>
             Versiya {Constants.expoConfig?.version ?? '1.0.1'}
           </AppText>
         </Pressable>

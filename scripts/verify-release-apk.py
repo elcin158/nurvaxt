@@ -6,6 +6,7 @@ import pathlib
 import re
 import shutil
 import subprocess
+import sys
 import zipfile
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
@@ -48,8 +49,11 @@ assert application is not None
 assert application.attrib.get(android + 'debuggable', 'false') == 'false'
 permissions = [node.attrib[android + 'name'] for node in manifest.findall('uses-permission')]
 blocked = ['SYSTEM_ALERT_WINDOW', 'CAMERA', 'RECORD_AUDIO', 'ACCESS_FINE_LOCATION',
-           'ACCESS_COARSE_LOCATION', 'USE_EXACT_ALARM', 'READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']
+           'ACCESS_BACKGROUND_LOCATION', 'USE_EXACT_ALARM', 'READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']
 assert not any('android.permission.' + name in permissions for name in blocked), 'Unexpected release permission'
+countdown_resources = json.loads(subprocess.check_output([
+    sys.executable, str(root / 'scripts/verify-countdown-resources.py'), str(apk),
+], text=True))
 with zipfile.ZipFile(apk) as archive:
     bundle = archive.read('assets/index.android.bundle')
     assert len(bundle) > 100_000, 'Missing embedded JavaScript/Hermes bundle'
@@ -72,6 +76,8 @@ report = {
     'signatureVerified': True, 'matchesLocalReleaseKey': True, 'debuggable': False,
     'abis': abis, 'embeddedBundleBytes': len(bundle), 'reminderToneBundled': tone,
     'permissions': permissions,
+    'countdownResourcesVerified': True,
+    'countdownLayouts': countdown_resources['layouts'],
     'datasetVersions': {path.stem: json.loads(path.read_text())['version']
                         for path in sorted((root / 'data/verified').glob('[0-9][0-9][0-9][0-9].json'))},
     'offlineColdLaunchVerified': False,

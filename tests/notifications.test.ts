@@ -6,12 +6,14 @@ import {
   notificationId,
   planNotifications,
   planCountdown,
+  planSolarCountdown,
   reconciliationDiff,
   type ReminderPreferences,
 } from '../src/features/notifications/domain';
 import { reconcile, type NotificationAdapter } from '../src/features/notifications/reconcile';
 import { datasetSchema } from '../src/types/data';
 import dataset from '../data/verified/2026.json';
+import { atTime } from '../src/utils/time';
 const days = datasetSchema.parse(dataset).records;
 const now = DateTime.fromISO('2026-10-08T00:00', { zone: 'Asia/Baku' }).toMillis();
 const prefs: ReminderPreferences = {
@@ -121,11 +123,28 @@ test('quiet hours and past-time filtering also apply to at-time notifications', 
     ),
   ).toBe(true);
 });
-test('ongoing countdown uses only verified daily prayers for the selected city', () => {
+test('ongoing countdown uses verified prayer starts and Sübh deadlines for the selected city', () => {
   const events = planCountdown(days.slice(7, 9), 'qmi-1');
-  expect(events).toHaveLength(10);
-  expect(events[0]).toMatchObject({ name: 'Sübh', time: '05:25', previousTimestamp: null });
-  expect(events[5]).toMatchObject({ date: '2026-10-09', previousTimestamp: events[4]?.timestamp });
+  expect(events).toHaveLength(12);
+  expect(events[0]).toMatchObject({
+    name: 'Sübh',
+    phase: 'start',
+    time: '05:25',
+    previousTimestamp: null,
+  });
+  expect(events[1]).toMatchObject({
+    name: 'Sübh',
+    phase: 'end',
+    time: '06:44',
+    previousTimestamp: events[0]?.timestamp,
+    timestamp: atTime('2026-10-08', '06:44'),
+  });
+  expect(events[6]).toMatchObject({
+    date: '2026-10-09',
+    phase: 'start',
+    previousTimestamp: events[5]?.timestamp,
+  });
+  expect(planCountdown([{ ...days[7]!, sunrise: null }], 'qmi-1')).toHaveLength(5);
   expect(planCountdown(days, 'unpublished-city')).toEqual([]);
   expect(
     planCountdown(
@@ -133,6 +152,38 @@ test('ongoing countdown uses only verified daily prayers for the selected city',
       'qmi-1',
     ),
   ).toEqual([]);
+});
+
+test('persistent solar plan omits kerahat entirely when the feature is off', () => {
+  const records = days.slice(7, 9);
+  expect(
+    planSolarCountdown(records, 'qmi-1', false, { morning: 45, noon: 45, evening: 45 }),
+  ).toEqual({ kerahat: [] });
+});
+
+test('persistent kerahat plan uses each selected warning and actual sunset', () => {
+  const record = days[7]!;
+  const plan = planSolarCountdown([record], 'qmi-1', true, { morning: 0, noon: 20, evening: 60 });
+  expect(plan.kerahat).toHaveLength(3);
+  expect(plan.kerahat.map((window) => (window.start - window.warningStart) / 60_000)).toEqual([
+    0, 20, 60,
+  ]);
+  expect(plan.kerahat[2]!.end).toBe(atTime(record.date, record.sunset!));
+  expect(plan.kerahat[2]!.end).not.toBe(atTime(record.date, record.maghrib!));
+});
+
+test('solar panel never uses another city or an unverified endpoint', () => {
+  const records = days.slice(7, 9);
+  const warnings = { morning: 45, noon: 45, evening: 45 };
+  expect(planSolarCountdown(records, 'qmi-20', true, warnings)).toEqual({ kerahat: [] });
+  expect(
+    planSolarCountdown(
+      records.map((day) => ({ ...day, verified: false })),
+      'qmi-1',
+      true,
+      warnings,
+    ),
+  ).toEqual({ kerahat: [] });
 });
 test('reconciliation replaces changed content/sound and keeps identical events', () => {
   const desired = planNotifications(days, 'qmi-1', prefs, now, 2);

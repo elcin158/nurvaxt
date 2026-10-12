@@ -1,0 +1,9 @@
+       Live Notifications
+       OngoingActivityController State
+       isUpdateNotAllowed : false
+       isNightMode : false
+       topComponent : ComponentInfo{az.nurvaxt.liveprobe/az.nurvaxt.liveprobe.ProbeActivity}
+       Hidden list
+       Pending list
+       Ongoing Activity History
+           10-12 12:34:21.622 | 0|az.nurvaxt.liveprobe|9101|null|10392 is REMOVED

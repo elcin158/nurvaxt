@@ -2,7 +2,8 @@ import { useEffect, useSyncExternalStore } from 'react';
 import { Alert, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '../src/components/layout/Screen';
-import { AppText, Button, Card, IconButton } from '../src/components/ui';
+import { ScreenHeader } from '../src/components/layout/ScreenHeader';
+import { AppText, Button, Card } from '../src/components/ui';
 import { useActiveClock } from '../src/hooks/useActiveClock';
 import {
   diagnosticsStore,
@@ -48,11 +49,10 @@ export default function Diagnostics() {
       } as Record<string, string>
     )[d.status] ?? d.status;
   return (
-    <Screen>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <AppText variant="title">Diaqnostika</AppText>
-        <IconButton name="close" label="Bağla" onPress={() => router.back()} />
-      </View>
+    <Screen
+      bottomSafeArea
+      header={<ScreenHeader title="Diaqnostika" action="close" onBack={() => router.back()} />}
+    >
       <Card>
         <View style={{ gap: 16 }}>
           {[

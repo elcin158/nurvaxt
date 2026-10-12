@@ -1,7 +1,7 @@
 # Architecture
 
-Expo Router owns navigation; feature modules own prayer logic, reminders, locations and
-settings. Strict TypeScript and Zod separate source input from application records.
+Expo Router owns navigation; feature modules own prayer logic, reminders, locations, qibla
+and settings. Strict TypeScript and Zod separate source input from application records.
 
 | Concern                  | Implementation                                                                                             |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------- |
@@ -12,11 +12,12 @@ settings. Strict TypeScript and Zod separate source input from application recor
 | Query lifetime           | TanStack Query by city/date range; permanent local-package freshness                                       |
 | Preferences              | Zustand persist + AsyncStorage; validated hydration and safe defaults                                      |
 | Countdown                | Luxon absolute Asia/Baku timestamps, five-prayer domain engine                                             |
-| Countdown rendering      | Only hero component ticks each second while focused/active                                                 |
+| Countdown rendering      | Hero and enabled kərahət card tick each second while focused/active                                        |
 | Android status countdown | Native minute icon updates, system chronometer, durable verified timetable and next urgency-boundary alarm |
 | Date rollover            | Local next-midnight timeout + foreground refresh, independent of displayed day                             |
 | Android reminders        | Local Expo module, persistent native plan, next 32 AlarmManager timestamps                                 |
 | iOS reminders            | Expo local notifications, maximum 60 future requests, diff reconciliation                                  |
+| Qibla                    | Great-circle bearing from the city centre or an opt-in coarse position; levelled magnetometer heading      |
 | Theme                    | Shared token/context palette with system appearance and bundled Manrope                                    |
 
 Startup copies the prebuilt `prayer-times.db` asset when missing or when its bundle id differs from the app's, then verifies SQLite integrity, schema version and record count.
@@ -30,6 +31,19 @@ Displayed historical navigation never changes notification preferences or the sc
 After today's İşa the engine considers tomorrow's first daily prayer; a missing tomorrow stays
 unavailable rather than jumping across a gap. Optional Hijri uses Intl `islamic-civil`, ±2 days,
 is display-only and never affects alarms.
+
+The hero keeps the next daily prayer as its main event. From verified İşa until the following
+verified sunrise, it also shows a smaller sunrise countdown and progress. That progress spans
+the whole night, including midnight and Sübh. Missing either endpoint hides the extra display.
+The optional `showKerahat` preference defaults off and persists across launches. Its Hanafi
+solar intervals are display-only estimates: sunrise +45 minutes, Zöhr -10 minutes, and actual
+sunset -45 minutes. They use distinct source fields, never Məğrib as a sunset substitute. An
+active interval shows time to its end. `kerahatWarnings` stores three independent advance-warning
+thresholds, defaulting to 45 minutes each. Settings support exact whole minutes from 0 to 120;
+zero disables that period's advance warning while keeping its active display. These thresholds
+control the app and Android ongoing-panel warning and do not change the solar interval endpoints.
+The native plan receives separate verified sunrise and kərahət endpoints. Its existing visual
+boundary alarm also advances those displays while JS is absent; prayer reminder events stay separate.
 
 Android receives the complete future plan for available records, but registers at most 32
 distinct timestamps. Native receivers consume due events and refill while JS is absent.

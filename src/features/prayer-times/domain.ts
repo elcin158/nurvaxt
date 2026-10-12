@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import { TIMEZONE } from '../../constants/prayers';
 export type PrayerOccurrence = {
   field: PrayerField;
+  phase: 'start' | 'end';
   time: string;
   date: string;
   timestamp: number;
@@ -15,22 +16,65 @@ export function prayerUrgency(remaining: number): 'normal' | 'soon' | 'imminent'
   if (remaining > 0 && remaining <= 30 * 60_000) return 'soon';
   return 'normal';
 }
-export function nextPrayer(days: PrayerDay[], now: number): PrayerOccurrence | null {
+/** Prayer starts plus Sübh's verified sunrise deadline, shared by the app and native plan. */
+export function prayerCountdownTimeline(days: PrayerDay[]): PrayerOccurrence[] {
+  const occurrences = days
+    .filter((day) => day.verified)
+    .flatMap((day) => {
+      const starts = DAILY_PRAYERS.flatMap((field) =>
+        day[field]
+          ? [
+              {
+                field,
+                phase: 'start' as const,
+                time: day[field]!,
+                date: day.date,
+                timestamp: atTime(day.date, day[field]!),
+              },
+            ]
+          : [],
+      );
+      if (!day.fajr || !day.sunrise) return starts;
+      const start = atTime(day.date, day.fajr);
+      const end = atTime(day.date, day.sunrise);
+      if (end <= start) return starts;
+      return [
+        ...starts,
+        {
+          field: 'fajr' as const,
+          phase: 'end' as const,
+          time: day.sunrise,
+          date: day.date,
+          timestamp: end,
+        },
+      ];
+    })
+    .sort((a, b) => a.timestamp - b.timestamp);
+  return occurrences.map((event, index) => ({
+    ...event,
+    previousTimestamp: occurrences[index - 1]?.timestamp ?? null,
+  }));
+}
+
+function nextOccurrence(
+  days: PrayerDay[],
+  now: number,
+  includeEnd: boolean,
+): PrayerOccurrence | null {
   const today = DateTime.fromMillis(now, { zone: TIMEZONE }).toISODate()!;
   const allowed = new Set([today, shiftDate(today, 1)]);
-  const occurrences = days
-    .filter((d) => d.verified && allowed.has(d.date))
-    .flatMap((day) =>
-      DAILY_PRAYERS.flatMap((field) =>
-        day[field]
-          ? [{ field, time: day[field]!, date: day.date, timestamp: atTime(day.date, day[field]!) }]
-          : [],
-      ),
-    )
-    .sort((a, b) => a.timestamp - b.timestamp);
+  const occurrences = prayerCountdownTimeline(days.filter((day) => allowed.has(day.date))).filter(
+    (event) => includeEnd || event.phase === 'start',
+  );
   const index = occurrences.findIndex((event) => event.timestamp > now);
   if (index < 0) return null;
   return { ...occurrences[index]!, previousTimestamp: occurrences[index - 1]?.timestamp ?? null };
+}
+export function nextPrayer(days: PrayerDay[], now: number): PrayerOccurrence | null {
+  return nextOccurrence(days, now, false);
+}
+export function nextPrayerCountdown(days: PrayerDay[], now: number): PrayerOccurrence | null {
+  return nextOccurrence(days, now, true);
 }
 export function countdown(occurrence: PrayerOccurrence | null, now: number) {
   if (!occurrence) return { remaining: 0, progress: 0 };

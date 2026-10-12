@@ -4,15 +4,31 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { z } from 'zod';
 import { PRAYER_FIELDS, type PrayerField, type ReminderEvent } from '../constants/prayers';
 import { defaultReminders, type ReminderPreferences } from '../features/notifications/domain';
+import { REMINDER_SOUND_IDS } from '../features/notifications/sounds';
+import {
+  defaultKerahatWarnings,
+  MAX_KERAHAT_WARNING_MINUTES,
+} from '../features/prayer-times/solar';
 const offsetSchema = z.array(z.number().int().min(0).max(120)).max(25);
+const kerahatWarningSchema = z.number().int().min(0).max(MAX_KERAHAT_WARNING_MINUTES).default(45);
 const preferencesSchema = z.object({
   locationId: z.string().regex(/^qmi-\d+$/),
   recentLocations: z.array(z.string()).max(5),
   theme: z.enum(['light', 'dark', 'system']),
   timeFormat: z.enum(['24', '12']),
   showHijri: z.boolean(),
+  showKerahat: z.boolean().default(false),
+  kerahatWarnings: z
+    .object({
+      morning: kerahatWarningSchema,
+      noon: kerahatWarningSchema,
+      evening: kerahatWarningSchema,
+    })
+    .default(defaultKerahatWarnings),
   hijriAdjustment: z.number().int().min(-2).max(2),
   visibleFields: z.array(z.enum(PRAYER_FIELDS)).min(1),
+  // Defaulted so a stored preference file written before the Qibla screen still parses.
+  qiblaSource: z.enum(['city', 'device']).default('city'),
   onboardingComplete: z.boolean(),
   reminders: z.object({
     enabled: z.boolean(),
@@ -26,7 +42,7 @@ const preferencesSchema = z.object({
       maghrib: offsetSchema,
       isha: offsetSchema,
     }),
-    sound: z.enum(['silent', 'default', 'tone']),
+    sound: z.enum(REMINDER_SOUND_IDS),
     vibration: z.boolean(),
     quietHours: z.object({
       enabled: z.boolean(),
@@ -42,8 +58,11 @@ export const defaultPreferences: Preferences = {
   theme: 'system',
   timeFormat: '24',
   showHijri: false,
+  showKerahat: false,
+  kerahatWarnings: defaultKerahatWarnings,
   hijriAdjustment: 0,
   visibleFields: [...PRAYER_FIELDS],
+  qiblaSource: 'city',
   onboardingComplete: false,
   reminders: defaultReminders,
 };

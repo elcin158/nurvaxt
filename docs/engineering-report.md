@@ -141,9 +141,13 @@ See [year rollover](year-rollover.md) for the same-key APK update workflow.
 5. Measure release cold start, memory, accessibility and notification timing on representative
    small/large devices. Debug Expo overlay tooling is not the intended release permission surface.
 
-Optional GPS, widgets, qibla, azan recordings and automatic Ramadan mode are deferred.
+Widgets, azan recordings and automatic Ramadan mode are deferred. The Qibla compass ships
+with a levelled magnetometer heading and an optional coarse-location origin; the precise
+(GPS) permission stays blocked in the manifest.
 Ramadan dates/iftar conventions must have verified religious-calendar evidence before display.
-The app has no account, advertising, analytics, backend, push registration or location tracking.
+The app has no account, advertising, analytics, backend, push registration or location
+tracking. The Qibla screen reads an approximate position only while the reader switches it
+on, and neither stores nor transmits it.
 
 See [native matrix](native-test-matrix.md), [source evidence](qmi-data-source.md),
 [notification limits](notifications.md), [dependency audit](dependency-audit-summary.json)

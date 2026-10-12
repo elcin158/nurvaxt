@@ -3,7 +3,8 @@
 An independent Azerbaijani prayer timetable app. Expo SDK 55, React Native 0.83.10,
 React 19.2, strict TypeScript, Expo Router, Zustand, TanStack Query and native SQLite.
 All product UI and notification messages are Azerbaijani. No accounts, advertising,
-analytics, push service, GPS tracking or runtime QMİ requests.
+analytics, push service, GPS tracking or runtime QMİ requests. The Qibla compass works from
+the selected city; an optional coarse-location origin is the only permission it can ask for.
 
 **Current verified coverage: all 74 official regions, 1 October–31 December 2026.**
 The package includes 222 monthly sources, 6,808 daily records and 61,272 published times.
@@ -135,7 +136,7 @@ mode and azan recordings are deliberately deferred. No guessed dates or sunset/M
 
 ## Builds and checks
 
-Local signed release APK (version 1.0.4, Android versionCode 5):
+Local signed release APK (version 1.0.6, Android versionCode 7):
 
 ```bash
 npm run android:release-key
@@ -145,7 +146,7 @@ python3 scripts/verify-release-apk.py
 
 The release embeds JS, fonts and the verified data. The APK is produced at
 `android/app/build/outputs/apk/release/app-release.apk`. The delivery copy is
-`artifacts/nurvaxt-1.0.4-release.apk`. This is an APK for installation and testing;
+`artifacts/nurvaxt-1.0.6-release.apk`. This is an APK for installation and testing;
 public-store requirements remain in the release checklist.
 
 The previous 1.0.1 API 35 emulator verification passed with Wi-Fi/mobile data disabled and no Metro tunnel:
@@ -176,6 +177,11 @@ system font scale. Evidence is kept separately in `docs/countdown-layout/`:
 ```bash
 npm run android:countdown-smoke -- --serial emulator-5556 --output-dir docs/countdown-layout
 ```
+
+Release 1.0.6 adopts the supplied blue crescent icon, with cobalt/cyan surfaces,
+light and navy themes, native SVG artwork and coordinated launcher/splash assets.
+Larger system fonts expand the tab bar and place prayer times on a separate row.
+See [brand assets and visual QA](docs/blue-crescent/README.md).
 
 The first device inspection of 1.0.3 is reserved for the user's local test. Earlier emulator
 reports retain their actual 1.0.1/1.0.2 versions. To independently check the new installed

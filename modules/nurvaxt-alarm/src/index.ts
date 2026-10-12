@@ -1,4 +1,11 @@
 import { requireOptionalNativeModule } from 'expo-modules-core';
+export type LiveNotificationAccess = {
+  mode: 'standard' | 'unsupported';
+  enabled: boolean;
+  canOpenSettings: boolean;
+  promoted: boolean;
+  notificationsAllowed: boolean;
+};
 export type AlarmDiagnostics = {
   exact: boolean;
   count: number;
@@ -15,4 +22,6 @@ export default requireOptionalNativeModule<{
   scheduleTest: () => Promise<void>;
   diagnostics: () => AlarmDiagnostics;
   requestExactAccess: () => void;
+  liveNotificationAccess: () => LiveNotificationAccess;
+  openLiveNotificationSettings: () => boolean;
 }>('NurvaxtAlarm');

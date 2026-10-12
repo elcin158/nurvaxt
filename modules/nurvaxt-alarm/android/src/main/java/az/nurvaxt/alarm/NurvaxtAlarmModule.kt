@@ -31,5 +31,11 @@ class NurvaxtAlarmModule : Module() {
         context.startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:${context.packageName}")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
       }
     }
+    Function("liveNotificationAccess") {
+      LiveNotificationAccess.status(appContext.reactContext ?: throw IllegalStateException("Context unavailable"))
+    }
+    Function("openLiveNotificationSettings") {
+      LiveNotificationAccess.openSettings(appContext.reactContext ?: throw IllegalStateException("Context unavailable"))
+    }
   }
 }

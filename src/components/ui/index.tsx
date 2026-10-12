@@ -27,9 +27,13 @@ export function Card({ children, style }: PropsWithChildren<{ style?: ViewStyle 
         {
           backgroundColor: colors.surface,
           borderRadius: tokens.radius.md,
-          padding: tokens.spacing.lg,
+          padding: 20,
           borderWidth: 1,
           borderColor: colors.border,
+          shadowColor: colors.shadow,
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.035,
+          shadowRadius: 16,
         },
         style,
       ]}
@@ -66,6 +70,7 @@ export function IconButton({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
+      accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => ({
@@ -73,8 +78,10 @@ export function IconButton({
         minHeight: 48,
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 24,
+        borderRadius: 16,
         backgroundColor: colors.surface,
+        borderWidth: 1,
+        borderColor: colors.border,
         opacity: disabled ? 0.4 : pressed ? 0.65 : 1,
       })}
     >
@@ -97,21 +104,24 @@ export function Button({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => ({
         paddingVertical: 16,
         paddingHorizontal: 24,
         minHeight: 52,
-        borderRadius: 16,
+        borderRadius: 18,
         backgroundColor: secondary ? colors.elevated : colors.primary,
+        borderWidth: 1,
+        borderColor: secondary ? colors.border : colors.primary,
         opacity: disabled ? 0.4 : pressed ? 0.7 : 1,
         alignItems: 'center',
       })}
     >
       <AppText
         style={{
-          color: secondary ? colors.primary : colors.background,
+          color: secondary ? colors.primary : colors.onPrimary,
           fontFamily: tokens.font.bold,
         }}
       >
@@ -120,31 +130,79 @@ export function Button({
     </Pressable>
   );
 }
+export function ChoiceGroup({ children }: PropsWithChildren) {
+  const { colors } = useTheme();
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 4,
+        padding: 4,
+        borderRadius: 16,
+        backgroundColor: colors.elevated,
+      }}
+    >
+      {children}
+    </View>
+  );
+}
 export function Chip({
   title,
   selected,
   onPress,
+  segment = false,
 }: {
   title: string;
   selected: boolean;
   onPress: () => void;
+  segment?: boolean;
 }) {
   const { colors } = useTheme();
   return (
     <Pressable
       accessibilityRole="checkbox"
+      accessibilityLabel={title}
       accessibilityState={{ checked: selected }}
+      aria-checked={selected}
       onPress={onPress}
       style={({ pressed }) => ({
-        borderRadius: 14,
-        paddingHorizontal: 16,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 6,
+        borderRadius: segment ? 12 : 14,
+        paddingHorizontal: segment ? 12 : 14,
         paddingVertical: 12,
         minHeight: 48,
-        backgroundColor: selected ? colors.primary : colors.elevated,
-        opacity: pressed ? 0.65 : 1,
+        ...(segment ? { flexGrow: 1, flexBasis: 0, minWidth: 64 } : {}),
+        backgroundColor: pressed
+          ? colors.pressed
+          : selected
+            ? segment
+              ? colors.surface
+              : colors.selected
+            : segment
+              ? 'transparent'
+              : colors.surface,
+        borderWidth: 1,
+        borderColor: segment || selected ? 'transparent' : colors.border,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: segment && selected ? 0.06 : 0,
+        shadowRadius: 5,
       })}
     >
-      <AppText variant="caption" style={{ color: selected ? colors.background : colors.text }}>
+      {!segment && selected && <Icon name="checkmark" size={15} color={colors.selectedText} />}
+      <AppText
+        variant="caption"
+        style={{
+          color: selected ? colors.selectedText : colors.muted,
+          fontFamily: tokens.font.semibold,
+          textAlign: 'center',
+          flexShrink: 1,
+        }}
+      >
         {title}
       </AppText>
     </Pressable>

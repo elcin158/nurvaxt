@@ -1,19 +1,16 @@
 import { DateTime } from 'luxon';
-import {
-  DAILY_PRAYERS,
-  LABELS,
-  REMINDER_EVENTS,
-  TIMEZONE,
-  type ReminderEvent,
-} from '../../constants/prayers';
+import { LABELS, REMINDER_EVENTS, TIMEZONE, type ReminderEvent } from '../../constants/prayers';
 import type { PrayerDay } from '../../types/data';
 import { atTime } from '../../utils/time';
+import { kerahatWindows, type KerahatWarningMinutes } from '../prayer-times/solar';
+import { prayerCountdownTimeline, type PrayerOccurrence } from '../prayer-times/domain';
+import type { ReminderSound } from './sounds';
 export type ReminderPreferences = {
   enabled: boolean;
   atPrayerTime: boolean;
   ongoingCountdown: boolean;
   offsets: Record<ReminderEvent, number[]>;
-  sound: 'silent' | 'default' | 'tone';
+  sound: ReminderSound;
   vibration: boolean;
   quietHours: { enabled: boolean; start: string; end: string };
 };
@@ -114,34 +111,40 @@ export function planNotifications(
 }
 export type CountdownPrayer = {
   name: string;
+  phase: PrayerOccurrence['phase'];
   date: string;
   time: string;
   timestamp: number;
   previousTimestamp: number | null;
 };
-// Independent of reminder offsets: the ongoing timer always follows the five daily prayers.
+// Independent of reminder offsets: prayer starts and Sübh's sunrise deadline.
 export function planCountdown(days: PrayerDay[], locationId: string): CountdownPrayer[] {
-  const events = days
-    .filter((day) => day.verified && day.locationId === locationId)
-    .flatMap((day) =>
-      DAILY_PRAYERS.flatMap((prayer) =>
-        day[prayer]
-          ? [
-              {
-                name: LABELS[prayer],
-                date: day.date,
-                time: day[prayer]!,
-                timestamp: atTime(day.date, day[prayer]!),
-              },
-            ]
-          : [],
-      ),
-    )
-    .sort((a, b) => a.timestamp - b.timestamp);
-  return events.map((event, index) => ({
-    ...event,
-    previousTimestamp: events[index - 1]?.timestamp ?? null,
-  }));
+  return prayerCountdownTimeline(days.filter((day) => day.locationId === locationId)).map(
+    ({ field, ...event }) => ({ ...event, name: LABELS[field] }),
+  );
+}
+
+export function planSolarCountdown(
+  days: PrayerDay[],
+  locationId: string,
+  showKerahat: boolean,
+  warnings: KerahatWarningMinutes,
+) {
+  const verified = days.filter((day) => day.verified && day.locationId === locationId);
+  const kerahat = showKerahat
+    ? verified
+        .flatMap((day) =>
+          kerahatWindows(day).map((window) => ({
+            name: window.title,
+            date: day.date,
+            start: window.start,
+            end: window.end,
+            warningStart: window.start - warnings[window.id] * 60_000,
+          })),
+        )
+        .sort((a, b) => a.start - b.start)
+    : [];
+  return { kerahat };
 }
 export function notificationFingerprint(event: PlannedNotification) {
   return JSON.stringify([event.timestamp, event.body, event.sound, event.vibration]);

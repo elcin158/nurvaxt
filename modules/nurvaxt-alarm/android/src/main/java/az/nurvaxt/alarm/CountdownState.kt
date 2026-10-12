@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import org.json.JSONObject
@@ -22,6 +23,7 @@ data class CountdownPrayer(
   val time: String,
   val timestamp: Long,
   val previousTimestamp: Long?,
+  val phase: String = "start",
 )
 
 data class CountdownPlan(
@@ -29,6 +31,7 @@ data class CountdownPlan(
   val location: String,
   val timeFormat: String,
   val events: List<CountdownPrayer>,
+  val kerahat: List<CountdownKerahat> = emptyList(),
 )
 
 /** A separate durable timetable, so turning off an advance reminder never changes the timer. */
@@ -47,8 +50,15 @@ object CountdownState {
           event.getString("name"), event.getString("date"), event.getString("time"),
           event.getLong("timestamp"),
           if (event.isNull("previousTimestamp")) null else event.getLong("previousTimestamp"),
+          event.optString("phase", "start"),
         )
       }.sortedBy { it.timestamp },
+      json.optJSONArray("kerahat")?.let { values ->
+        (0 until values.length()).map { index ->
+          val event = values.getJSONObject(index)
+          CountdownKerahat(event.getString("name"), event.getString("date"), event.getLong("start"), event.getLong("end"), event.getLong("warningStart"))
+        }.sortedBy { it.start }
+      } ?: emptyList(),
     )
   }
 
@@ -58,7 +68,8 @@ object CountdownState {
   @Synchronized fun replace(context: Context, json: JSONObject) {
     val plan = decode(json)
     require(plan.timeFormat in listOf("12", "24"))
-    require(plan.events.all { it.timestamp > 0 && it.name.isNotBlank() })
+    require(plan.events.all { it.timestamp > 0 && it.name.isNotBlank() && it.phase in listOf("start", "end") })
+    require(plan.kerahat.all { it.name.isNotBlank() && it.start > 0 && it.end > it.start && it.warningStart <= it.start && it.start - it.warningStart <= 7_200_000 })
     check(prefs(context).edit().putString("plan", json.toString()).commit())
     sync(context)
   }
@@ -95,10 +106,12 @@ object CountdownState {
     alarm.cancel(boundaryIntent(context))
   }
 
-  fun armBoundary(context: Context, prayer: CountdownPrayer, now: Long) {
+  fun armBoundary(context: Context, plan: CountdownPlan, prayer: CountdownPrayer, now: Long) {
     // Only the next visual threshold wakes the device; the per-second timer is system-rendered.
-    val timestamp = listOf(prayer.timestamp - 1_800_000, prayer.timestamp - 900_000, prayer.timestamp)
-      .firstOrNull { it > now } ?: return
+    val prayerBoundary = listOf(prayer.timestamp - 1_800_000, prayer.timestamp - 900_000, prayer.timestamp)
+      .firstOrNull { it > now }
+    val timestamp = listOfNotNull(prayerBoundary, CountdownSolar.boundary(plan.kerahat, now))
+      .minOrNull() ?: return
     val alarm = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     if (AlarmQueue.exact(context))
       alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timestamp, boundaryIntent(context))
@@ -116,11 +129,12 @@ object CountdownState {
         NotificationManagerCompat.from(context).cancel(NOTIFICATION_ID)
         prefs(context).edit().putBoolean("active", false).remove("lastError").apply()
       } else {
-        armBoundary(context, next, now)
+        armBoundary(context, plan!!, next, now)
         ContextCompat.startForegroundService(context, Intent(context, CountdownService::class.java))
       }
     } catch (error: Exception) {
       // Countdown start restrictions must never prevent the independent prayer alarm plan.
+      Log.e("NurvaxtCountdown", "Countdown service could not be started", error)
       prefs(context).edit().putString("lastError", error.message ?: error.javaClass.simpleName).apply()
     }
   }

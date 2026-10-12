@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioAttributes
-import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
@@ -35,7 +34,7 @@ object AlarmQueue {
       val event = events.getJSONObject(i)
       require(event.getString("id").startsWith("nurvaxt:") && ids.add(event.getString("id")))
       require(event.getLong("timestamp") > 0)
-      require(event.getString("sound") in listOf("silent", "default", "tone"))
+      require(event.getString("sound") in ReminderSounds.ids)
     }
     cancel(context)
     check(prefs(context).edit().putString("plan", events.toString()).putString("registered", "[]").commit())
@@ -101,7 +100,7 @@ object AlarmQueue {
       if (Build.VERSION.SDK_INT >= 26) {
         val channel = NotificationChannel(channelId, "Namaz xatırlatmaları", NotificationManager.IMPORTANCE_HIGH)
         channel.enableVibration(vibrate)
-        val uri = when(sound) { "silent" -> null; "tone" -> Uri.parse("android.resource://${context.packageName}/raw/nurvaxt_tone"); else -> RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION) }
+        val uri = ReminderSounds.uri(context, sound)
         channel.setSound(uri, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION).build())
         notifications.createNotificationChannel(channel)
       }
@@ -109,11 +108,11 @@ object AlarmQueue {
       val tap = launch?.let { PendingIntent.getActivity(context, 0, it, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE) }
       val body = due.joinToString("\n") { it.getString("body") }
       val notification = NotificationCompat.Builder(context, channelId)
-        .setSmallIcon(context.resources.getIdentifier("notification_icon", "drawable", context.packageName).takeIf { it != 0 } ?: context.applicationInfo.icon).setContentTitle("NurVaxt").setContentText(body)
+        .setSmallIcon(R.drawable.nurvaxt_countdown_clock).setContentTitle("NurVaxt").setContentText(body)
         .setStyle(NotificationCompat.BigTextStyle().bigText(body)).setAutoCancel(true)
         .setContentIntent(tap).setPriority(NotificationCompat.PRIORITY_HIGH)
       if (Build.VERSION.SDK_INT < 26) {
-        if (sound != "silent") notification.setSound(if(sound == "tone") Uri.parse("android.resource://${context.packageName}/raw/nurvaxt_tone") else RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+        notification.setSound(ReminderSounds.uri(context, sound))
         if (vibrate) notification.setVibrate(longArrayOf(0, 200))
       }
       notifications.notify(timestamp.toString().hashCode(), notification.build())
@@ -125,6 +124,6 @@ object AlarmQueue {
     val storage = prefs(context); val plan = JSONArray(storage.getString("plan", "[]"))
     val times = (0 until plan.length()).map { plan.getJSONObject(it).getLong("timestamp") }.filter { it > System.currentTimeMillis() }
     val countdown = CountdownState.prefs(context)
-    return mapOf("exact" to exact(context), "count" to JSONArray(storage.getString("registered", "[]")).length(), "queued" to times.size, "next" to times.minOrNull(), "lastOperation" to storage.getString("lastOperation", null), "lastError" to storage.getString("lastError", null), "countdownActive" to countdown.getBoolean("active", false), "countdownError" to countdown.getString("lastError", null))
+    return mapOf("exact" to exact(context), "count" to JSONArray(storage.getString("registered", "[]")).length(), "queued" to times.size, "next" to times.minOrNull(), "lastOperation" to storage.getString("lastOperation", null), "lastError" to storage.getString("lastError", null), "countdownActive" to countdown.getBoolean("active", false), "countdownError" to (countdown.getString("lastError", null) ?: countdown.getString("notificationViewError", null)))
   }
 }

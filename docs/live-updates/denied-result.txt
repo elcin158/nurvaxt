@@ -1,0 +1,14 @@
+INSTRUMENTATION_RESULT: deniedAccessFallbackVerified=true
+INSTRUMENTATION_RESULT: hasPromotableCharacteristics=true
+INSTRUMENTATION_RESULT: nativeStyle=android.app.Notification$ProgressStyle
+INSTRUMENTATION_RESULT: noCustomRemoteViews=true
+INSTRUMENTATION_RESULT: postedPromoted=false
+INSTRUMENTATION_RESULT: productionBuilderUsed=false
+INSTRUMENTATION_RESULT: promotedSettingsAction=java.lang.NoSuchFieldException: ACTION_MANAGE_APP_PROMOTED_NOTIFICATIONS
+INSTRUMENTATION_RESULT: releaseDismissalIntentVerified=true
+INSTRUMENTATION_RESULT: samePrayerNotRepromoted=true
+INSTRUMENTATION_RESULT: sdkFull=3600001
+INSTRUMENTATION_RESULT: stream=Live Update release framework checks passed
+INSTRUMENTATION_RESULT: systemAllowsPromotion=false
+INSTRUMENTATION_RESULT: systemChronometer=true
+INSTRUMENTATION_CODE: -1

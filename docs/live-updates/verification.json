@@ -1,0 +1,75 @@
+{
+  "releaseApk": "artifacts/nurvaxt-live-updates-release.apk",
+  "apkSha256": "4482994981de8a6d4bc6b3e62c8f6dd7d9de84e39de88d3e665d991f8a35ca49",
+  "releaseSignatureVerified": true,
+  "debuggable": false,
+  "checks": {
+    "typecheck": true,
+    "targetedEslint": true,
+    "prettier": true,
+    "javascriptTests": 43,
+    "nativeTests": 11,
+    "releaseBuild": true,
+    "releaseVitalLint": true
+  },
+  "emulator": {
+    "api": "36.1",
+    "systemImage": "google_apis/x86_64 revision 4",
+    "syntheticPrayerUsedOnlyForFrameworkQa": true,
+    "privatePromotionFlagsEnabled": false,
+    "promoted": {
+      "deniedAccessFallbackVerified": false,
+      "hasPromotableCharacteristics": true,
+      "nativeStyle": "android.app.Notification$ProgressStyle",
+      "noCustomRemoteViews": true,
+      "postedPromoted": true,
+      "productionBuilderUsed": true,
+      "promotedSettingsAction": "java.lang.NoSuchFieldException: ACTION_MANAGE_APP_PROMOTED_NOTIFICATIONS",
+      "releaseDismissalIntentVerified": true,
+      "samePrayerNotRepromoted": true,
+      "sdkFull": 3600001,
+      "stream": "Live Update release framework checks passed",
+      "systemAllowsPromotion": true,
+      "systemChronometer": true,
+      "instrumentationCode": -1
+    },
+    "denied": {
+      "deniedAccessFallbackVerified": true,
+      "hasPromotableCharacteristics": true,
+      "nativeStyle": "android.app.Notification$ProgressStyle",
+      "noCustomRemoteViews": true,
+      "postedPromoted": false,
+      "productionBuilderUsed": false,
+      "promotedSettingsAction": "java.lang.NoSuchFieldException: ACTION_MANAGE_APP_PROMOTED_NOTIFICATIONS",
+      "releaseDismissalIntentVerified": true,
+      "samePrayerNotRepromoted": true,
+      "sdkFull": 3600001,
+      "stream": "Live Update release framework checks passed",
+      "systemAllowsPromotion": false,
+      "systemChronometer": true,
+      "instrumentationCode": -1,
+      "productionFallbackReturnedCompactAndExpandedViews": true,
+      "postedProbeWasSeparateNativeCandidate": true
+    },
+    "appSettingsButtonOpenedNormalLiveUpdatesSettings": true,
+    "liveUpdatePermissionRestored": true
+  },
+  "physicalDevice": {
+    "model": "Samsung SM-G990E",
+    "api": "36.0",
+    "finalDeviceApkSha256": "a618db7c7481de8720ce2f477ebd2a2e4befde8b155f693e76d30b36534b491f",
+    "sameReleaseCodeSignedWithExistingDevelopmentCertificate": true,
+    "installedApkHashMatched": true,
+    "ordinaryCountdownActive": true,
+    "publicLiveUpdatesSupported": false,
+    "dataCleared": false,
+    "clockChanged": false,
+    "systemSettingsChanged": false
+  },
+  "limits": [
+    "Promoted Android cards are uncollapsible; ordinary notifications retain system expansion.",
+    "Samsung SDK 36.0 cannot use the public SDK 36.1 promotion request.",
+    "Native screenshot was captured; a separate UIAutomator hierarchy attempt could not reach idle.",
+    "Other manufacturers, enlarged fonts and dark system mode need physical visual QA."
+  ]
+}

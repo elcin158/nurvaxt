@@ -26,6 +26,8 @@ function Shell() {
   const city = usePreferences((s) => s.locationId);
   const reminders = usePreferences((s) => s.reminders);
   const timeFormat = usePreferences((s) => s.timeFormat);
+  const showKerahat = usePreferences((s) => s.showKerahat);
+  const kerahatWarnings = usePreferences((s) => s.kerahatWarnings);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -47,7 +49,7 @@ function Shell() {
   }, [attempt]);
   useEffect(() => {
     if (ready && hydrated) void requestReconciliation();
-  }, [ready, hydrated, city, reminders, timeFormat]);
+  }, [ready, hydrated, city, reminders, timeFormat, showKerahat, kerahatWarnings]);
   const remindersEnabled = reminders.enabled;
   useEffect(() => {
     if (ready && hydrated && remindersEnabled) void promptExactAccessOnce();

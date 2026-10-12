@@ -1,0 +1,38 @@
+{
+  "apk": "artifacts/nurvaxt-notification-fix-release.apk",
+  "layouts": {
+    "nurvaxt_countdown_compact": {
+      "id": "0x7f0b0076",
+      "packagedXml": "res/k2.xml",
+      "viewIdsVerified": [
+        "countdown_prayer",
+        "countdown_stage",
+        "countdown_timer"
+      ]
+    },
+    "nurvaxt_countdown_expanded": {
+      "id": "0x7f0b0077",
+      "packagedXml": "res/Nr.xml",
+      "viewIdsVerified": [
+        "countdown_prayer",
+        "countdown_time",
+        "countdown_stage",
+        "countdown_timer",
+        "countdown_symbol",
+        "countdown_progress",
+        "countdown_kerahat",
+        "countdown_kerahat_label",
+        "countdown_kerahat_stage",
+        "countdown_kerahat_timer"
+      ]
+    }
+  },
+  "drawables": {
+    "drawable/nurvaxt_countdown_badge": "0x7f070110",
+    "drawable/nurvaxt_countdown_circle": "0x7f070111",
+    "drawable/nurvaxt_countdown_clock": "0x7f070112",
+    "drawable/nurvaxt_countdown_diamond": "0x7f070113",
+    "drawable/nurvaxt_countdown_divider": "0x7f070114",
+    "drawable/nurvaxt_countdown_progress": "0x7f070115"
+  }
+}

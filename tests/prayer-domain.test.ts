@@ -1,5 +1,10 @@
 import { DateTime } from 'luxon';
-import { nextPrayer, countdown, prayerUrgency } from '../src/features/prayer-times/domain';
+import {
+  nextPrayer,
+  nextPrayerCountdown,
+  countdown,
+  prayerUrgency,
+} from '../src/features/prayer-times/domain';
 import { atTime, formatCountdown, formatDate, shiftDate } from '../src/utils/time';
 import { datasetSchema } from '../src/types/data';
 import dataset from '../data/verified/2026.json';
@@ -38,6 +43,50 @@ describe('official next-prayer engine', () => {
   test('does not include İmsak or sunrise in daily prayer countdown', () => {
     expect(nextPrayer(days, stamp('2026-10-08T05:19:00'))?.field).toBe('fajr');
     expect(nextPrayer(days, stamp('2026-10-08T05:25:00'))?.field).toBe('dhuhr');
+  });
+  test('Sübh countdown switches from its start to its sunrise deadline in every region', () => {
+    for (const location of locations) {
+      const day = allDays.find(
+        (row) => row.locationId === location.id && row.date === '2026-10-08',
+      )!;
+      const start = atTime(day.date, day.fajr!);
+      const end = atTime(day.date, day.sunrise!);
+      expect(nextPrayerCountdown([day], start - 1)).toMatchObject({
+        field: 'fajr',
+        phase: 'start',
+        timestamp: start,
+      });
+      const active = nextPrayerCountdown([day], start);
+      expect(active).toMatchObject({
+        field: 'fajr',
+        phase: 'end',
+        time: day.sunrise,
+        timestamp: end,
+        previousTimestamp: start,
+      });
+      expect(countdown(active, start)).toEqual({ remaining: end - start, progress: 0 });
+      expect(nextPrayerCountdown([day], end - 1)?.phase).toBe('end');
+      expect(nextPrayerCountdown([day], end)).toMatchObject({ field: 'dhuhr', phase: 'start' });
+    }
+  });
+  test('Sübh deadline requires both verified endpoints in the same record', () => {
+    const day = days.find((row) => row.date === '2026-10-08')!;
+    const duringFajr = atTime(day.date, '06:00');
+    for (const record of [
+      { ...day, sunrise: null },
+      { ...day, fajr: null },
+      { ...day, sunrise: day.fajr },
+    ]) {
+      expect(nextPrayerCountdown([record], duringFajr)?.field).toBe('dhuhr');
+    }
+    expect(nextPrayerCountdown([{ ...day, verified: false }], duringFajr)).toBeNull();
+    expect(
+      nextPrayerCountdown(
+        days.filter((row) => row.date !== '2026-10-09'),
+        stamp('2026-10-08T23:00:00'),
+      ),
+    ).toBeNull();
+    expect(nextPrayerCountdown(days, stamp('2026-12-31T23:00:00'))).toBeNull();
   });
   test('rolls past İşa to the next official day', () => {
     const next = nextPrayer(days, stamp('2026-10-08T23:59:59'));

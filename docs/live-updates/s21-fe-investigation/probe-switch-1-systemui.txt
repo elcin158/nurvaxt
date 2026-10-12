@@ -1,0 +1,10 @@
+       Live Notifications
+       OngoingActivityController State
+       isUpdateNotAllowed : false
+       isNightMode : false
+            key : 0|az.nurvaxt.liveprobe|9101|null|10393
+       Hidden list
+       Pending list
+       Ongoing Activity History
+           10-12 12:35:49.116 | 0|az.nurvaxt.liveprobe|9101|null|10393 is ADDED
+           10-12 12:35:49.153 | 0|az.nurvaxt.liveprobe|9101|null|10393 is INFLATED

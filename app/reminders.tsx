@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { View, TextInput, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '../src/components/layout/Screen';
-import { AppText, Card, Chip, IconButton } from '../src/components/ui';
+import { ScreenHeader } from '../src/components/layout/ScreenHeader';
+import { AppText, Card, Chip } from '../src/components/ui';
 import { SettingsRow, Toggle } from '../src/features/settings/SettingsRow';
+import { ReminderSoundSettings } from '../src/features/settings/ReminderSoundSettings';
 import { usePreferences } from '../src/store/preferences';
 import { LABELS, REMINDER_EVENTS } from '../src/constants/prayers';
 import { tokens, useTheme } from '../src/theme';
@@ -55,13 +57,10 @@ export default function Reminders() {
   const prefs = usePreferences();
   const { colors } = useTheme();
   return (
-    <Screen>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <AppText variant="title" style={{ flex: 1 }}>
-          Xatırlatmalar
-        </AppText>
-        <IconButton name="close" label="Bağla" onPress={() => router.back()} />
-      </View>
+    <Screen
+      bottomSafeArea
+      header={<ScreenHeader title="Xatırlatmalar" action="close" onBack={() => router.back()} />}
+    >
       <AppText style={{ color: colors.muted }}>
         Namaz vaxtı çatanda bildiriş alın. Əlavə olaraq hər namazdan əvvəl xatırlatma seçə
         bilərsiniz.
@@ -82,7 +81,7 @@ export default function Reminders() {
         {Platform.OS === 'android' && (
           <SettingsRow
             title="Daimi vaxt göstəricisi"
-            subtitle="Yuxarı sətirdə qalan dəqiqələr · paneldə iri canlı geri sayım"
+            subtitle="Yuxarı sətirdə NurVaxt nişanı, son 99 dəqiqədə qalan dəqiqələr · paneldə iri canlı geri sayım"
           >
             <Toggle
               label="Daimi vaxt göstəricisi"
@@ -127,17 +126,7 @@ export default function Reminders() {
         </Card>
       ))}
       <Card>
-        <AppText variant="heading">Səs</AppText>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 16 }}>
-          {(['silent', 'default', 'tone'] as const).map((sound, i) => (
-            <Chip
-              key={sound}
-              title={['Səssiz', 'Standart', 'Qısa ton'][i]!}
-              selected={prefs.reminders.sound === sound}
-              onPress={() => prefs.set({ reminders: { ...prefs.reminders, sound } })}
-            />
-          ))}
-        </View>
+        <ReminderSoundSettings />
         <SettingsRow title="Vibrasiya">
           <Toggle
             label="Bildiriş vibrasiyası"

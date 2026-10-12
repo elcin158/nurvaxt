@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { View, Pressable, Alert } from 'react-native';
+import { View, Alert } from 'react-native';
 import { router } from 'expo-router';
-import Svg, { Path, Circle } from 'react-native-svg';
+import { BrandBackdrop, BrandIcon, BrandLockup } from '../../src/components/brand/Brand';
 import { Screen } from '../../src/components/layout/Screen';
-import { AppText, Button, Card, Chip } from '../../src/components/ui';
+import { AppText, Button, Card, Chip, Icon, IconButton } from '../../src/components/ui';
 import { CityButton } from '../../src/features/locations/CityButton';
+import { LiveNotificationEntry } from '../../src/features/settings/LiveNotificationEntry';
 import { usePreferences } from '../../src/store/preferences';
 import {
   promptExactAccess,
@@ -56,30 +57,75 @@ export default function Onboarding() {
     }
   }
   return (
-    <Screen>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <AppText variant="heading">NurVaxt.</AppText>
-        <AppText variant="caption" style={{ color: colors.muted }}>
-          {step + 1} / 4
+    <Screen
+      bottomSafeArea
+      header={
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 12,
+          }}
+        >
+          {step > 0 && (
+            <IconButton
+              name="chevron-back"
+              label="Geri"
+              disabled={busy}
+              onPress={() => setStep(step - 1)}
+            />
+          )}
+          <BrandLockup />
+          <AppText variant="caption" style={{ color: colors.muted }}>
+            {step + 1} / 4
+          </AppText>
+        </View>
+      }
+    >
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingVertical: 40,
+          minHeight: 252,
+          borderRadius: 32,
+          overflow: 'hidden',
+          gap: 20,
+        }}
+      >
+        <BrandBackdrop />
+        {step === 0 ? (
+          <BrandIcon size={120} />
+        ) : (
+          <View
+            style={{
+              width: 104,
+              height: 104,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#FFFFFF18',
+              borderColor: '#FFFFFF40',
+              borderWidth: 1,
+              borderRadius: 32,
+            }}
+          >
+            <Icon
+              name={
+                step === 1
+                  ? 'location-outline'
+                  : step === 2
+                    ? 'notifications-outline'
+                    : 'checkmark-circle-outline'
+              }
+              size={52}
+              color="#FFFFFF"
+            />
+          </View>
+        )}
+        <AppText variant="caption" style={{ color: colors.heroMuted, letterSpacing: 1.5 }}>
+          HƏR GÜN, VAXTINDA.
         </AppText>
-      </View>
-      <View style={{ alignItems: 'center', paddingVertical: 32 }}>
-        <Svg width={160} height={180} viewBox="0 0 160 180">
-          <Path
-            d="M30 155V80Q30 40 80 15Q130 40 130 80V155Z"
-            fill={colors.elevated}
-            stroke={colors.primary}
-            strokeWidth="3"
-          />
-          <Circle cx="80" cy="100" r="33" fill="none" stroke={colors.primary} strokeWidth="3" />
-          <Path
-            d="M80 79V101L97 110 M80 0V8 M148 68L140 72 M20 72L12 68"
-            fill="none"
-            stroke={colors.accent}
-            strokeWidth="4"
-            strokeLinecap="round"
-          />
-        </Svg>
       </View>
       <View style={{ gap: 16 }}>
         <AppText variant="title">{page.title}</AppText>
@@ -123,6 +169,9 @@ export default function Onboarding() {
           </View>
         </Card>
       )}
+      {step === 3 && prefs.reminders.enabled && prefs.reminders.ongoingCountdown && (
+        <LiveNotificationEntry onboarding />
+      )}
       <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 8, marginVertical: 16 }}>
         {pages.map((_, index) => (
           <View
@@ -154,15 +203,6 @@ export default function Onboarding() {
         }}
       />
       {step === 2 && <Button title="Hələlik keç" secondary onPress={() => setStep(3)} />}
-      {step > 0 && !busy && (
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => setStep(step - 1)}
-          style={{ minHeight: 48, alignItems: 'center', justifyContent: 'center' }}
-        >
-          <AppText style={{ color: colors.muted }}>Geri</AppText>
-        </Pressable>
-      )}
     </Screen>
   );
 }

@@ -9,10 +9,12 @@ import { locationName } from '../locations/locations';
 import {
   notificationFingerprint,
   planCountdown,
+  planSolarCountdown,
   planNotifications,
   type PlannedNotification,
 } from './domain';
 import { reconcile, type NotificationAdapter } from './reconcile';
+import { notificationSound } from './sounds';
 export type Diagnostics = {
   permission: string;
   lastOperation: string | null;
@@ -74,12 +76,7 @@ const expoAdapter: NotificationAdapter = {
       content: {
         title: event.title,
         body: event.body,
-        sound:
-          event.sound === 'silent'
-            ? false
-            : event.sound === 'tone'
-              ? 'nurvaxt_tone.wav'
-              : 'default',
+        sound: notificationSound(event.sound),
         data: { fingerprint: notificationFingerprint(event) },
       },
       trigger: {
@@ -103,7 +100,7 @@ async function run() {
     update({ permission: allowed ? 'granted' : permission.status });
     const today = todayISO();
     const location = usePreferences.getState().locationId;
-    const days = await readDays(location, today, shiftDate(today, 370));
+    const days = await readDays(location, shiftDate(today, -1), shiftDate(today, 370));
     // If settings changed during IO, the serialized follow-up run will apply the latest selection.
     const prefs = usePreferences.getState();
     if (prefs.locationId !== location) return;
@@ -124,6 +121,7 @@ async function run() {
           location: locationName(location),
           timeFormat: prefs.timeFormat,
           events: planCountdown(days, location),
+          ...planSolarCountdown(days, location, prefs.showKerahat, prefs.kerahatWarnings),
         }),
       );
       const state = Alarm.diagnostics();

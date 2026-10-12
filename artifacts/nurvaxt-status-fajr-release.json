@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-10-12T09:51:47.590270+00:00",
+  "apk": "artifacts/nurvaxt-status-fajr-release.apk",
+  "version": "1.0.6",
+  "versionCode": 7,
+  "sha256": "1a2afc72d43891249e651b7445980d7ccb74914da1f7e536772aa2586d9f7a9a",
+  "bytes": 105534341,
+  "signatureVerified": true,
+  "matchesLocalReleaseKey": true,
+  "certificateSha256": "01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e",
+  "debuggable": false,
+  "abis": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86",
+    "x86_64"
+  ],
+  "embeddedBundleBytes": 3705400,
+  "reminderToneBundled": true,
+  "nativeUnitTestsPassed": 12,
+  "targetedJestTestsPassed": 40,
+  "typescriptPassed": true,
+  "targetedEslintPassed": true,
+  "physicalDeviceVerified": false
+}

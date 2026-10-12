@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { DateTime } from 'luxon';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 import { Screen } from '../../src/components/layout/Screen';
-import { AppText, Card, Chip, EmptyState, IconButton } from '../../src/components/ui';
+import { BrandIcon } from '../../src/components/brand/Brand';
+import { AppText, Card, Chip, ChoiceGroup, EmptyState, IconButton } from '../../src/components/ui';
 import { CityButton } from '../../src/features/locations/CityButton';
 import { useToday } from '../../src/hooks/useToday';
 import { usePrayerDays } from '../../src/hooks/usePrayerDays';
@@ -37,11 +38,21 @@ export default function Calendar() {
   };
   return (
     <Screen>
-      <View>
-        <AppText variant="title">Təqvim</AppText>
-        <CityButton />
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
+        }}
+      >
+        <View style={{ flex: 1 }}>
+          <AppText variant="title">Təqvim</AppText>
+        </View>
+        <BrandIcon size={44} />
       </View>
-      <Card>
+      <CityButton />
+      <Card style={{ padding: 16 }}>
         <View
           style={{
             flexDirection: 'row',
@@ -87,12 +98,12 @@ export default function Calendar() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: 16,
-                    backgroundColor: selected === date ? colors.primary : colors.surface,
+                    backgroundColor: selected === date ? colors.selected : colors.surface,
                     borderWidth: date === today ? 1 : 0,
-                    borderColor: colors.primary,
+                    borderColor: colors.selectedBorder,
                   }}
                 >
-                  <AppText style={{ color: selected === date ? colors.background : colors.text }}>
+                  <AppText style={{ color: selected === date ? colors.selectedText : colors.text }}>
                     {Number(date.slice(-2))}
                   </AppText>
                   <View
@@ -103,7 +114,7 @@ export default function Calendar() {
                       marginTop: 3,
                       backgroundColor: rows.some((r) => r.date === date)
                         ? selected === date
-                          ? colors.background
+                          ? colors.selectedText
                           : colors.primary
                         : 'transparent',
                     }}
@@ -114,10 +125,10 @@ export default function Calendar() {
           ))}
         </View>
       </Card>
-      <View style={{ flexDirection: 'row', gap: 8 }}>
-        <Chip title="Günlük" selected={!list} onPress={() => setList(false)} />
-        <Chip title="Aylıq siyahı" selected={list} onPress={() => setList(true)} />
-      </View>
+      <ChoiceGroup>
+        <Chip segment title="Günlük" selected={!list} onPress={() => setList(false)} />
+        <Chip segment title="Aylıq siyahı" selected={list} onPress={() => setList(true)} />
+      </ChoiceGroup>
       {isPending ? (
         <ActivityIndicator color={colors.primary} />
       ) : list ? (

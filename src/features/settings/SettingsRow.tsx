@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from 'react';
-import { Pressable, Switch, View } from 'react-native';
+import { Platform, Pressable, Switch, View } from 'react-native';
 import { AppText, Icon } from '../../components/ui';
 import { useTheme } from '../../theme';
 export function SettingsRow({
@@ -14,9 +14,12 @@ export function SettingsRow({
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 16,
-        minHeight: 56,
-        paddingVertical: 12,
+        gap: 12,
+        minHeight: 52,
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border,
+        marginBottom: 6,
       }}
     >
       <View style={{ flex: 1 }}>
@@ -32,7 +35,11 @@ export function SettingsRow({
     </View>
   );
   return onPress ? (
-    <Pressable accessibilityRole="button" onPress={onPress}>
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+    >
       {content}
     </Pressable>
   ) : (
@@ -51,11 +58,14 @@ export function Toggle({
   const { colors } = useTheme();
   return (
     <Switch
+      {...(Platform.OS === 'web'
+        ? { activeThumbColor: value ? colors.onPrimary : colors.secondary }
+        : {})}
       accessibilityLabel={label}
       value={value}
       onValueChange={onChange}
       trackColor={{ false: colors.border, true: colors.primary }}
-      thumbColor={colors.surface}
+      thumbColor={value ? colors.onPrimary : colors.secondary}
     />
   );
 }

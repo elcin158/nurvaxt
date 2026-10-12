@@ -1,0 +1,16 @@
+{
+  "device": "Samsung SM-G990E",
+  "android": 16,
+  "defaultCollapsed": true,
+  "expandTapVerified": true,
+  "collapseTapVerified": true,
+  "sunriseArcVisibleWhenExpanded": true,
+  "collapsedHeightPx": 348,
+  "expandedHeightPx": 665,
+  "timerBefore": "6:09:28",
+  "timerAfter": "6:09:16",
+  "clockChanged": false,
+  "systemSettingsChanged": false,
+  "appDataCleared": false,
+  "minuteRefreshObservation": "Inconclusive during concurrent device interaction; the panel was closed before a second observation."
+}

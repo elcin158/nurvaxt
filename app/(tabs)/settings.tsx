@@ -3,8 +3,12 @@ import { Alert, Linking, Platform, View } from 'react-native';
 import { router } from 'expo-router';
 import Constants from 'expo-constants';
 import { Screen } from '../../src/components/layout/Screen';
-import { AppText, Button, Card, Chip } from '../../src/components/ui';
+import { BrandIcon } from '../../src/components/brand/Brand';
+import { AppText, Button, Card, Chip, ChoiceGroup } from '../../src/components/ui';
 import { SettingsRow, Toggle } from '../../src/features/settings/SettingsRow';
+import { KerahatWarningSettings } from '../../src/features/settings/KerahatWarningSettings';
+import { TimeVisibilitySettings } from '../../src/features/settings/TimeVisibilitySettings';
+import { LiveNotificationEntry } from '../../src/features/settings/LiveNotificationEntry';
 import { locationName } from '../../src/features/locations/locations';
 import { usePreferences } from '../../src/store/preferences';
 import {
@@ -13,7 +17,7 @@ import {
   requestExactAccess,
   requestNotificationPermission,
 } from '../../src/features/notifications/service';
-import { LABELS, PRAYER_FIELDS, SOURCE_URL } from '../../src/constants/prayers';
+import { SOURCE_URL } from '../../src/constants/prayers';
 import { useTheme } from '../../src/theme';
 import { currentDataset as dataset } from '../../src/database/bundled';
 import { availableCoverage } from '../../src/database/coverage';
@@ -46,7 +50,22 @@ export default function Settings() {
   }
   return (
     <Screen>
-      <AppText variant="title">Ayarlar</AppText>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
+        }}
+      >
+        <View style={{ flex: 1, gap: 4 }}>
+          <AppText variant="title">Ayarlar</AppText>
+          <AppText variant="caption" style={{ color: colors.muted }}>
+            Sizə uyğun bir NurVaxt.
+          </AppText>
+        </View>
+        <BrandIcon size={44} />
+      </View>
       {prefs.storageError && (
         <AppText style={{ color: colors.error }}>{prefs.storageError}</AppText>
       )}
@@ -62,27 +81,37 @@ export default function Settings() {
           />
           <SettingsRow title="Dil" subtitle="Azərbaycan dili" />
           <SettingsRow title="Görünüş" />
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          <ChoiceGroup>
             {(['light', 'dark', 'system'] as const).map((mode, i) => (
               <Chip
                 key={mode}
+                segment
                 title={['Açıq', 'Tünd', 'Sistem'][i]!}
                 selected={prefs.theme === mode}
                 onPress={() => prefs.set({ theme: mode })}
               />
             ))}
-          </View>
+          </ChoiceGroup>
           <SettingsRow title="Saat formatı" />
-          <View style={{ flexDirection: 'row', gap: 8 }}>
+          <ChoiceGroup>
             {(['24', '12'] as const).map((format) => (
               <Chip
                 key={format}
+                segment
                 title={`${format} saat`}
                 selected={prefs.timeFormat === format}
                 onPress={() => prefs.set({ timeFormat: format })}
               />
             ))}
-          </View>
+          </ChoiceGroup>
+          <SettingsRow title="Kərahət vaxtları" subtitle="Hənəfi qaydası · təxmini intervallar">
+            <Toggle
+              label="Kərahət vaxtlarını göstər"
+              value={prefs.showKerahat}
+              onChange={(showKerahat) => prefs.set({ showKerahat })}
+            />
+          </SettingsRow>
+          {prefs.showKerahat && <KerahatWarningSettings />}
           <SettingsRow
             title="Hicri tarixi göstər"
             subtitle="Mülki islam təqvimi · hesablanmış tarix"
@@ -141,7 +170,7 @@ export default function Settings() {
           {Platform.OS === 'android' && (
             <SettingsRow
               title="Daimi vaxt göstəricisi"
-              subtitle="Qalan vaxt yuxarı sətirdə və bildiriş panelində"
+              subtitle="Yuxarı sətirdə nişan, bildiriş panelində geri sayım"
             >
               <Toggle
                 label="Daimi vaxt göstəricisi"
@@ -152,6 +181,7 @@ export default function Settings() {
               />
             </SettingsRow>
           )}
+          {Platform.OS === 'android' && <LiveNotificationEntry />}
           {diagnostic.countdownError && (
             <AppText variant="caption" style={{ color: colors.error }}>
               Daimi göstərici açıla bilmədi. Tətbiqi yenidən açın və bildiriş ayarlarını yoxlayın.
@@ -187,16 +217,7 @@ export default function Settings() {
           GÖSTƏRİLƏN VAXTLAR
         </AppText>
         <Card>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-            {PRAYER_FIELDS.map((field) => (
-              <Chip
-                key={field}
-                title={LABELS[field]}
-                selected={prefs.visibleFields.includes(field)}
-                onPress={() => prefs.toggleField(field)}
-              />
-            ))}
-          </View>
+          <TimeVisibilitySettings />
           <AppText variant="caption" style={{ color: colors.muted, marginTop: 16 }}>
             İmsak və Günçıxma beş gündəlik namazın sayına daxil deyil.
           </AppText>

@@ -2,7 +2,7 @@ import type { ExpoConfig } from 'expo/config';
 const config: ExpoConfig = {
   name: 'NurVaxt',
   slug: 'nurvaxt',
-  version: '1.0.5',
+  version: '1.0.6',
   scheme: 'nurvaxt',
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
@@ -14,24 +14,25 @@ const config: ExpoConfig = {
   },
   android: {
     package: 'az.nurvaxt.app',
-    versionCode: 6,
+    versionCode: 7,
     allowBackup: false,
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
-      backgroundColor: '#155E4B',
+      backgroundColor: '#0649D6',
       monochromeImage: './assets/monochrome.png',
     },
     blockedPermissions: [
       'android.permission.RECORD_AUDIO',
       'android.permission.CAMERA',
       'android.permission.ACCESS_FINE_LOCATION',
-      'android.permission.ACCESS_COARSE_LOCATION',
+      'android.permission.ACCESS_BACKGROUND_LOCATION',
       'android.permission.USE_EXACT_ALARM',
       'android.permission.READ_EXTERNAL_STORAGE',
       'android.permission.WRITE_EXTERNAL_STORAGE',
       'android.permission.SYSTEM_ALERT_WINDOW',
     ],
     permissions: [
+      'ACCESS_COARSE_LOCATION',
       'POST_NOTIFICATIONS',
       'RECEIVE_BOOT_COMPLETED',
       'SCHEDULE_EXACT_ALARM',
@@ -60,16 +61,33 @@ const config: ExpoConfig = {
         image: './assets/splash.png',
         imageWidth: 144,
         resizeMode: 'contain',
-        backgroundColor: '#F7F8F5',
-        dark: { backgroundColor: '#0C1714' },
+        backgroundColor: '#F3F6FC',
+        dark: { backgroundColor: '#080F21' },
       },
     ],
     [
       'expo-notifications',
       {
         icon: './assets/notification-icon.png',
-        color: '#155E4B',
-        sounds: ['./assets/nurvaxt_tone.wav'],
+        color: '#2D5CE3',
+        sounds: ['tone', 'soft', 'bell', 'melody'].map((sound) => `./assets/nurvaxt_${sound}.wav`),
+      },
+    ],
+    [
+      'expo-audio',
+      { microphonePermission: false, recordAudioAndroid: false, enableBackgroundPlayback: false },
+    ],
+    [
+      'expo-location',
+      {
+        // Qibla only needs a rough position: a kilometre of error moves the bearing by a
+        // hundredth of a degree, so the precise-location permission stays blocked.
+        locationWhenInUsePermission:
+          'Qiblə istiqamətini dəqiqləşdirmək üçün təxmini məkanınız yalnız həmin anda oxunur.',
+        locationAlwaysPermission: false,
+        locationAlwaysAndWhenInUsePermission: false,
+        isAndroidBackgroundLocationEnabled: false,
+        isAndroidForegroundServiceEnabled: false,
       },
     ],
     './plugins/withNurvaxtAlarm',

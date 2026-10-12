@@ -7,10 +7,14 @@ module.exports = (config) =>
     async (mod) => {
       const output = path.join(mod.modRequest.platformProjectRoot, 'app/src/main/res/raw');
       fs.mkdirSync(output, { recursive: true });
-      fs.copyFileSync(
-        path.join(mod.modRequest.projectRoot, 'assets/nurvaxt_tone.wav'),
-        path.join(output, 'nurvaxt_tone.wav'),
-      );
+      for (const file of fs.readdirSync(path.join(mod.modRequest.projectRoot, 'assets'))) {
+        if (/^nurvaxt_\w+\.wav$/.test(file)) {
+          fs.copyFileSync(
+            path.join(mod.modRequest.projectRoot, 'assets', file),
+            path.join(output, file),
+          );
+        }
+      }
       return mod;
     },
   ]);
