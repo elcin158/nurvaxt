@@ -20,10 +20,10 @@ export function CityButton({ compact = false }: { compact?: boolean }) {
         paddingHorizontal: compact ? 10 : 14,
         paddingVertical: compact ? 8 : 10,
         borderRadius: compact ? 14 : 18,
-        backgroundColor: pressed ? colors.pressed : compact ? colors.selected : colors.surface,
+        backgroundColor: pressed ? colors.pressed : compact ? 'transparent' : colors.surface,
         borderWidth: compact ? 0 : 1,
         borderColor: colors.border,
-        ...(compact ? { maxWidth: '48%', flexShrink: 1 } : {}),
+        ...(compact ? { flexShrink: 1 } : {}),
       })}
     >
       <View
@@ -33,10 +33,14 @@ export function CityButton({ compact = false }: { compact?: boolean }) {
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: 12,
-          backgroundColor: colors.selected,
+          backgroundColor: compact ? 'transparent' : colors.selected,
         }}
       >
-        <Icon name="location-outline" size={compact ? 16 : 20} color={colors.selectedText} />
+        <Icon
+          name="location-outline"
+          size={compact ? 16 : 20}
+          color={compact ? colors.muted : colors.selectedText}
+        />
       </View>
       <View style={compact ? { flexShrink: 1 } : { flex: 1, gap: 1 }}>
         {!compact && (
@@ -47,7 +51,7 @@ export function CityButton({ compact = false }: { compact?: boolean }) {
         <AppText
           variant={compact ? 'caption' : 'body'}
           numberOfLines={compact ? 1 : undefined}
-          style={{ color: colors.selectedText }}
+          style={{ color: compact ? colors.muted : colors.selectedText }}
         >
           {locationName(city)}
         </AppText>
@@ -55,7 +59,7 @@ export function CityButton({ compact = false }: { compact?: boolean }) {
       <Icon
         name={compact ? 'chevron-down' : 'chevron-forward'}
         size={compact ? 12 : 18}
-        color={compact ? colors.selectedText : colors.muted}
+        color={colors.muted}
       />
     </Pressable>
   );

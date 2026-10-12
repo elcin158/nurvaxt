@@ -10,13 +10,19 @@ import org.junit.runner.notification.RunListener
 
 /** Uses the platform instrumentation API and existing JUnit dependency. */
 class CountdownTestRunner : Instrumentation() {
+  private var testClass: Class<*> = CountdownNotificationTest::class.java
+
   override fun onCreate(arguments: Bundle?) {
     super.onCreate(arguments)
+    if (arguments?.getString("class") == SystemSoundPreviewTest::class.java.name) {
+      testClass = SystemSoundPreviewTest::class.java
+    }
     start()
   }
 
   override fun onStart() {
     CountdownNotificationTest.context = targetContext
+    SystemSoundPreviewTest.context = targetContext
     val junit = JUnitCore()
     var current = 0
     var failed = false
@@ -24,7 +30,7 @@ class CountdownTestRunner : Instrumentation() {
       putString("class", description.className)
       putString("test", description.methodName)
       putInt("current", current)
-      putInt("numtests", 7)
+      putInt("numtests", testClass.declaredMethods.count { it.getAnnotation(org.junit.Test::class.java) != null })
     }
     junit.addListener(object : RunListener() {
       override fun testStarted(description: Description) {
@@ -42,11 +48,13 @@ class CountdownTestRunner : Instrumentation() {
     })
     var summary = ""
     var success = false
-    runOnMainSync {
-      val result = junit.run(CountdownNotificationTest::class.java)
+    val runTests = {
+      val result = junit.run(testClass)
       success = result.wasSuccessful()
       summary = "${result.runCount} tests, ${result.failureCount} failures"
     }
+    // Sound timeout checks leave the main looper free to process native cleanup.
+    if (testClass == SystemSoundPreviewTest::class.java) runTests() else runOnMainSync { runTests() }
     finish(if (success) Activity.RESULT_OK else Activity.RESULT_CANCELED, Bundle().apply {
       putString("stream", summary)
     })

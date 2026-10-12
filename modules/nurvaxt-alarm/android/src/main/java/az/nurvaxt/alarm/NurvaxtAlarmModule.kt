@@ -9,8 +9,22 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 class NurvaxtAlarmModule : Module() {
+  private var soundPreview: SystemSoundPreview? = null
+
   override fun definition() = ModuleDefinition {
     Name("NurvaxtAlarm")
+    Function("previewDefaultSound") {
+      val context = appContext.reactContext ?: throw IllegalStateException("Context unavailable")
+      val preview = soundPreview ?: SystemSoundPreview(context).also { soundPreview = it }
+      preview.play()
+    }
+    Function("stopSoundPreview") { soundPreview?.stop() }
+    Function("isSoundPreviewPlaying") { soundPreview?.isPlaying() == true }
+    OnActivityEntersBackground { soundPreview?.stop() }
+    OnDestroy {
+      soundPreview?.stop()
+      soundPreview = null
+    }
     AsyncFunction("replacePlan") { json: String ->
       val context = appContext.reactContext ?: throw IllegalStateException("Context unavailable")
       AlarmQueue.replace(context, JSONArray(json))

@@ -37,9 +37,11 @@ Android 13+. Prayer reminder delivery remains independent of the countdown foreg
 `Daimi vaxt göstəricisi` defaults on once notifications are enabled, and switching it off posts
 nothing at all — no panel entry and no status-bar slot. While on, a native
 `CountdownService` shows a silent, default-importance ongoing notification and a status icon.
-The countdown status icon shows only the remaining minutes, switching to
-seconds in the final minute. Counts above 99 minutes use a clock so three digits
-do not crowd the square slot. The brief startup notification uses a system clock icon while
+At one hour or more, the countdown status icon shows only the app's supplied wordmark
+and crescent. Below one hour it stacks that app mark above the remaining-minute count,
+switching to a second count below one minute. The cutoffs use the actual remaining time;
+numeric counts retain their upward rounding. Text is fitted to the slot width.
+The brief startup notification uses a system clock icon while
 the plan loads. Android controls the square slot
 dimensions; increasing bitmap resolution cannot enlarge it.
 The earlier side-by-side implementation measured 13 px for each shape on the connected Samsung
@@ -77,14 +79,15 @@ system expander. The earlier Samsung developer-test screenshots in `docs/modern-
 are historical design evidence, not proof of public Live Update support on that phone. The
 reverted Samsung experiment is described in `docs/dual-live-updates` as historical work.
 
-The `notification_icon` asset and native prayer reminders use a clock so delivery does not
-reintroduce a crescent in the status bar. Asset generation and Expo prebuild preserve that clock.
-The ongoing countdown shows only its remaining-minute/second count, using
-a clock above 99 minutes. Both forms send bitmap bytes to SystemUI, including the
-clock-only form, so the small icon does not depend on resolving an app resource in another process.
+The `notification_icon` asset and native prayer reminders use a clock.
+Asset generation and Expo prebuild preserve that reminder clock.
+The ongoing countdown shows the app mark alone at one hour or more and stacks it above
+its remaining-minute/second count in the final hour. It sends the artwork as bitmap bytes
+to SystemUI, so the small icon does not depend on resolving an app resource in another process.
 Launcher icons retain the app artwork.
-The notification panel uses `DecoratedCustomViewStyle`, preserving Android's header, expander and
-settings action. Its custom layouts may contain only `@RemoteView` classes — `LinearLayout`,
+The notification panel uses `DecoratedCustomViewStyle`, preserving Android's header and expander.
+The standalone **qalıb** caption and **Ayarlar** action are omitted.
+Its custom layouts may contain only `@RemoteView` classes — `LinearLayout`,
 `FrameLayout`, `TextView`, `ImageView`, `ProgressBar`, `Chronometer` and the like. A plain
 `android.view.View`, even as a hairline divider, fails SystemUI inflation and crashes the app with
 `BadForegroundServiceNotificationException`, so dividers are 1 dp `ImageView`s with a background. Its compact content fits the 48 dp system limit and shows a 26 sp live countdown
@@ -135,7 +138,7 @@ deadline dependent on card preparation; see [foreground-service startup troubles
 
 Before posting the custom countdown, the app inflates both `RemoteViews` and executes their
 actions locally. If layout/resource resolution or an action fails, it posts the standard system
-countdown with the same prayer, location, deadline and settings action. The failure is logged and
+countdown with the same prayer, location and deadline. The failure is logged and
 stored as `notificationViewError` in native countdown preferences. A surrounding service
 `try/catch` alone cannot catch the asynchronous SystemUI foreground-notification crash.
 Package replacement removes the old countdown notification before restoring the durable plan;
@@ -184,13 +187,17 @@ The reminder sound list plays a short preview when selected, with a separate pla
 for listening without changing the saved choice. Web also previews on hover; if browser autoplay
 blocks it, the user can click the play button. New previews stop the previous sound. Leaving the
 screen, backgrounding the app, choosing silent, and hovering out stop playback. Android's default
-preview reads the system notification sound URI. iOS and web only preview the bundled tones;
+preview uses `RingtoneManager` in `NurvaxtAlarm`, so Android resolves the system URI/cache and
+can use its remote ringtone player when direct media access is restricted. It uses the notification
+volume, reports an unset/muted system sound, and only shows playback after the native player starts.
+Native cleanup stops it on background/module destruction and after at most four seconds; the UI
+also observes natural completion. iOS and web only preview the bundled tones;
 the system default remains selectable and is explained in the UI.
 
 The four original PCM WAV files live in `assets/`, `android/app/src/main/res/raw/`, and the iOS
 app's Resources build phase. Regenerate them with `node --import tsx scripts/generate-sounds.ts`;
 `npm run assets:generate` also regenerates them. Expo notification configuration and the Android
-config plugin retain these resources on prebuild. Audio previews use `expo-audio` on native and
+config plugin retain these resources on prebuild. Bundled-tone previews use `expo-audio` on native and
 an HTML audio element on web, without microphone permission or background playback. A new
 native build is required after adding the module or notification resources.
 

@@ -17,6 +17,9 @@ export type AlarmDiagnostics = {
   countdownError: string | null;
 };
 export default requireOptionalNativeModule<{
+  previewDefaultSound: () => 'playing' | 'silent' | 'muted' | 'unavailable';
+  stopSoundPreview: () => void;
+  isSoundPreviewPlaying: () => boolean;
   replacePlan: (json: string) => Promise<void>;
   replaceCountdownPlan: (json: string) => Promise<void>;
   scheduleTest: () => Promise<void>;

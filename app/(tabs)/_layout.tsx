@@ -7,7 +7,7 @@ export default function TabsLayout() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { fontScale } = useWindowDimensions();
-  const bottomPadding = Math.max(insets.bottom, 16);
+  const bottomPadding = Math.max(insets.bottom, 8);
   return (
     <Tabs
       screenOptions={{
@@ -17,52 +17,46 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-          shadowColor: colors.shadow,
-          shadowOpacity: 0.06,
-          shadowRadius: 20,
-          shadowOffset: { width: 0, height: -4 },
           elevation: 0,
-          height: 70 + bottomPadding + Math.max(0, fontScale - 1) * 24,
-          paddingTop: 8,
+          height: 52 + bottomPadding + Math.max(0, fontScale - 1) * 24,
+          paddingTop: 3,
           paddingBottom: bottomPadding,
         },
         tabBarLabelStyle: {
-          fontFamily: tokens.font.semibold,
-          fontSize: 12,
-          lineHeight: 18,
+          fontFamily: tokens.font.medium,
+          fontSize: 11,
+          lineHeight: 16,
           flexShrink: 0,
         },
-        tabBarItemStyle: { minHeight: 48, paddingVertical: 2 },
+        tabBarItemStyle: { minHeight: 44, paddingVertical: 1 },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Bu gün',
-          tabBarIcon: ({ color }) => <Icon name="today-outline" color={color} size={21} />,
+          tabBarIcon: ({ color }) => <Icon name="home-outline" color={color} size={19} />,
         }}
       />
       <Tabs.Screen
         name="calendar"
         options={{
           title: 'Təqvim',
-          tabBarIcon: ({ color }) => <Icon name="calendar-outline" color={color} size={21} />,
+          tabBarIcon: ({ color }) => <Icon name="calendar-outline" color={color} size={19} />,
         }}
       />
       <Tabs.Screen
         name="qibla"
         options={{
           title: 'Qiblə',
-          tabBarIcon: ({ color }) => <Icon name="compass-outline" color={color} size={21} />,
+          tabBarIcon: ({ color }) => <Icon name="compass-outline" color={color} size={19} />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: 'Ayarlar',
-          tabBarIcon: ({ color }) => <Icon name="options-outline" color={color} size={21} />,
+          tabBarIcon: ({ color }) => <Icon name="settings-outline" color={color} size={19} />,
         }}
       />
     </Tabs>

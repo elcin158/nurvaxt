@@ -1,20 +1,30 @@
-import { render, screen, fireEvent, act } from '@testing-library/react-native';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react-native';
+import { Alert, Share } from 'react-native';
 import { ThemeProvider } from '../src/theme';
 import { usePreferences, defaultPreferences } from '../src/store/preferences';
 import { PrayerList } from '../src/features/prayer-times/PrayerList';
 import { KerahatTimesCard } from '../src/features/prayer-times/KerahatTimesCard';
 import { NextPrayerCard } from '../src/features/prayer-times/NextPrayerCard';
 import { useActiveClock } from '../src/hooks/useActiveClock';
+import { useToday } from '../src/hooks/useToday';
 import { KerahatWarningSettings } from '../src/features/settings/KerahatWarningSettings';
 import Calendar from '../app/(tabs)/calendar';
 import Home from '../app/(tabs)/index';
-import { router } from 'expo-router';
 import { datasetSchema } from '../src/types/data';
 import dataset from '../data/verified/2026.json';
+const shareSpy = jest.spyOn(Share, 'share');
+const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+const pressShare = () =>
+  act(async () => {
+    fireEvent.press(screen.getByRole('button', { name: 'Vaxtları paylaş' }));
+  });
 jest.mock('@expo/vector-icons/Ionicons', () => () => null);
 jest.mock('expo-router', () => ({ router: { push: jest.fn(), back: jest.fn() } }));
-jest.mock('react-native-safe-area-context', () => ({ SafeAreaView: require('react-native').View }));
-jest.mock('../src/hooks/useToday', () => ({ useToday: () => '2026-10-08' }));
+jest.mock('react-native-safe-area-context', () => ({
+  SafeAreaView: require('react-native').View,
+  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+}));
+jest.mock('../src/hooks/useToday', () => ({ useToday: jest.fn(() => '2026-10-08') }));
 jest.mock('../src/hooks/useActiveClock', () => ({
   useActiveClock: jest.fn(() => Date.parse('2026-10-08T02:50:00Z')),
 }));
@@ -35,47 +45,189 @@ jest.mock('../src/hooks/usePrayerDays', () => ({
 }));
 beforeEach(() => {
   jest.clearAllMocks();
+  shareSpy.mockReset().mockResolvedValue({ action: Share.sharedAction });
   usePreferences.setState(defaultPreferences);
+  jest.mocked(useToday).mockReturnValue('2026-10-08');
   jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T02:50:00Z'));
 });
-test('home opens the selected source time and routes reminder setup only for prayer events', async () => {
+test('home time rows are read-only and day navigation still updates the times', async () => {
   usePreferences.setState({ showKerahat: true });
   await render(
     <ThemeProvider>
       <Home />
     </ThemeProvider>,
   );
-  expect(screen.getByText('9 vaxt · 24 saat')).toBeOnTheScreen();
+  expect(screen.queryByText('Günün bütün vaxtları')).not.toBeOnTheScreen();
   expect(screen.getByLabelText('Günbatımı, 18:11')).toBeOnTheScreen();
   expect(screen.getByLabelText('Məğrib, 18:25')).toBeOnTheScreen();
-  await fireEvent.press(screen.getByLabelText('Əsr, 16:27'));
-  expect(screen.getByText('Bakı · 8 oktyabr 2026, cümə axşamı')).toBeOnTheScreen();
-  await fireEvent.press(screen.getByText('Xatırlatmaları tənzimlə'));
-  expect(router.push).toHaveBeenCalledWith('/reminders');
-  await fireEvent.press(screen.getByLabelText('Günçıxma, 06:44'));
+  const row = screen.getByLabelText('Əsr, 16:27');
+  expect(row).toHaveProp('accessibilityRole', 'text');
+  expect(row).not.toHaveProp('onPress');
+  await fireEvent.press(row);
   expect(screen.queryByText('Xatırlatmaları tənzimlə')).not.toBeOnTheScreen();
-  await fireEvent.press(screen.getByLabelText('Bağla'));
+  expect(screen.queryByLabelText('Vaxt təfərrüatını bağla')).not.toBeOnTheScreen();
   await fireEvent.press(screen.getByLabelText('Növbəti gün'));
   expect(screen.getByLabelText('Günçıxma, 06:45')).toBeOnTheScreen();
   expect(screen.getByText(/06:45\s*–\s*07:30/)).toBeOnTheScreen();
 });
 
-test('home respects hidden fields and twelve-hour times, then replaces details after a city change', async () => {
+test('home follows the next prayer day at İşa and keeps that timetable across midnight', async () => {
+  jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T15:24:00Z'));
+  const view = await render(
+    <ThemeProvider>
+      <Home />
+    </ThemeProvider>,
+  );
+  expect(screen.getByText('Bu gün · 8 oktyabr 2026')).toBeOnTheScreen();
+  expect(screen.getByLabelText('İşa, 19:25, növbəti namaz')).toBeOnTheScreen();
+
+  jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T15:25:00Z'));
+  await view.rerender(
+    <ThemeProvider>
+      <Home />
+    </ThemeProvider>,
+  );
+  expect(screen.getByText('Sabah · 9 oktyabr 2026')).toBeOnTheScreen();
+  expect(screen.getByLabelText('Sübh, 05:26, növbəti namaz')).toBeOnTheScreen();
+  expect(screen.getByLabelText('Günçıxma, 06:45')).toBeOnTheScreen();
+  await pressShare();
+  expect(shareSpy.mock.calls[0]?.[0].message).toContain('Bakı\n9 oktyabr 2026, cümə');
+
+  jest.mocked(useToday).mockReturnValue('2026-10-09');
+  jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T20:00:00Z'));
+  await view.rerender(
+    <ThemeProvider>
+      <Home />
+    </ThemeProvider>,
+  );
+  expect(screen.getByText('Bu gün · 9 oktyabr 2026')).toBeOnTheScreen();
+  expect(screen.getByLabelText('Sübh, 05:26, növbəti namaz')).toBeOnTheScreen();
+});
+
+test('manual day navigation stays selected until returning to the next prayer day', async () => {
+  jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T17:00:00Z'));
+  const view = await render(
+    <ThemeProvider>
+      <Home />
+    </ThemeProvider>,
+  );
+  await fireEvent.press(screen.getByLabelText('Əvvəlki gün'));
+  expect(screen.getByText('Bu gün · 8 oktyabr 2026')).toBeOnTheScreen();
+  expect(screen.getByLabelText('Sübh, 05:25')).toBeOnTheScreen();
+  expect(screen.queryByText('NÖVBƏTİ')).not.toBeOnTheScreen();
+
+  jest.mocked(useToday).mockReturnValue('2026-10-09');
+  jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T20:00:00Z'));
+  await view.rerender(
+    <ThemeProvider>
+      <Home />
+    </ThemeProvider>,
+  );
+  expect(screen.getByText('8 oktyabr 2026')).toBeOnTheScreen();
+  expect(screen.getByLabelText('Sübh, 05:25')).toBeOnTheScreen();
+  await fireEvent.press(screen.getByRole('button', { name: /Növbəti namazın gününə qayıt$/ }));
+  expect(screen.getByText('Bu gün · 9 oktyabr 2026')).toBeOnTheScreen();
+  expect(screen.getByLabelText('Sübh, 05:26, növbəti namaz')).toBeOnTheScreen();
+});
+
+test('changing city follows its next prayer even when that changes the displayed day', async () => {
+  jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T15:30:00Z'));
+  await render(
+    <ThemeProvider>
+      <Home />
+    </ThemeProvider>,
+  );
+  expect(screen.getByText('Sabah · 9 oktyabr 2026')).toBeOnTheScreen();
+  expect(screen.getByLabelText('Sübh, 05:26, növbəti namaz')).toBeOnTheScreen();
+  await act(async () => usePreferences.getState().setLocation('qmi-20'));
+  expect(screen.getByText('Bu gün · 8 oktyabr 2026')).toBeOnTheScreen();
+  expect(screen.getByLabelText('İşa, 19:39, növbəti namaz')).toBeOnTheScreen();
+});
+
+test('sharing includes all nine times even when rows are hidden, and follows format, city and date', async () => {
   usePreferences.setState({ timeFormat: '12', visibleFields: ['fajr', 'asr', 'sunset'] });
   await render(
     <ThemeProvider>
       <Home />
     </ThemeProvider>,
   );
-  expect(screen.getByText('3 vaxt · 12 saat')).toBeOnTheScreen();
   expect(screen.getByText('6:11 g.s.')).toBeOnTheScreen();
   expect(screen.queryByLabelText('Məğrib, 18:25')).not.toBeOnTheScreen();
-  await fireEvent.press(screen.getByLabelText('Əsr, 16:27'));
+  await pressShare();
+  expect(shareSpy.mock.calls[0]?.[0].message).toContain('Sübh: 5:25 g.ə.');
+  expect(shareSpy.mock.calls[0]?.[0].message).toContain('Məğrib: 6:25 g.s.');
+  expect(shareSpy.mock.calls[0]?.[0].message).toContain('Gecəyarısı: 11:48 g.s.');
   await act(async () => usePreferences.getState().setLocation('qmi-20'));
-  expect(screen.queryByText('Bakı · 8 oktyabr 2026, cümə axşamı')).not.toBeOnTheScreen();
   expect(screen.getByLabelText('Əsr, 16:40')).toBeOnTheScreen();
-  await fireEvent.press(screen.getByLabelText('Əsr, 16:40'));
-  expect(screen.getByText('Gəncə · 8 oktyabr 2026, cümə axşamı')).toBeOnTheScreen();
+  await fireEvent.press(screen.getByLabelText('Növbəti gün'));
+  await pressShare();
+  const message = shareSpy.mock.calls[1]?.[0].message;
+  expect(message).toContain('Gəncə\n9 oktyabr 2026, cümə');
+  expect(message).not.toContain('Bakı');
+  expect(message).toContain('Əsr: 4:39 g.s.');
+  expect(message?.split('\n').filter((line) => /^.+: \d/.test(line))).toHaveLength(9);
+});
+test('one share button opens the system sheet with the full dated timetable and source', async () => {
+  await render(
+    <ThemeProvider>
+      <Home />
+    </ThemeProvider>,
+  );
+  expect(screen.getAllByRole('button', { name: 'Vaxtları paylaş' })).toHaveLength(1);
+  await pressShare();
+  expect(shareSpy).toHaveBeenCalledWith(
+    {
+      title: 'Namaz vaxtları · Bakı · 8 oktyabr 2026, cümə axşamı',
+      message: [
+        'NurVaxt · Namaz vaxtları',
+        'Bakı',
+        '8 oktyabr 2026, cümə axşamı',
+        '',
+        'İmsak: 05:20',
+        'Sübh: 05:25',
+        'Günçıxma: 06:44',
+        'Zöhr: 12:28',
+        'Əsr: 16:27',
+        'Günbatımı: 18:11',
+        'Məğrib: 18:25',
+        'İşa: 19:25',
+        'Gecəyarısı: 23:48',
+        '',
+        'Mənbə: Qafqaz Müsəlmanları İdarəsi',
+      ].join('\n'),
+    },
+    {
+      dialogTitle: 'Vaxtları paylaş',
+      subject: 'Namaz vaxtları · Bakı · 8 oktyabr 2026, cümə axşamı',
+    },
+  );
+});
+test('share failure allows retry and dismissing the sheet is silent', async () => {
+  shareSpy.mockRejectedValueOnce(new Error('Unavailable'));
+  await render(
+    <ThemeProvider>
+      <Home />
+    </ThemeProvider>,
+  );
+  await pressShare();
+  await waitFor(() =>
+    expect(alertSpy).toHaveBeenCalledWith('Paylaşmaq mümkün olmadı', 'Yenidən cəhd edin.'),
+  );
+  shareSpy.mockResolvedValueOnce({ action: Share.dismissedAction });
+  await pressShare();
+  expect(shareSpy).toHaveBeenCalledTimes(2);
+  expect(alertSpy).toHaveBeenCalledTimes(1);
+});
+test('sharing omits missing source times without inventing values', async () => {
+  const day = { ...datasetSchema.parse(dataset).records[7]!, sunset: null };
+  await render(
+    <ThemeProvider>
+      <PrayerList day={day} />
+    </ThemeProvider>,
+  );
+  await pressShare();
+  expect(shareSpy.mock.calls[0]?.[0].message).not.toContain('Günbatımı:');
+  expect(shareSpy.mock.calls[0]?.[0].message).toContain('Məğrib: 18:25');
 });
 test('switching from Bakı to Gəncə replaces the calendar with that city’s source times', async () => {
   await render(
@@ -87,6 +239,9 @@ test('switching from Bakı to Gəncə replaces the calendar with that city’s s
   await act(async () => usePreferences.getState().setLocation('qmi-20'));
   expect(screen.getByText('16:40')).toBeOnTheScreen();
   expect(screen.queryByText('16:27')).not.toBeOnTheScreen();
+  await pressShare();
+  expect(shareSpy.mock.calls[0]?.[0].message).toContain('Gəncə\n8 oktyabr 2026');
+  expect(shareSpy.mock.calls[0]?.[0].message).toContain('Əsr: 16:40');
 });
 test('prayer rows use all distinct source fields and an accessible next label', async () => {
   const day = datasetSchema.parse(dataset).records[7]!;
@@ -114,6 +269,7 @@ test('calendar navigation covers November and December then shows missing Januar
   expect(screen.getByText('15:34')).toBeOnTheScreen();
   await fireEvent.press(screen.getByLabelText('Növbəti ay'));
   expect(screen.getByText('Bu tarix üçün təqvim yoxdur')).toBeOnTheScreen();
+  expect(screen.queryByRole('button', { name: 'Vaxtları paylaş' })).not.toBeOnTheScreen();
   await fireEvent.press(screen.getByLabelText('Əvvəlki ay'));
   expect(screen.getByText('15:34')).toBeOnTheScreen();
 });

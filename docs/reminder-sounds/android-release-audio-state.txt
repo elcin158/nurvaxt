@@ -1,0 +1,1 @@
+AudioPlaybackConfiguration piid:183 deviceIds:[2] type:android.media.MediaPlayer u/pid:10218/6672 state:started attr:AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null sessionId:193 mutedState:none  FormatInfo{isSpatialized=false, channelMask=0x1, sampleRate=48000}

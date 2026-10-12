@@ -1,0 +1,48 @@
+{
+  "apk": "artifacts/nurvaxt-standard-sound-fix.apk",
+  "sha256": "bd8da0b3e09898255e431c46354d54b6c0a7c115e61ade2bfa653f429ee1da52",
+  "bytes": 84168163,
+  "signatureVerified": true,
+  "matchesPreviousReleaseKey": true,
+  "certificateSha256": "01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e",
+  "abis": ["arm64-v8a", "armeabi-v7a", "x86_64"],
+  "embeddedBundleBytes": 3727712,
+  "nativeSystemSoundPreviewBundled": true,
+  "countdownResourcesVerified": true,
+  "countdownLayouts": {
+    "nurvaxt_countdown_compact": {
+      "id": "0x7f0d0088",
+      "packagedXml": "res/k2.xml",
+      "viewIdsVerified": ["countdown_prayer", "countdown_stage", "countdown_timer"]
+    },
+    "nurvaxt_countdown_expanded": {
+      "id": "0x7f0d0089",
+      "packagedXml": "res/Nr.xml",
+      "viewIdsVerified": [
+        "countdown_prayer",
+        "countdown_time",
+        "countdown_stage",
+        "countdown_timer",
+        "countdown_symbol",
+        "countdown_progress",
+        "countdown_kerahat",
+        "countdown_kerahat_label",
+        "countdown_kerahat_stage",
+        "countdown_kerahat_timer"
+      ]
+    }
+  },
+  "testOnlyWriteSettingsPermissionAbsent": true,
+  "jestTestsPassed": 124,
+  "typecheckPassed": true,
+  "eslintPassed": true,
+  "physicalDeviceAudioVerified": false,
+  "androidSystemSoundTestsPassed": 5,
+  "androidSystemSoundTestReport": "docs/reminder-sounds/android-system-preview-tests.txt",
+  "emulatorApi": 36,
+  "emulatorHostAudioDisabled": true,
+  "releaseUiSystemSoundPreviewVerified": true,
+  "releaseAudioUsageVerified": "USAGE_NOTIFICATION",
+  "releaseAudioPlayerStartedAndUnmuted": true,
+  "checkedAt": "2026-10-12T18:00:26.931321+00:00"
+}

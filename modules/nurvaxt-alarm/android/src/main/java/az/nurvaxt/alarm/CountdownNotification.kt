@@ -5,7 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -14,7 +13,6 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.Icon
-import android.net.Uri
 import android.os.Build
 import android.os.SystemClock
 import android.util.Log
@@ -26,11 +24,8 @@ import androidx.core.graphics.drawable.IconCompat
 object CountdownNotification {
   private const val ICON = 96
 
-  /** Glyph height, as a share of the slot, that lands on the system clock's digit size. */
-  private const val CLOCK = 0.7f
-
-  /** Keep the count to two digits; longer counts use a clock. */
-  private const val DIGITS = 99
+  /** Numeric countdowns appear only in the final hour. */
+  private const val HOUR = 3_600_000L
 
   /** Ceil-rounded seconds and whole minutes left — the units both the icon and the text report. */
   private fun units(remaining: Long): Pair<Long, Long> {
@@ -48,18 +43,22 @@ object CountdownNotification {
   }
 
   private fun icon(context: Context, remaining: Long): IconCompat {
-    val (seconds, minutes) = units(remaining)
     // Send artwork bytes rather than a resource ID that SystemUI could resolve against an old APK.
     val bitmap = Bitmap.createBitmap(ICON, ICON, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
-    if (minutes > DIGITS) {
-      requireNotNull(context.getDrawable(R.drawable.nurvaxt_countdown_clock)).apply {
-        setBounds(0, 0, ICON, ICON)
-        draw(canvas)
-      }
+    val mark = requireNotNull(context.getDrawable(R.drawable.nurvaxt_countdown_app_mark))
+    if (remaining >= HOUR) {
+      mark.setBounds(0, 0, ICON, ICON)
+      mark.draw(canvas)
       return IconCompat.createWithBitmap(bitmap)
     }
-    val text = if (seconds >= 60) minutes.toString() else seconds.coerceAtLeast(1).toString()
+    // During the final hour, stack the app mark above the minute/second count.
+    mark.apply {
+      setBounds(ICON / 4, 0, ICON * 3 / 4, ICON / 2)
+      draw(canvas)
+    }
+    val (seconds, minutes) = units(remaining)
+    val text = if (remaining >= 60_000) minutes.toString() else seconds.coerceAtLeast(1).toString()
     val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
       color = Color.WHITE
       typeface = Typeface.create("sans-serif", Typeface.NORMAL)
@@ -68,12 +67,12 @@ object CountdownNotification {
     val bounds = Rect()
     paint.getTextBounds(text, 0, text.length, bounds)
     val height = minOf(
-      CLOCK * ICON,
+      40f,
       (ICON - 4f) * bounds.height() / bounds.width(),
     )
     paint.textSize *= height / bounds.height()
     paint.getTextBounds(text, 0, text.length, bounds)
-    canvas.drawText(text, ICON / 2f - bounds.exactCenterX(), ICON / 2f - bounds.exactCenterY(), paint)
+    canvas.drawText(text, ICON / 2f - bounds.exactCenterX(), ICON * 3 / 4f - bounds.exactCenterY(), paint)
     return IconCompat.createWithBitmap(bitmap)
   }
 
@@ -95,7 +94,7 @@ object CountdownNotification {
         prayer.phase == "end" -> "Sübhün bitməsinə qalan vaxt"
         remaining <= 900_000 -> "Son 15 dəqiqə"
         remaining <= 1_800_000 -> "Son 30 dəqiqə"
-        else -> "qalıb"
+        else -> ""
       })
       val color = context.getColor(when {
         remaining <= 900_000 -> R.color.countdown_imminent
@@ -144,7 +143,7 @@ object CountdownNotification {
       manager.createNotificationChannel(NotificationChannel(
         CountdownState.CHANNEL, "Namaza qalan vaxt", NotificationManager.IMPORTANCE_DEFAULT,
       ).apply {
-        description = "Yuxarı sətirdə saat ikonu və ya son 99 dəqiqənin sayı, paneldə iri canlı geri sayım."
+        description = "Yuxarı sətirdə tətbiq ikonu və son 60 dəqiqədə altında qalan vaxt, paneldə iri canlı geri sayım."
         setSound(null, null)
         enableVibration(false)
         setShowBadge(false)
@@ -187,16 +186,11 @@ object CountdownNotification {
     val tap = launch?.let {
       PendingIntent.getActivity(context, 7401, it, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     }
-    val settings = PendingIntent.getActivity(
-      context, 7402,
-      Intent(Intent.ACTION_VIEW, Uri.parse("nurvaxt://settings")).setPackage(context.packageName),
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-    )
     val kerahat = CountdownSolar.kerahat(plan.kerahat, now)
     val solarSummary = kerahat
       ?.let { "${if (now >= it.start) "Kərahət vaxtıdır" else "Kərahət yaxınlaşır"} · ${it.name}" }
       .orEmpty()
-    val body = "$duration qalıb · $stage" + if (solarSummary.isEmpty()) "" else " · $solarSummary"
+    val body = "$duration · $stage" + if (solarSummary.isEmpty()) "" else " · $solarSummary"
     val title = "${prayer.name} · $time"
     val progress = prayer.previousTimestamp?.takeIf { it < prayer.timestamp }?.let {
       (((now - it).toDouble() / (prayer.timestamp - it)) * 100).toInt().coerceIn(0, 100)
@@ -214,7 +208,6 @@ object CountdownNotification {
       .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
       .setContentIntent(tap)
       .setColor(Color.parseColor(if (imminent) "#C45A45" else if (soon) "#B4812E" else "#2D5CE3"))
-      .addAction(0, "Ayarlar", settings)
     if (prayer.phase == "start" && Build.VERSION.SDK_INT >= 36 && CountdownLiveUpdate.eligible(
         Build.VERSION.SDK_INT_FULL, LiveNotificationAccess.allowed(context), remaining, prayer.timestamp,
         CountdownState.prefs(context).getLong(CountdownLiveUpdate.DISMISSED_PRAYER, 0),

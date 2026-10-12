@@ -8,6 +8,7 @@ import { defaultPreferences, restorePreferences, usePreferences } from '../src/s
 import { ReminderSoundSettings } from '../src/features/settings/ReminderSoundSettings';
 import { REMINDER_SOUNDS, notificationSound } from '../src/features/notifications/sounds';
 import { previewSources } from '../src/features/notifications/previewSources';
+import Alarm from '../modules/nurvaxt-alarm/src';
 
 jest.mock('@expo/vector-icons/Ionicons', () => () => null);
 jest.mock('expo-router', () => ({
@@ -17,11 +18,20 @@ jest.mock('expo-audio', () => {
   const player = { pause: jest.fn(), replace: jest.fn(), play: jest.fn() };
   return {
     testPlayer: player,
+    testStatus: { didJustFinish: false },
     useAudioPlayer: () => player,
-    useAudioPlayerStatus: () => ({ didJustFinish: false }),
+    useAudioPlayerStatus: () => require('expo-audio').testStatus,
     setAudioModeAsync: jest.fn(() => Promise.resolve()),
   };
 });
+jest.mock('../modules/nurvaxt-alarm/src', () => ({
+  __esModule: true,
+  default: {
+    previewDefaultSound: jest.fn(),
+    stopSoundPreview: jest.fn(),
+    isSoundPreviewPlaying: jest.fn(),
+  },
+}));
 const player = require('expo-audio').testPlayer as {
   pause: jest.Mock;
   replace: jest.Mock;
@@ -33,10 +43,14 @@ beforeEach(() => {
   jest.clearAllMocks();
   jest.mocked(AppState.addEventListener).mockReturnValue({ remove: jest.fn() });
   jest.mocked(setAudioModeAsync).mockResolvedValue();
+  jest.mocked(Alarm!.previewDefaultSound).mockReturnValue('playing');
+  jest.mocked(Alarm!.isSoundPreviewPlaying).mockReturnValue(true);
+  require('expo-audio').testStatus.didJustFinish = false;
   usePreferences.setState(defaultPreferences);
 });
 afterEach(() => {
   Platform.OS = originalOS;
+  jest.useRealTimers();
 });
 const showSettings = () =>
   render(
@@ -134,12 +148,100 @@ test('backgrounding stops preview, while an audio setup failure stays recoverabl
   ).not.toBeOnTheScreen();
 });
 
-test('Android previews the actual system notification URI', async () => {
+test('Android previews the system notification sound through the native ringtone player', async () => {
   await showSettings();
   await press('Standart: dinlə');
-  expect(player.replace).toHaveBeenLastCalledWith({
-    uri: 'content://settings/system/notification_sound',
-  });
+  expect(Alarm!.previewDefaultSound).toHaveBeenCalledTimes(1);
+  expect(player.replace).not.toHaveBeenCalled();
+  expect(player.play).not.toHaveBeenCalled();
+  expect(setAudioModeAsync).not.toHaveBeenCalled();
+  expect(screen.getByLabelText('Standart: səsi dayandır')).toBeOnTheScreen();
+  expect(usePreferences.getState().reminders.sound).toBe('default');
+  const stops = jest.mocked(Alarm!.stopSoundPreview).mock.calls.length;
+  await press('Standart: səsi dayandır');
+  expect(Alarm!.stopSoundPreview).toHaveBeenCalledTimes(stops + 1);
+  expect(screen.queryByText('Səslənir…')).not.toBeOnTheScreen();
+});
+
+test.each([
+  ['silent', 'Telefonun standart bildiriş səsi səssizdir. Səs ayarlarından bildiriş səsi seçin.'],
+  ['muted', 'Telefonun bildiriş səsi bağlıdır. Səs ayarlarından bildiriş səsini artırın.'],
+  ['unavailable', 'Səs açıla bilmədi. Dinləmə düyməsinə yenidən toxunun.'],
+] as const)(
+  'Android reports %s system playback without claiming it is playing',
+  async (result, message) => {
+    jest.mocked(Alarm!.previewDefaultSound).mockReturnValue(result);
+    await showSettings();
+    await press('Standart: dinlə');
+    expect(screen.getByText(message)).toBeOnTheScreen();
+    expect(screen.queryByText('Səslənir…')).not.toBeOnTheScreen();
+    expect(usePreferences.getState().reminders.sound).toBe('default');
+    jest.mocked(Alarm!.previewDefaultSound).mockReturnValue('playing');
+    await press('Standart: dinlə');
+    expect(screen.queryByText(message)).not.toBeOnTheScreen();
+    expect(screen.getByText('Səslənir…')).toBeOnTheScreen();
+  },
+);
+
+test('system playback stops on a new selection, backgrounding and screen exit', async () => {
+  const view = await showSettings();
+  await press('Standart: dinlə');
+  let stops = jest.mocked(Alarm!.stopSoundPreview).mock.calls.length;
+  await press('Zəng');
+  expect(Alarm!.stopSoundPreview).toHaveBeenCalledTimes(stops + 1);
+  await press('Standart');
+  stops = jest.mocked(Alarm!.stopSoundPreview).mock.calls.length;
+  const callback = jest
+    .mocked(AppState.addEventListener)
+    .mock.calls.find(([event]) => event === 'change')![1];
+  await act(async () => callback('background'));
+  expect(Alarm!.stopSoundPreview).toHaveBeenCalledTimes(stops + 1);
+  await press('Standart: dinlə');
+  stops = jest.mocked(Alarm!.stopSoundPreview).mock.calls.length;
+  await view.unmount();
+  expect(Alarm!.stopSoundPreview).toHaveBeenCalledTimes(stops + 1);
+});
+
+test('system completion clears the playing state independently of custom audio status', async () => {
+  jest.useFakeTimers();
+  const view = await showSettings();
+  await press('Standart: dinlə');
+  require('expo-audio').testStatus.didJustFinish = true;
+  await view.rerender(
+    <ThemeProvider>
+      <ReminderSoundSettings />
+    </ThemeProvider>,
+  );
+  expect(screen.getByText('Səslənir…')).toBeOnTheScreen();
+  jest.mocked(Alarm!.isSoundPreviewPlaying).mockReturnValue(false);
+  await act(async () => jest.advanceTimersByTime(100));
+  expect(screen.queryByText('Səslənir…')).not.toBeOnTheScreen();
+});
+
+test('system preview is bounded even if the ringtone keeps playing', async () => {
+  jest.useFakeTimers();
+  await showSettings();
+  await press('Standart: dinlə');
+  await act(async () => jest.advanceTimersByTime(4000));
+  expect(screen.queryByText('Səslənir…')).not.toBeOnTheScreen();
+  expect(Alarm!.stopSoundPreview).toHaveBeenCalled();
+});
+
+test('choosing standard cancels an unfinished custom preview', async () => {
+  let finishSetup!: () => void;
+  jest.mocked(setAudioModeAsync).mockImplementationOnce(
+    () =>
+      new Promise<void>((done) => {
+        finishSetup = done;
+      }),
+  );
+  await showSettings();
+  await press('Zəng');
+  await press('Standart');
+  await act(async () => finishSetup());
+  expect(player.play).not.toHaveBeenCalled();
+  expect(Alarm!.previewDefaultSound).toHaveBeenCalledTimes(1);
+  expect(screen.getByText('Səslənir…')).toBeOnTheScreen();
 });
 
 test('iOS offers real previews for custom sounds and explains the system sound', async () => {

@@ -55,6 +55,17 @@ async function main() {
     .resize(96, 96)
     .png()
     .toFile('assets/notification-icon.png');
+  // The ongoing countdown uses the supplied app lettering and crescent.
+  const countdownMark = await sharp('assets/mark-mono.png')
+    .trim()
+    .resize(80, 80, { fit: 'contain', background: '#00000000' })
+    .extend({ top: 8, bottom: 8, left: 8, right: 8, background: '#00000000' })
+    .png()
+    .toBuffer();
+  await writeFile(
+    'modules/nurvaxt-alarm/android/src/main/res/drawable-nodpi/nurvaxt_countdown_app_mark.png',
+    countdownMark,
+  );
   await generateReminderSounds();
 }
 main().catch((error) => {

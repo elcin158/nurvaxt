@@ -107,39 +107,50 @@ class CountdownNotificationTest {
     assertNull(notification.bigContentView)
   }
 
-  @Test fun statusIconShowsOnlyTimeAndPreservesMinuteSecondBoundaries() {
+  @Test fun statusIconStacksAppMarkAboveTimeAndPreservesDurationBoundaries() {
     val now = System.currentTimeMillis()
     fun icon(left: Long) = CountdownPrayer("Sübh", "2026-10-12", "06:45", now + left, null).let { prayer ->
       val notification = CountdownNotification.build(context, CountdownPlan(true, "Bakı", "24", listOf(prayer)), prayer, now)
       (notification.smallIcon.loadDrawable(context) as BitmapDrawable).bitmap
     }
-    for (minutes in listOf(1, 2, 40, 59, 60, 99)) {
-      val count = icon(minutes * 60_000L)
+    fun bounds(bitmap: Bitmap, top: Int, bottom: Int) = Rect().apply {
+      for (y in top until bottom) for (x in 0 until bitmap.width) {
+        if (bitmap.getPixel(x, y).ushr(24) > 128) union(x, y, x + 1, y + 1)
+      }
+    }
+    val mark = Bitmap.createBitmap(96, 48, Bitmap.Config.ARGB_8888)
+    requireNotNull(context.getDrawable(R.drawable.nurvaxt_countdown_app_mark)).apply {
+      setBounds(24, 0, 72, 48)
+      draw(Canvas(mark))
+    }
+    for (left in listOf(1_000L, 30_000L, 59_000L, 59_999L, 60_000L, 120_000L,
+        40 * 60_000L, 59 * 60_000L, 3_599_999L)) {
+      val count = icon(left)
       assertEquals(96, count.width)
       assertEquals(96, count.height)
-      val bounds = Rect()
-      for (y in 0 until 96) for (x in 0 until 96) {
-        if (count.getPixel(x, y).ushr(24) > 128) bounds.union(x, y, x + 1, y + 1)
-      }
-      // A single large, centered count replaces the old two-row mark/count icon.
-      assertTrue("Count is too small: $minutes", bounds.height() > 50)
-      assertEquals(48f, bounds.exactCenterX(), 2f)
-      assertEquals(48f, bounds.exactCenterY(), 2f)
-      assertTrue(bounds.top >= 10 && bounds.bottom <= 86)
+      assertTrue("App mark changed size: $left", Bitmap.createBitmap(count, 0, 0, 96, 48).sameAs(mark))
+      val number = bounds(count, 48, 96)
+      assertTrue("Duration is too small: $left", number.height() >= 24)
+      assertEquals(48f, number.exactCenterX(), 2f)
+      assertEquals(72f, number.exactCenterY(), 2f)
+      assertTrue("Duration is clipped: $left", number.left >= 2 && number.right <= 94)
+      assertTrue("Rows overlap: $left", number.top >= 52 && number.bottom <= 92)
     }
     assertTrue(icon(59_000).sameAs(icon(59 * 60_000L)))
     assertTrue(icon(60_000).sameAs(icon(1_000)))
     assertTrue(icon(60_001).sameAs(icon(2 * 60_000L)))
+    assertFalse(icon(59_999).sameAs(icon(60_000)))
     assertTrue(icon(1_001).sameAs(icon(2_000)))
     assertTrue(icon(0).sameAs(icon(1_000)))
     assertFalse(icon(40 * 60_000L).sameAs(icon(39 * 60_000L)))
-    val clock = Bitmap.createBitmap(96, 96, Bitmap.Config.ARGB_8888)
-    requireNotNull(context.getDrawable(R.drawable.nurvaxt_countdown_clock)).apply {
+    val fullMark = Bitmap.createBitmap(96, 96, Bitmap.Config.ARGB_8888)
+    requireNotNull(context.getDrawable(R.drawable.nurvaxt_countdown_app_mark)).apply {
       setBounds(0, 0, 96, 96)
-      draw(Canvas(clock))
+      draw(Canvas(fullMark))
     }
-    assertTrue(icon(99 * 60_000L + 1).sameAs(clock))
-    assertTrue(icon(180 * 60_000L).sameAs(clock))
-    assertFalse(icon(99 * 60_000L).sameAs(clock))
+    for (left in listOf(3_600_000L, 3_600_001L, 99 * 60_000L, 180 * 60_000L, 24 * 3_600_000L)) {
+      assertTrue("Expected only the app mark: $left", icon(left).sameAs(fullMark))
+    }
+    assertFalse(icon(3_599_999L).sameAs(fullMark))
   }
 }
