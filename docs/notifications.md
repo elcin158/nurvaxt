@@ -37,8 +37,8 @@ Android 13+. Prayer reminder delivery remains independent of the countdown foreg
 `Daimi vaxt göstəricisi` defaults on once notifications are enabled, and switching it off posts
 nothing at all — no panel entry and no status-bar slot. While on, a native
 `CountdownService` shows a silent, default-importance ongoing notification and a status icon.
-The countdown status icon restores the app mark above the remaining minutes, switching to
-seconds in the final minute. Counts above 99 minutes use the app mark alone so three digits
+The countdown status icon shows only the remaining minutes, switching to
+seconds in the final minute. Counts above 99 minutes use a clock so three digits
 do not crowd the square slot. The brief startup notification uses a system clock icon while
 the plan loads. Android controls the square slot
 dimensions; increasing bitmap resolution cannot enlarge it.
@@ -77,11 +77,11 @@ system expander. The earlier Samsung developer-test screenshots in `docs/modern-
 are historical design evidence, not proof of public Live Update support on that phone. The
 reverted Samsung experiment is described in `docs/dual-live-updates` as historical work.
 
-The `notification_icon` asset retains the supplied wordmark/crescent artwork, but native prayer
-reminders now use the clock drawable so delivery does not reintroduce a crescent in the status bar.
-The ongoing countdown restores the app mark above its remaining-minute/second count, using
-the mark alone above 99 minutes. Both forms send bitmap bytes to SystemUI, including the
-mark-only form, so the small icon does not depend on resolving an app resource in another process.
+The `notification_icon` asset and native prayer reminders use a clock so delivery does not
+reintroduce a crescent in the status bar. Asset generation and Expo prebuild preserve that clock.
+The ongoing countdown shows only its remaining-minute/second count, using
+a clock above 99 minutes. Both forms send bitmap bytes to SystemUI, including the
+clock-only form, so the small icon does not depend on resolving an app resource in another process.
 Launcher icons retain the app artwork.
 The notification panel uses `DecoratedCustomViewStyle`, preserving Android's header, expander and
 settings action. Its custom layouts may contain only `@RemoteView` classes — `LinearLayout`,

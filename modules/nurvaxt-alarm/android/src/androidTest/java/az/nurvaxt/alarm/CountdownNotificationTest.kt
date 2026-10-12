@@ -3,7 +3,9 @@ package az.nurvaxt.alarm
 import android.app.Notification
 import android.content.Context
 import android.content.res.Configuration
-import android.graphics.BitmapFactory
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.os.Parcel
 import android.widget.Chronometer
@@ -105,19 +107,39 @@ class CountdownNotificationTest {
     assertNull(notification.bigContentView)
   }
 
-  @Test fun statusIconRestoresMarkAndCountAndUsesInlineArtworkForLongDurations() {
+  @Test fun statusIconShowsOnlyTimeAndPreservesMinuteSecondBoundaries() {
     val now = System.currentTimeMillis()
     fun icon(left: Long) = CountdownPrayer("Sübh", "2026-10-12", "06:45", now + left, null).let { prayer ->
       val notification = CountdownNotification.build(context, CountdownPlan(true, "Bakı", "24", listOf(prayer)), prayer, now)
       (notification.smallIcon.loadDrawable(context) as BitmapDrawable).bitmap
     }
-    val short = icon(40 * 60_000L)
-    assertEquals(96, short.width)
-    assertEquals(96, short.height)
-    assertTrue((0 until 48).any { y -> (0 until 96).any { x -> short.getPixel(x, y).ushr(24) > 128 } })
-    assertTrue((48 until 96).any { y -> (0 until 96).any { x -> short.getPixel(x, y).ushr(24) > 128 } })
-    val mark = context.resources.getIdentifier("notification_icon", "drawable", context.packageName)
-    assertTrue(mark != 0)
-    assertTrue(icon(180 * 60_000L).sameAs(BitmapFactory.decodeResource(context.resources, mark)))
+    for (minutes in listOf(1, 2, 40, 59, 60, 99)) {
+      val count = icon(minutes * 60_000L)
+      assertEquals(96, count.width)
+      assertEquals(96, count.height)
+      val bounds = Rect()
+      for (y in 0 until 96) for (x in 0 until 96) {
+        if (count.getPixel(x, y).ushr(24) > 128) bounds.union(x, y, x + 1, y + 1)
+      }
+      // A single large, centered count replaces the old two-row mark/count icon.
+      assertTrue("Count is too small: $minutes", bounds.height() > 50)
+      assertEquals(48f, bounds.exactCenterX(), 2f)
+      assertEquals(48f, bounds.exactCenterY(), 2f)
+      assertTrue(bounds.top >= 10 && bounds.bottom <= 86)
+    }
+    assertTrue(icon(59_000).sameAs(icon(59 * 60_000L)))
+    assertTrue(icon(60_000).sameAs(icon(1_000)))
+    assertTrue(icon(60_001).sameAs(icon(2 * 60_000L)))
+    assertTrue(icon(1_001).sameAs(icon(2_000)))
+    assertTrue(icon(0).sameAs(icon(1_000)))
+    assertFalse(icon(40 * 60_000L).sameAs(icon(39 * 60_000L)))
+    val clock = Bitmap.createBitmap(96, 96, Bitmap.Config.ARGB_8888)
+    requireNotNull(context.getDrawable(R.drawable.nurvaxt_countdown_clock)).apply {
+      setBounds(0, 0, 96, 96)
+      draw(Canvas(clock))
+    }
+    assertTrue(icon(99 * 60_000L + 1).sameAs(clock))
+    assertTrue(icon(180 * 60_000L).sameAs(clock))
+    assertFalse(icon(99 * 60_000L).sameAs(clock))
   }
 }

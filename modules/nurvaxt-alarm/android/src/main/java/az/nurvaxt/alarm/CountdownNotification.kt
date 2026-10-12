@@ -8,12 +8,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
-import android.graphics.RectF
 import android.graphics.Typeface
 import android.graphics.drawable.Icon
 import android.net.Uri
@@ -31,7 +29,7 @@ object CountdownNotification {
   /** Glyph height, as a share of the slot, that lands on the system clock's digit size. */
   private const val CLOCK = 0.7f
 
-  /** Keep the combined icon to two digits; longer counts use the app mark alone. */
+  /** Keep the count to two digits; longer counts use a clock. */
   private const val DIGITS = 99
 
   /** Ceil-rounded seconds and whole minutes left — the units both the icon and the text report. */
@@ -51,15 +49,17 @@ object CountdownNotification {
 
   private fun icon(context: Context, remaining: Long): IconCompat {
     val (seconds, minutes) = units(remaining)
-    val mark = context.resources.getIdentifier("notification_icon", "drawable", context.packageName)
-    val logo = if (mark != 0) BitmapFactory.decodeResource(context.resources, mark) else null
     // Send artwork bytes rather than a resource ID that SystemUI could resolve against an old APK.
-    if (minutes > DIGITS && logo != null) return IconCompat.createWithBitmap(logo)
-    val text = if (seconds >= 60) minutes.toString() else seconds.coerceAtLeast(1).toString()
-    // Restore the app mark above the count within Android's square status-bar slot.
     val bitmap = Bitmap.createBitmap(ICON, ICON, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
-    val logoBounds = logo?.let { alphaBounds(it) }?.takeUnless { it.isEmpty }
+    if (minutes > DIGITS) {
+      requireNotNull(context.getDrawable(R.drawable.nurvaxt_countdown_clock)).apply {
+        setBounds(0, 0, ICON, ICON)
+        draw(canvas)
+      }
+      return IconCompat.createWithBitmap(bitmap)
+    }
+    val text = if (seconds >= 60) minutes.toString() else seconds.coerceAtLeast(1).toString()
     val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
       color = Color.WHITE
       typeface = Typeface.create("sans-serif", Typeface.NORMAL)
@@ -67,39 +67,14 @@ object CountdownNotification {
     }
     val bounds = Rect()
     paint.getTextBounds(text, 0, text.length, bounds)
-    val logoRatio = logoBounds?.let { it.width().toFloat() / it.height() } ?: 0f
-    val gap = if (logoBounds != null) 6f else 0f
     val height = minOf(
-      if (logoBounds != null) (ICON - 12f) / 2f else CLOCK * ICON,
-      (ICON - 4f) / maxOf(logoRatio, bounds.width().toFloat() / bounds.height()),
+      CLOCK * ICON,
+      (ICON - 4f) * bounds.height() / bounds.width(),
     )
     paint.textSize *= height / bounds.height()
     paint.getTextBounds(text, 0, text.length, bounds)
-    val visibleHeight = bounds.height().toFloat()
-    val logoWidth = visibleHeight * logoRatio
-    val logoTop = (ICON - 2 * visibleHeight - gap) / 2f
-    if (logo != null && logoBounds != null) {
-      canvas.drawBitmap(logo, logoBounds, RectF(
-        (ICON - logoWidth) / 2f, logoTop, (ICON + logoWidth) / 2f, logoTop + visibleHeight,
-      ), Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG))
-    }
-    val numberCenter = if (logoBounds != null) logoTop + visibleHeight + gap + visibleHeight / 2f else ICON / 2f
-    canvas.drawText(text, ICON / 2f - bounds.exactCenterX(), numberCenter - bounds.exactCenterY(), paint)
+    canvas.drawText(text, ICON / 2f - bounds.exactCenterX(), ICON / 2f - bounds.exactCenterY(), paint)
     return IconCompat.createWithBitmap(bitmap)
-  }
-
-  private fun alphaBounds(bitmap: Bitmap): Rect {
-    val pixels = IntArray(bitmap.width * bitmap.height)
-    bitmap.getPixels(pixels, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
-    return Rect().apply {
-      pixels.forEachIndexed { index, pixel ->
-        if (Color.alpha(pixel) >= 128) {
-          val x = index % bitmap.width
-          val y = index / bitmap.width
-          union(x, y, x + 1, y + 1)
-        }
-      }
-    }
   }
 
   private fun content(
@@ -169,7 +144,7 @@ object CountdownNotification {
       manager.createNotificationChannel(NotificationChannel(
         CountdownState.CHANNEL, "Namaza qalan vaxt", NotificationManager.IMPORTANCE_DEFAULT,
       ).apply {
-        description = "Yuxarı sətirdə nişan və son 99 dəqiqənin sayı, paneldə iri canlı geri sayım."
+        description = "Yuxarı sətirdə saat ikonu və ya son 99 dəqiqənin sayı, paneldə iri canlı geri sayım."
         setSound(null, null)
         enableVibration(false)
         setShowBadge(false)

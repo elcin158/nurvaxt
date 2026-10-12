@@ -46,16 +46,13 @@ async function main() {
     .joinChannel(silhouette, { raw: { width: 256, height: 256, channels: 1 } })
     .png()
     .toFile('assets/mark-mono.png');
-  // The themed launcher keeps the crescent; notifications use the full supplied logo.
+  // The themed launcher keeps the crescent.
   const mark = await readFile('assets/brand.svg', 'utf8');
   const mono = mark.replace('viewBox="0 0 100 100"', 'viewBox="-24 -24 148 148"');
   await sharp(Buffer.from(mono)).png().toFile('assets/monochrome.png');
-  // Android tints small notification icons from alpha only. Remove the blue background and
-  // outer artwork spacing, then keep the lettering and crescent together with a 2 dp inset.
-  await sharp('assets/mark-mono.png')
-    .trim()
-    .resize(80, 80, { fit: 'contain', background: '#00000000' })
-    .extend({ top: 8, bottom: 8, left: 8, right: 8, background: '#00000000' })
+  // Match the native reminder clock; Android tints small icons from alpha only.
+  await sharp('assets/notification-icon.svg')
+    .resize(96, 96)
     .png()
     .toFile('assets/notification-icon.png');
   await generateReminderSounds();
