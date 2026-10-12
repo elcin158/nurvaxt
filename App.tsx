@@ -3,6 +3,7 @@ import { ActivityIndicator, AppState, Image, KeyboardAvoidingView, Platform, Pre
   ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import * as Application from 'expo-application';
 import * as Crypto from 'expo-crypto';
 import * as WebBrowser from 'expo-web-browser';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -13,10 +14,10 @@ import { api, ApiConnectionError, ApiError, parseCallback } from './src/auth/api
 import { vault } from './src/auth/deviceStore';
 import { VaultError } from './src/auth/vault';
 import { REDIRECT_URI, type Session } from './src/auth/types';
-import { UpdateNotice } from './src/update/UpdateNotice';
-import { versionLabel } from './src/update/useAppUpdate';
 
 WebBrowser.maybeCompleteAuthSession();
+// Read from the installed binary, not app config, so support sees the build actually on the device.
+const versionLabel = [Application.nativeApplicationVersion, Application.nativeBuildVersion && `(${Application.nativeBuildVersion})`].filter(Boolean).join(' ');
 type Phase = 'loading' | 'login' | 'setup' | 'locked' | 'home';
 
 type AuthContextValue = {
@@ -291,7 +292,6 @@ function AuthApp({ children }: { children: ReactNode }) {
   </SafeAreaView>;
   return <AuthContext.Provider value={{ session, authenticated: phase === 'home' && !!session, screen, getAccessToken, lock, logout }}>
     {children}
-    <UpdateNotice />
     {obscured && <View style={styles.privacy}><Image source={require('./assets/rih-login.png')} style={styles.logo} resizeMode="contain" /></View>}
   </AuthContext.Provider>;
 }
