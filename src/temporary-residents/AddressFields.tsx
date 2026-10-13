@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { colors, Input, Select, type Choice } from '../components/ResidentControls';
-import type { AdminScope } from '../reference/types';
+import type { AddressBook, AdminScope } from '../reference/types';
 import { AdminUnitPicker } from '../components/AdminUnitPicker';
 import type { AddressCatalog, PersonalData, Street } from './types';
 import type { Errors } from './schema';
@@ -31,9 +31,21 @@ function streetOptions(streets: Street[]): Choice[] {
   return result;
 }
 
+/**
+ * The settlement a record's account address is held to, as Tbu.Web holds it: none while the
+ * record is "Formed" (status 1), then the settlement of its admin unit (0 when that is not one of
+ * the user's areas, so nothing can be chosen).
+ */
+export function heldSettlement(draft: { server?: unknown; status?: { status: number } }, adminUnitId: number | null, book: AddressBook) {
+  if (!draft.server || !draft.status || draft.status.status === 1) return undefined;
+  return book.adminUnit(adminUnitId)?.settlementId ?? 0;
+}
+
 /** `domestic` is a block with no country of its own: always inside Azerbaijan, as the household return address. */
-export function AddressFields({ prefix = '', label = 'Ünvan', number, data, catalog, onChange, errors = {}, domestic = false, required = !domestic }: {
+export function AddressFields({ prefix = '', label = 'Ünvan', number, data, catalog, onChange, errors = {}, domestic = false, required = !domestic, settlementId }: {
   prefix?: string; label?: string; number?: string; data: PersonalData; catalog: AddressCatalog; onChange(value: PersonalData): void; errors?: Errors; domestic?: boolean; required?: boolean;
+  /** The account address only: see heldSettlement. */
+  settlementId?: number;
 }) {
   const key = (suffix: string) => prefix ? `${prefix}${suffix}` : suffix[0].toLowerCase() + suffix.slice(1);
   const country = domestic ? catalog.lookups.country?.find(x => x.code === '031') : catalog.lookups.country?.find(x => x.id === data[key('CountryId')]);
@@ -41,7 +53,7 @@ export function AddressFields({ prefix = '', label = 'Ünvan', number, data, cat
   const entrance = Number(data[key('EntranceId')]) || null, isOther = data[key('AddressIsOther')] === true;
   const book = catalog.addresses;
   // An account address offers the user's areas; any other block every unit of its country.
-  const scope = useMemo<AdminScope>(() => prefix ? { countryId: country?.id ?? 0 } : { account: true }, [prefix, country?.id]);
+  const scope = useMemo<AdminScope>(() => prefix ? { countryId: country?.id ?? 0 } : { account: true, settlementId }, [prefix, country?.id, settlementId]);
   const unit = book.adminUnit(admin);
   const streets = useMemo(() => admin ? [...streetOptions(book.streets(admin)), { id: OTHER, label: 'Digər' }] : [], [book, admin]);
   const entrances = useMemo(() => admin && street ? [...book.entrances(admin, street), { id: OTHER, label: 'Digər' }] : [], [book, admin, street]);

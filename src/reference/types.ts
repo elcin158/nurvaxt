@@ -1,5 +1,6 @@
 export type Option = { id: number; label: string; parentId?: number | null; parentIds?: number[] | null; code?: string | null };
-export type AdminUnit = Option & { countryId: number; canSelectAccount: boolean; hasStreet: boolean };
+/** `settlementId` is known for the user's own areas only (those with `canSelectAccount`). */
+export type AdminUnit = Option & { countryId: number; canSelectAccount: boolean; hasStreet: boolean; settlementId?: number | null };
 export type Street = Option & { adminUnitId: number; hasEntrance: boolean };
 export type Entrance = Option & { adminUnitId: number; throughFareId: number };
 export type TreeType = { id: number; parentId: number | null; label: string; isComputed: boolean; code?: string | null };
@@ -7,9 +8,10 @@ export type TreeType = { id: number; parentId: number | null; label: string; isC
 /**
  * Which admin units an address block offers, as Tbu.Web's picker does: an account address only
  * the user's areas (and the units above them, to browse through); any other address every unit of
- * its country.
+ * its country. A record past "Formed" keeps its settlement: `settlementId` then limits the account
+ * address to the user's areas of that settlement (0 when it is not one of theirs: none).
  */
-export type AdminScope = { account: true } | { countryId: number };
+export type AdminScope = { account: true; settlementId?: number } | { countryId: number };
 
 /**
  * The address register as the forms read it. On a device it is an SQLite database queried row by
@@ -41,10 +43,19 @@ export function adminTree(units: AdminUnit[]): Pick<AddressBook, 'adminUnit' | '
   const parentOf = (unit: AdminUnit) => unit.parentId != null && byId.has(unit.parentId) ? unit.parentId : null;
   const kids = new Map<number | null, AdminUnit[]>();
   for (const unit of byLabel([...units])) kids.set(parentOf(unit), [...kids.get(parentOf(unit)) ?? [], unit]);
-  // An account address browses through the units above the user's areas, as the web picker does.
-  const accountTree = new Set<number>();
-  for (const unit of units) if (unit.canSelectAccount)
-    for (let id: number | null = unit.id; id != null && !accountTree.has(id); id = parentOf(byId.get(id)!)) accountTree.add(id);
+  // An account address browses through the units above the user's areas, as the web picker does;
+  // one tree per settlement a record is held to, built when first asked for.
+  const ownArea = (unit: AdminUnit, settlementId?: number) => unit.canSelectAccount && (settlementId == null || unit.settlementId === settlementId);
+  const trees = new Map<number | undefined, Set<number>>();
+  const accountTree = (settlementId?: number) => {
+    let tree = trees.get(settlementId);
+    if (tree) return tree;
+    tree = new Set<number>();
+    for (const unit of units) if (ownArea(unit, settlementId))
+      for (let id: number | null = unit.id; id != null && !tree.has(id); id = parentOf(byId.get(id)!)) tree.add(id);
+    trees.set(settlementId, tree);
+    return tree;
+  };
   const path = (id: unknown) => {
     const result: AdminUnit[] = [];
     for (let unit = byId.get(Number(id)); unit && !result.includes(unit); unit = byId.get(parentOf(unit) ?? NaN)) result.unshift(unit);
@@ -52,8 +63,8 @@ export function adminTree(units: AdminUnit[]): Pick<AddressBook, 'adminUnit' | '
   };
   return {
     adminUnit: id => byId.get(Number(id)) ?? null, path,
-    children: (parentId, scope) => (kids.get(parentId) ?? []).filter(x => 'account' in scope ? accountTree.has(x.id) : x.countryId === scope.countryId),
-    selectable: (unit, scope) => 'account' in scope ? unit.canSelectAccount : unit.countryId === scope.countryId,
+    children: (parentId, scope) => (kids.get(parentId) ?? []).filter(x => 'account' in scope ? accountTree(scope.settlementId).has(x.id) : x.countryId === scope.countryId),
+    selectable: (unit, scope) => 'account' in scope ? ownArea(unit, scope.settlementId) : unit.countryId === scope.countryId,
   };
 }
 
@@ -68,6 +79,8 @@ export type ReferenceData = {
   landCategories: { id: number; parentId: number | null; code: string; label: string; isComputed: boolean }[];
   /** The admin units where the user may keep accounts. */
   accountAdminUnitIds: number[];
+  /** The settlement of each of those units, by unit id; absent from a catalogue downloaded before it existed. */
+  accountAdminUnitSettlements?: Record<string, number>;
   /** The GPS error radius the server accepts, in metres; a catalogue downloaded before it existed falls back to 50. */
   locationMaxAccuracyMeters?: number;
 };
@@ -78,6 +91,11 @@ export const validReference = (value: ReferenceData | null | undefined): value i
   !!value.lookups && typeof value.lookups === 'object' && Array.isArray(value.employmentStatuses) && Array.isArray(value.vehicleTypes) &&
   Array.isArray(value.otherEquipmentTypes) && Array.isArray(value.animals) && Array.isArray(value.landCategories) &&
   Array.isArray(value.accountAdminUnitIds);
+
+/** The user's account areas with their settlements (null where the catalogue predates them). */
+export const accountAreas = (data: Pick<ReferenceData, 'accountAdminUnitIds' | 'accountAdminUnitSettlements'>) => data.accountAdminUnitSettlements
+  ? new Map(Object.entries(data.accountAdminUnitSettlements).map(([id, settlementId]) => [Number(id), settlementId as number | null]))
+  : new Map(data.accountAdminUnitIds.map(id => [id, null as number | null]));
 
 const same = (a: unknown, b: unknown) => a != null && b != null && String(a) === String(b);
 /** An address book over arrays: for tests, and for any list small enough to hold. */

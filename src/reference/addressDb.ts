@@ -51,18 +51,18 @@ type StreetRow = { id: number; label: string; parent_id: number | null; admin_un
 type EntranceRow = { id: number; label: string; admin_unit_id: number; through_fare_id: number };
 
 /**
- * Opens the stored register for one user; `accountAdminUnitIds` are where they may keep accounts.
+ * Opens the stored register for one user; `accountAreas` are where they may keep accounts, with their settlements.
  * Null when no complete register is on the device. Admin units (a few thousand) are held in
  * memory; streets and entrances are read by index when a form asks for them.
  */
-export async function openAddresses(accountAdminUnitIds: number[]): Promise<StoredAddresses | null> {
+export async function openAddresses(accountAreas: Map<number, number | null>): Promise<StoredAddresses | null> {
   const db = await database();
   const meta = Object.fromEntries((await db.getAllAsync<{ key: string; value: string }>('SELECT key, value FROM meta')).map(x => [x.key, x.value]));
   if (!meta.complete || !meta.counts) return null;
   const pages = await db.getFirstAsync<{ page_count: number }>('PRAGMA page_count'), size = await db.getFirstAsync<{ page_size: number }>('PRAGMA page_size');
-  const account = new Set(accountAdminUnitIds);
   const units = (await db.getAllAsync<UnitRow>('SELECT * FROM admin_units')).map((row): AdminUnit =>
-    ({ id: row.id, label: row.label, parentId: row.parent_id, countryId: row.country_id, hasStreet: !!row.has_street, canSelectAccount: account.has(row.id) }));
+    ({ id: row.id, label: row.label, parentId: row.parent_id, countryId: row.country_id, hasStreet: !!row.has_street,
+      canSelectAccount: accountAreas.has(row.id), settlementId: accountAreas.get(row.id) ?? null }));
   const street = (row: StreetRow): Street => ({ id: row.id, label: row.label, parentId: row.parent_id, adminUnitId: row.admin_unit_id, hasEntrance: !!row.has_entrance });
   const entrance = (row: EntranceRow): Entrance => ({ id: row.id, label: row.label, adminUnitId: row.admin_unit_id, throughFareId: row.through_fare_id });
   const id = (value: unknown) => Number(value) || 0;

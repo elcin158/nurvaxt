@@ -211,3 +211,16 @@ test('the first blocking step is reported so the form opens where the record is 
   const issue = firstIssue(badFin, catalog);
   assert.equal(issue.step, 1); assert.match(issue.errors.fin, /FİN/);
 });
+
+test('an account address offers the user areas, held to the record settlement once it leaves "Formed"', () => {
+  const book = memoryAddressBook({ adminUnits: [
+    { id: 10, label: 'Rayon', countryId: 1031, canSelectAccount: false },
+    { id: 11, parentId: 10, label: 'Kənd A', countryId: 1031, canSelectAccount: true, settlementId: 5 },
+    { id: 12, parentId: 10, label: 'Kənd B', countryId: 1031, canSelectAccount: true, settlementId: 6 },
+    { id: 13, parentId: 10, label: 'Kənd C', countryId: 1031, canSelectAccount: false },
+  ] });
+  const ids = scope => book.children(10, scope).filter(x => book.selectable(x, scope)).map(x => x.id);
+  assert.deepEqual(ids({ account: true }), [11, 12]);
+  assert.deepEqual(ids({ account: true, settlementId: 6 }), [12]);
+  assert.deepEqual(book.children(null, { account: true, settlementId: 0 }), []);
+});

@@ -6,7 +6,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Button, colors, ReadOnly, SidebarToggle, useReadOnly } from '../components/ResidentControls';
 import { ActionSheet, ConfirmDialog } from '../components/ActionSheet';
 import { draftNotice, StateBanner } from '../components/StateBanner';
-import { AddressFields } from '../temporary-residents/AddressFields';
+import { AddressFields, heldSettlement } from '../temporary-residents/AddressFields';
 import { StepMarker, type StepIconName } from '../components/StepMarker';
 import { useHouseholds } from './context';
 import { MemberEditor, MemberReview } from './MemberEditor';
@@ -248,7 +248,8 @@ export function FormEditor({ initialDraft, showIssues = false, review }: { initi
                 <Text accessibilityRole="header" style={styles.sectionTitle}>Şəxsi hesab</Text>
                 <View style={styles.year}><Text style={styles.muted}>Hesabat ili</Text><Text style={styles.yearValue}>{data.reportYear}</Text></View>
                 {!!draft.server?.personalAccountNumber && <View style={styles.year}><Text style={styles.muted}>Şəxsi hesab №</Text><Text style={styles.yearValue}>{draft.server.personalAccountNumber}</Text></View>}
-                <AddressFields label="Təsərrüfatın ünvanı" data={data as unknown as PersonalData} catalog={catalog} errors={errors} onChange={value => save({ ...data,
+                <AddressFields label="Təsərrüfatın ünvanı" data={data as unknown as PersonalData} catalog={catalog} errors={errors}
+                  settlementId={heldSettlement(draft, data.adminUnitId, catalog.addresses)} onChange={value => save({ ...data,
                   adminUnitId: value.adminUnitId as number | null, throughFareId: value.throughFareId as number | null, entranceId: value.entranceId as number | null,
                   addressIsOther: value.addressIsOther === true, addressOtherNote: String(value.addressOtherNote ?? '') })} />
               </View>}

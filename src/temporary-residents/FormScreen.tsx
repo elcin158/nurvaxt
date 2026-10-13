@@ -8,7 +8,7 @@ import { numbers } from '../households/numbers';
 import { Card, Cell, Checkbox, Grid, PageTitle, RadioGroup, WebButton } from '../households/web';
 import { DateField } from '../components/DateField';
 import { StepMarker, type StepIconName } from '../components/StepMarker';
-import { AddressFields } from './AddressFields';
+import { AddressFields, heldSettlement } from './AddressFields';
 import { AnimalsFields } from './AnimalsFields';
 import { useResidents } from './context';
 import { documentSeries, fieldOptions, firstIssue, sections, settlementStatuses, updatePersonal, validate, type Errors } from './schema';
@@ -131,7 +131,8 @@ export function FormEditor({ initialDraft, showIssues = false, review }: { initi
               {view === 0 && <View style={styles.account}>
                 <View style={styles.summary}><Text style={styles.muted}>Hesabat ili</Text><Text style={styles.summaryValue}>{data.reportYear}</Text></View>
                 {!!draft.server?.personalAccountNumber && <View style={styles.summary}><Text style={styles.muted}>Şəxsi hesab №</Text><Text style={styles.summaryValue}>{draft.server.personalAccountNumber}</Text></View>}
-                <AddressFields data={data as unknown as PersonalData} catalog={catalog} errors={errors} onChange={value => save({ ...data,
+                <AddressFields data={data as unknown as PersonalData} catalog={catalog} errors={errors}
+                  settlementId={heldSettlement(draft, data.adminUnitId, catalog.addresses)} onChange={value => save({ ...data,
                   adminUnitId: value.adminUnitId as number | null, throughFareId: value.throughFareId as number | null, entranceId: value.entranceId as number | null,
                   addressIsOther: value.addressIsOther === true, addressOtherNote: String(value.addressOtherNote ?? '') })} />
               </View>}

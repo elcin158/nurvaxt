@@ -7,7 +7,7 @@ import { ownerKey } from '../temporary-residents/types';
 import { purgeLegacyCatalog as purgeHouseholds } from '../households/deviceStore';
 import { purgeLegacyCatalog as purgeResidents } from '../temporary-residents/deviceStore';
 import { downloadAddresses, openAddresses, partialAddresses, type AddressTable, type StoredAddresses } from './addressDb';
-import { noAddresses, validReference, type AddressCounts, type ReferenceCatalog, type ReferenceData } from './types';
+import { accountAreas, noAddresses, validReference, type AddressCounts, type ReferenceCatalog, type ReferenceData } from './types';
 
 // The reference data both modules share, in two parts downloaded separately: the forms' lists
 // (small, kept encrypted per user, since `accountAdminUnitIds` is theirs) and the address register
@@ -71,7 +71,7 @@ export function ReferenceProvider({ children }: { children: ReactNode }) {
       const data = raw ? JSON.parse(raw) as ReferenceData : null;
       if (raw && !validReference(data)) throw new Error('Arayışlar köhnə formatdadır. İnternetə qoşulub yeniləyin.');
       if (!data) return;
-      const stored = await openAddresses(data.accountAdminUnitIds);
+      const stored = await openAddresses(accountAreas(data));
       if (!cancelled) show({ lists: data, addresses: stored });
       const unfinished = await partialAddresses();
       if (!cancelled) setPartial(unfinished);
@@ -114,22 +114,22 @@ export function ReferenceProvider({ children }: { children: ReactNode }) {
     if (!live.current) return false;
     local.write(account, 'catalog', JSON.stringify(data));
     // The account areas may have changed; the register is reopened with them.
-    const stored = await openAddresses(data.accountAdminUnitIds);
+    const stored = await openAddresses(accountAreas(data));
     if (!live.current) return false;
     show({ lists: data, addresses: stored }); setNotice('Formaların siyahıları cihazda saxlanıldı.');
     return true;
   });
 
   const refreshAddresses = async () => { await run('addresses', async () => {
-    const accountAreas = current.current.lists?.accountAdminUnitIds;
-    if (!accountAreas) throw new Error('Əvvəlcə formaların siyahılarını yükləyin.');
+    const lists = current.current.lists;
+    if (!lists) throw new Error('Əvvəlcə formaların siyahılarını yükləyin.');
     const counts = await apiRequest<AddressCounts>('GET', 'reference/addresses', { accessToken: await accessToken(), timeoutMs: 60_000 });
     const fetchPage = async (table: AddressTable, after: number) =>
       apiRequest<string>('GET', `reference/addresses/${table}?after=${after}`, { accessToken: await accessToken(), timeoutMs: 60_000, text: true });
     const complete = await downloadAddresses(counts, fetchPage,
       (done, total) => { if (live.current) setProgress({ done, total }); }, () => live.current);
     if (!complete || !live.current) return false;
-    const stored = await openAddresses(accountAreas);
+    const stored = await openAddresses(accountAreas(lists));
     if (!stored) throw new Error('Ünvanlar cihazda saxlanılmadı. Yenidən cəhd edin.');
     if (!live.current) return false;
     show({ ...current.current, addresses: stored }); setPartial(null); setNotice('Ünvanlar cihazda saxlanıldı. Formanı internetsiz doldura bilərsiniz.');

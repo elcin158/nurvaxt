@@ -1,6 +1,5 @@
-import { useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Animated, Easing, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, colors, ui } from './ResidentControls';
 
@@ -12,10 +11,15 @@ export function ActionSheet({ title, subtitle, items, loading, error, onClose }:
 }) {
   const insets = useSafeAreaInsets();
   // The backdrop fades in and the sheet slides up from the bottom edge, clear of the home indicator / gesture bar.
-  return <Modal visible transparent statusBarTranslucent navigationBarTranslucent animationType="none" onRequestClose={onClose}>
-    <Animated.View entering={FadeIn.duration(180)} style={styles.backdrop}>
+  // Core Animated, not Reanimated layout animations: those misplace the sheet inside a Modal on Android.
+  const [shown] = useState(() => new Animated.Value(0));
+  useEffect(() => { Animated.timing(shown, { toValue: 1, duration: 220, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(); }, [shown]);
+  const slide = { transform: [{ translateY: shown.interpolate({ inputRange: [0, 1], outputRange: [400, 0] }) }] };
+  return <Modal visible transparent animationType="none" onRequestClose={onClose}>
+    <View style={styles.backdrop}>
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.dim, { opacity: shown }]} />
       <Pressable accessibilityLabel="Menyunu bağla" style={StyleSheet.absoluteFill} onPress={onClose} />
-      <Animated.View entering={SlideInDown.duration(220)} style={[styles.sheet, { paddingBottom: insets.bottom + 20 }]}>
+      <Animated.View style={[styles.sheet, { paddingBottom: insets.bottom + 20 }, slide]}>
         <Text style={styles.title}>{title}</Text>{!!subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
         {loading ? <ActivityIndicator style={{ margin: 24 }} color={colors.primary} />
           : <ScrollView style={{ flexGrow: 0 }} contentContainerStyle={{ gap: 6 }}>
@@ -29,7 +33,7 @@ export function ActionSheet({ title, subtitle, items, loading, error, onClose }:
           </ScrollView>}
         <Button secondary label="Bağla" onPress={onClose} />
       </Animated.View>
-    </Animated.View>
+    </View>
   </Modal>;
 }
 /** Confirmation in the wording of Tbu.Web's workflow dialog, optionally asking for a reason. */
@@ -51,7 +55,7 @@ export function ConfirmDialog({ title, text, confirmLabel, danger, descriptionRe
   </Modal>;
 }
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: '#0F172A66', justifyContent: 'flex-end' },
+  backdrop: { flex: 1, justifyContent: 'flex-end' }, dim: { backgroundColor: '#0F172A66' },
   sheet: { backgroundColor: '#FFF', borderTopLeftRadius: 14, borderTopRightRadius: 14, padding: 20, gap: 6, width: '100%', maxWidth: 560, maxHeight: '85%', alignSelf: 'center' },
   center: { flex: 1, backgroundColor: '#0F172A66', justifyContent: 'center', padding: 20 },
   dialog: { backgroundColor: '#FFF', borderRadius: 12, padding: 20, gap: 14, width: '100%', maxWidth: 480, alignSelf: 'center' },
