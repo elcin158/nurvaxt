@@ -36,7 +36,7 @@ export default function Home() {
   const { colors } = useTheme();
   const { height, fontScale } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const tabBarHeight = 52 + Math.max(insets.bottom, 8) + Math.max(0, fontScale - 1) * 24;
+  const tabBarHeight = 48 + insets.bottom + 8 + Math.max(0, fontScale - 1) * 24;
   const compact = fontScale <= 1.15 && height - insets.top - tabBarHeight < 780;
   const showHijri = usePreferences((s) => s.showHijri);
   const showKerahat = usePreferences((s) => s.showKerahat);
@@ -150,20 +150,6 @@ export default function Home() {
         )}
       </View>
       {showKerahat && <KerahatTimesCard compact date={date} />}
-      <View style={{ gap: 2, alignItems: 'center' }}>
-        <AppText
-          variant="caption"
-          style={{ fontSize: 11, lineHeight: 17, color: colors.muted, textAlign: 'center' }}
-        >
-          Mənbə: Qafqaz Müsəlmanları İdarəsi
-        </AppText>
-        <AppText
-          variant="caption"
-          style={{ fontSize: 11, lineHeight: 17, color: colors.muted, textAlign: 'center' }}
-        >
-          NurVaxt müstəqil tətbiqdir.
-        </AppText>
-      </View>
     </Screen>
   );
 }

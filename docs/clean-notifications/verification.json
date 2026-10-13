@@ -1,0 +1,19 @@
+{
+  "serial": "emulator-5580",
+  "androidSdk": 35,
+  "physicalDeviceTested": false,
+  "fixtureTimetable": true,
+  "deviceClockChanged": false,
+  "screenshots": [
+    "docs/clean-notifications/neutral-countdown.png",
+    "docs/clean-notifications/number-countdown.png",
+    "docs/clean-notifications/prayer-reminder.png"
+  ],
+  "apkSha256": "f33e44716200482d77f378c80618cff465cd4fd75330ce6efde4946e34dd0520",
+  "clockAndCrescentAbsentVisually": true,
+  "countdownAndReminderDelivered": true,
+  "nativeUnitTestsPassed": 12,
+  "notificationJestTestsPassed": 23,
+  "androidInstrumentationTestsPassed": 7,
+  "displayCombinationsTested": 48
+}

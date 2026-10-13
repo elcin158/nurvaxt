@@ -13,6 +13,8 @@ android {
 }
 
 dependencies {
+  // Layouts use TextAppearance.Compat.Notification*; matches the version the app already resolves.
+  implementation 'androidx.core:core:1.17.0'
   testImplementation 'junit:junit:4.13.2'
   androidTestImplementation 'junit:junit:4.13.2'
 }

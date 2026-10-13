@@ -1,0 +1,20 @@
+{
+  "serial": "emulator-5580",
+  "androidSdk": 35,
+  "physicalDeviceTested": false,
+  "fixtureTimetable": true,
+  "deviceClockChanged": false,
+  "screenshots": [
+    "docs/app-icon-notifications/app-icon-countdown.png",
+    "docs/app-icon-notifications/number-countdown.png",
+    "docs/app-icon-notifications/prayer-reminder.png"
+  ],
+  "apkSha256": "4ae38e546baa1d1c90bf6cf29d65f196a96ea1cb103cf740c74288429199aad9",
+  "applicationIconOutsideFinalHourVisuallyVerified": true,
+  "finalHourNumbersOnlyVisuallyVerified": true,
+  "prayerReminderAppIconVisuallyVerified": true,
+  "nativeUnitTestsPassed": 12,
+  "notificationJestTestsPassed": 23,
+  "androidInstrumentationTestsPassed": 7,
+  "displayCombinationsTested": 48
+}

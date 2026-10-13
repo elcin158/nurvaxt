@@ -7,6 +7,7 @@ import { AppText, Button, Card, Chip, Icon, IconButton } from '../../src/compone
 import { CityButton } from '../../src/features/locations/CityButton';
 import { LiveNotificationEntry } from '../../src/features/settings/LiveNotificationEntry';
 import { usePreferences } from '../../src/store/preferences';
+import { DAILY_PRAYERS } from '../../src/constants/prayers';
 import {
   promptExactAccess,
   requestNotificationPermission,
@@ -36,6 +37,17 @@ export default function Onboarding() {
   const { colors } = useTheme();
   const prefs = usePreferences();
   const page = pages[step]!;
+  const toggleReminder = (offset: number) => {
+    const reminders = usePreferences.getState().reminders;
+    const selected = DAILY_PRAYERS.every((prayer) => reminders.offsets[prayer].includes(offset));
+    const offsets = { ...reminders.offsets };
+    for (const prayer of DAILY_PRAYERS) {
+      offsets[prayer] = selected
+        ? offsets[prayer].filter((value) => value !== offset)
+        : [...new Set([...offsets[prayer], offset])].sort((a, b) => a - b);
+    }
+    prefs.set({ reminders: { ...reminders, offsets } });
+  };
   const finish = () => {
     prefs.set({ onboardingComplete: true });
     router.replace('/(tabs)');
@@ -138,32 +150,20 @@ export default function Onboarding() {
       )}
       {step === 2 && (
         <Card>
-          <AppText variant="heading">Başlanğıc xatırlatması</AppText>
+          <AppText variant="heading">Başlanğıc xatırlatmaları</AppText>
           <AppText style={{ marginVertical: 16, color: colors.muted }}>
-            Beş gündəlik namazın vaxtında və seçdiyiniz dəqiqə əvvəl bildiriş gələcək. Ayarlarda
-            tənzimləyə bilərsiniz.
+            5, 10 və 15 dəqiqəni birlikdə seçə bilərsiniz. Beş gündəlik namazın vaxtında və
+            seçdiyiniz hər vaxtda əvvəlcədən bildiriş gələcək. Ayarlarda tənzimləyə bilərsiniz.
           </AppText>
           <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
             {[5, 10, 15].map((offset) => (
               <Chip
                 key={offset}
                 title={`${offset} dəqiqə`}
-                selected={prefs.reminders.offsets.fajr.includes(offset)}
-                onPress={() =>
-                  prefs.set({
-                    reminders: {
-                      ...prefs.reminders,
-                      offsets: {
-                        imsak: [],
-                        fajr: [offset],
-                        dhuhr: [offset],
-                        asr: [offset],
-                        maghrib: [offset],
-                        isha: [offset],
-                      },
-                    },
-                  })
-                }
+                selected={DAILY_PRAYERS.every((prayer) =>
+                  prefs.reminders.offsets[prayer].includes(offset),
+                )}
+                onPress={() => toggleReminder(offset)}
               />
             ))}
           </View>

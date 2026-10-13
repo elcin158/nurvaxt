@@ -50,8 +50,9 @@ with zipfile.ZipFile(apk) as archive:
             assert 'id/' + view in entries, f'Missing view ID {view}'
             assert entries['id/' + view]['id'] in references, f'{view} absent from {key}'
         report['layouts'][name] = {'id': entries[key]['id'], 'packagedXml': path[1], 'viewIdsVerified': views}
-    for name in ['app_mark', 'badge', 'circle', 'clock', 'diamond', 'divider', 'progress']:
-        key = 'drawable/nurvaxt_countdown_' + name
+    for key in ['drawable/nurvaxt_countdown_app_mark'] + [
+        'drawable/nurvaxt_countdown_' + name for name in ['badge', 'circle', 'diamond', 'divider', 'progress']
+    ]:
         assert key in entries, f'Missing packaged {key}'
         path = re.search(r'^      \((?:nodpi)?\) \(file\) (\S+) type=(XML|PNG)$', entries[key]['values'], re.M)
         assert path and path[1] in archive.namelist(), f'Missing default drawable for {key}'
@@ -61,4 +62,6 @@ with zipfile.ZipFile(apk) as archive:
         else:
             assert archive.read(path[1]).startswith(b'\x89PNG\r\n\x1a\n'), f'Invalid PNG in {key}'
         report['drawables'][key] = entries[key]['id']
+    for removed in ['drawable/nurvaxt_countdown_clock', 'drawable/nurvaxt_notification_dot']:
+        assert removed not in entries, f'Obsolete notification artwork: {removed}'
 print(json.dumps(report, indent=2))

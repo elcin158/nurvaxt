@@ -59,10 +59,14 @@ const config: ExpoConfig = {
       'expo-splash-screen',
       {
         image: './assets/splash.png',
+        // A 144 dp rounded badge fits inside Android's 192 dp safe circle.
+        // Expo centers it on the required 288 dp canvas during prebuild.
         imageWidth: 144,
         resizeMode: 'contain',
         backgroundColor: '#F3F6FC',
         dark: { backgroundColor: '#080F21' },
+        // Android rasterizes the padding; give night mode its own matching drawable.
+        android: { dark: { image: './assets/splash.png', backgroundColor: '#080F21' } },
       },
     ],
     [

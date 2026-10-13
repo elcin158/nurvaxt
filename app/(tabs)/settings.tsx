@@ -17,7 +17,6 @@ import {
   requestExactAccess,
   requestNotificationPermission,
 } from '../../src/features/notifications/service';
-import { SOURCE_URL } from '../../src/constants/prayers';
 import { useTheme } from '../../src/theme';
 import { currentDataset as dataset } from '../../src/database/bundled';
 import { availableCoverage } from '../../src/database/coverage';
@@ -228,13 +227,7 @@ export default function Settings() {
           MƏLUMATLAR
         </AppText>
         <Card>
-          <SettingsRow
-            title="Namaz vaxtlarının mənbəyi"
-            subtitle="Qafqaz Müsəlmanları İdarəsi"
-            onPress={() => {
-              void Linking.openURL(SOURCE_URL);
-            }}
-          />
+          <SettingsRow title="Namaz vaxtlarının mənbəyi" subtitle="Qafqaz Müsəlmanları İdarəsi" />
           <SettingsRow title="Mövcud təqvimlər" subtitle={availableCoverage} />
           <SettingsRow title="Məlumat versiyası" subtitle={dataset.version} />
           <SettingsRow

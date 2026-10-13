@@ -7,12 +7,12 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Typeface
-import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.SystemClock
 import android.util.Log
@@ -42,21 +42,18 @@ object CountdownNotification {
     }
   }
 
+  internal fun appIcon(context: Context): IconCompat = IconCompat.createWithBitmap(
+    requireNotNull(BitmapFactory.decodeResource(context.resources, R.drawable.nurvaxt_countdown_app_mark)),
+  )
+
   private fun icon(context: Context, remaining: Long): IconCompat {
     // Send artwork bytes rather than a resource ID that SystemUI could resolve against an old APK.
+    if (remaining >= HOUR) return appIcon(context)
     val bitmap = Bitmap.createBitmap(ICON, ICON, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
-    val mark = requireNotNull(context.getDrawable(R.drawable.nurvaxt_countdown_app_mark))
-    if (remaining >= HOUR) {
-      mark.setBounds(0, 0, ICON, ICON)
-      mark.draw(canvas)
-      return IconCompat.createWithBitmap(bitmap)
-    }
-    // During the final hour, stack the app mark above the minute/second count.
-    mark.apply {
-      setBounds(ICON / 4, 0, ICON * 3 / 4, ICON / 2)
-      draw(canvas)
-    }
+    val mark = requireNotNull(BitmapFactory.decodeResource(context.resources, R.drawable.nurvaxt_countdown_app_mark))
+    canvas.drawBitmap(mark, null, Rect(ICON / 4, 0, ICON * 3 / 4, ICON / 2),
+      Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG))
     val (seconds, minutes) = units(remaining)
     val text = if (remaining >= 60_000) minutes.toString() else seconds.coerceAtLeast(1).toString()
     val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -68,7 +65,7 @@ object CountdownNotification {
     paint.getTextBounds(text, 0, text.length, bounds)
     val height = minOf(
       40f,
-      (ICON - 4f) * bounds.height() / bounds.width(),
+      (ICON - 8f) * bounds.height() / bounds.width(),
     )
     paint.textSize *= height / bounds.height()
     paint.getTextBounds(text, 0, text.length, bounds)
@@ -101,11 +98,9 @@ object CountdownNotification {
         remaining <= 1_800_000 -> R.color.countdown_soon
         else -> R.color.countdown_normal
       })
-      setImageViewResource(R.id.countdown_symbol, when {
-        remaining <= 900_000 -> R.drawable.nurvaxt_countdown_diamond
-        remaining <= 1_800_000 -> R.drawable.nurvaxt_countdown_circle
-        else -> R.drawable.nurvaxt_countdown_clock
-      })
+      setViewVisibility(R.id.countdown_symbol, if (remaining <= 1_800_000) View.VISIBLE else View.GONE)
+      setImageViewResource(R.id.countdown_symbol,
+        if (remaining <= 900_000) R.drawable.nurvaxt_countdown_diamond else R.drawable.nurvaxt_countdown_circle)
       setInt(R.id.countdown_symbol, "setColorFilter", color)
       setTextColor(R.id.countdown_timer, color)
       setTextColor(R.id.countdown_stage, color)
@@ -143,7 +138,7 @@ object CountdownNotification {
       manager.createNotificationChannel(NotificationChannel(
         CountdownState.CHANNEL, "Namaza qalan vaxt", NotificationManager.IMPORTANCE_DEFAULT,
       ).apply {
-        description = "Yuxarı sətirdə tətbiq ikonu və son 60 dəqiqədə altında qalan vaxt, paneldə iri canlı geri sayım."
+        description = "Yuxarı sətirdə hilalsız tətbiq ikonu və son 60 dəqiqədə altında qalan vaxt, paneldə iri canlı geri sayım."
         setSound(null, null)
         enableVibration(false)
         setShowBadge(false)
@@ -151,14 +146,14 @@ object CountdownNotification {
     }
   }
 
-  /** A fast, valid foreground notification: no plan parsing, artwork or Live Update preparation. */
+  /** A fast foreground notification with a small local app bitmap, no plan parsing or custom layouts. */
   fun startup(context: Context): Notification {
     createChannel(context)
     val builder = if (Build.VERSION.SDK_INT >= 26) Notification.Builder(context, CountdownState.CHANNEL)
       else Notification.Builder(context)
     builder
       // No app resource IDs: acknowledge a fresh install/start even if SystemUI cached old resources.
-      .setSmallIcon(Icon.createWithResource("android", android.R.drawable.ic_lock_idle_alarm))
+      .setSmallIcon(appIcon(context).toIcon(context))
       .setContentTitle("Namaza qalan vaxt")
       .setContentText("Vaxt göstəricisi hazırlanır…")
       .setShowWhen(false).setOngoing(true).setOnlyAlertOnce(true).setSound(null).setVibrate(null)
@@ -212,7 +207,9 @@ object CountdownNotification {
         Build.VERSION.SDK_INT_FULL, LiveNotificationAccess.allowed(context), remaining, prayer.timestamp,
         CountdownState.prefs(context).getLong(CountdownLiveUpdate.DISMISSED_PRAYER, 0),
       )) {
-      val live = CountdownLiveUpdate.notification(context, builder.build(), prayer.timestamp, remaining)
+      val live = CountdownLiveUpdate.notification(
+        context, builder.build(), prayer.timestamp, prayer.previousTimestamp, remaining,
+      )
       if (live.hasPromotableCharacteristics()) return live
     }
     return customOrStandard(context, builder) {

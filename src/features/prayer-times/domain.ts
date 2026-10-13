@@ -62,7 +62,8 @@ function nextOccurrence(
   includeEnd: boolean,
 ): PrayerOccurrence | null {
   const today = DateTime.fromMillis(now, { zone: TIMEZONE }).toISODate()!;
-  const allowed = new Set([today, shiftDate(today, 1)]);
+  // Yesterday supplies the İşa anchor for progress toward today's Sübh.
+  const allowed = new Set([shiftDate(today, -1), today, shiftDate(today, 1)]);
   const occurrences = prayerCountdownTimeline(days.filter((day) => allowed.has(day.date))).filter(
     (event) => includeEnd || event.phase === 'start',
   );

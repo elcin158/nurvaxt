@@ -1,0 +1,75 @@
+{
+  "android": [
+    {
+      "file": "android/app/src/main/res/drawable-mdpi/splashscreen_logo.png",
+      "canvasDp": 288,
+      "badgeDp": 144,
+      "maximumArtworkRadiusDp": 87.82,
+      "safeRadiusDp": 96
+    },
+    {
+      "file": "android/app/src/main/res/drawable-hdpi/splashscreen_logo.png",
+      "canvasDp": 288,
+      "badgeDp": 144,
+      "maximumArtworkRadiusDp": 87.78,
+      "safeRadiusDp": 96
+    },
+    {
+      "file": "android/app/src/main/res/drawable-xhdpi/splashscreen_logo.png",
+      "canvasDp": 288,
+      "badgeDp": 144,
+      "maximumArtworkRadiusDp": 87.74,
+      "safeRadiusDp": 96
+    },
+    {
+      "file": "android/app/src/main/res/drawable-xxhdpi/splashscreen_logo.png",
+      "canvasDp": 288,
+      "badgeDp": 144,
+      "maximumArtworkRadiusDp": 87.73,
+      "safeRadiusDp": 96
+    },
+    {
+      "file": "android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png",
+      "canvasDp": 288,
+      "badgeDp": 144,
+      "maximumArtworkRadiusDp": 87.68,
+      "safeRadiusDp": 96
+    },
+    {
+      "file": "android/app/src/main/res/drawable-night-mdpi/splashscreen_logo.png",
+      "canvasDp": 288,
+      "badgeDp": 144,
+      "maximumArtworkRadiusDp": 87.71,
+      "safeRadiusDp": 96
+    },
+    {
+      "file": "android/app/src/main/res/drawable-night-hdpi/splashscreen_logo.png",
+      "canvasDp": 288,
+      "badgeDp": 144,
+      "maximumArtworkRadiusDp": 87.69,
+      "safeRadiusDp": 96
+    },
+    {
+      "file": "android/app/src/main/res/drawable-night-xhdpi/splashscreen_logo.png",
+      "canvasDp": 288,
+      "badgeDp": 144,
+      "maximumArtworkRadiusDp": 87.47,
+      "safeRadiusDp": 96
+    },
+    {
+      "file": "android/app/src/main/res/drawable-night-xxhdpi/splashscreen_logo.png",
+      "canvasDp": 288,
+      "badgeDp": 144,
+      "maximumArtworkRadiusDp": 87.53,
+      "safeRadiusDp": 96
+    },
+    {
+      "file": "android/app/src/main/res/drawable-night-xxxhdpi/splashscreen_logo.png",
+      "canvasDp": 288,
+      "badgeDp": 144,
+      "maximumArtworkRadiusDp": 87.54,
+      "safeRadiusDp": 96
+    }
+  ],
+  "iosScalesVerified": [144, 288, 432]
+}

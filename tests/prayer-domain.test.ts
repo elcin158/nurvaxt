@@ -94,6 +94,53 @@ describe('official next-prayer engine', () => {
     expect(next?.time).toBe('05:26');
     expect(nextPrayer(days, stamp('2026-10-09T00:00:00'))?.timestamp).toBe(next?.timestamp);
   });
+  test.each(['2026-10-09', '2026-11-01', '2026-12-01'])(
+    'İşa–Sübh progress stays continuous across midnight on %s in every region',
+    (date) => {
+      const midnight = atTime(date, '00:00');
+      for (const location of locations) {
+        const region = allDays.filter((day) => day.locationId === location.id);
+        const previousDay = region.find((day) => day.date === shiftDate(date, -1))!;
+        const day = region.find((day) => day.date === date)!;
+        const start = atTime(previousDay.date, previousDay.isha!);
+        const end = atTime(day.date, day.fajr!);
+        for (const select of [nextPrayer, nextPrayerCountdown]) {
+          const before = select(region, midnight - 1);
+          const after = select(region, midnight);
+          expect(before).toMatchObject({
+            field: 'fajr',
+            phase: 'start',
+            timestamp: end,
+            previousTimestamp: start,
+          });
+          expect(after).toEqual(before);
+          expect(countdown(after, midnight).progress).toBeGreaterThan(0);
+          expect(countdown(after, midnight).progress).toBeLessThan(1);
+          expect(countdown(after, midnight).progress).toBeCloseTo(
+            countdown(before, midnight - 1).progress,
+            6,
+          );
+          expect(countdown(select(region, (start + end) / 2), (start + end) / 2).progress).toBe(
+            0.5,
+          );
+        }
+      }
+    },
+  );
+  test('overnight progress requires a verified previous day and never reuses a distant day', () => {
+    const previousDay = days.find((day) => day.date === '2026-10-08')!;
+    const day = days.find((day) => day.date === '2026-10-09')!;
+    const distantDay = days.find((day) => day.date === '2026-10-07')!;
+    const now = atTime(day.date, '02:00');
+    for (const records of [
+      [distantDay, day],
+      [{ ...previousDay, verified: false }, day],
+    ]) {
+      const event = nextPrayerCountdown(records, now);
+      expect(event).toMatchObject({ field: 'fajr', date: day.date, previousTimestamp: null });
+      expect(countdown(event, now).progress).toBe(0);
+    }
+  });
   test('rolls across the newly verified month boundaries', () => {
     expect(nextPrayer(days, stamp('2026-10-31T23:00:00'))).toMatchObject({
       date: '2026-11-01',

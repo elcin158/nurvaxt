@@ -4,11 +4,14 @@ import android.app.Notification
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
-import android.graphics.Canvas
+import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Icon
 import android.os.Parcel
+import android.view.View
 import android.widget.Chronometer
+import android.widget.ImageView
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import org.junit.Assert.*
@@ -18,7 +21,7 @@ class CountdownNotificationTest {
   companion object { lateinit var context: Context }
 
   private fun base() = NotificationCompat.Builder(context, CountdownState.CHANNEL)
-    .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+    .setSmallIcon(R.drawable.nurvaxt_countdown_app_mark)
     .setContentTitle("Sübh · 06:45").setContentText("10 dəq. qalıb")
     .setWhen(System.currentTimeMillis() + 600_000)
 
@@ -62,6 +65,8 @@ class CountdownNotificationTest {
             val expanded = notification.bigContentView.apply(configured, null)
             assertTrue(compact.findViewById<Chronometer>(R.id.countdown_timer).isCountDown)
             assertTrue(expanded.findViewById<Chronometer>(R.id.countdown_timer).isCountDown)
+            assertEquals(if (left <= 1_800_000) View.VISIBLE else View.GONE,
+              expanded.findViewById<ImageView>(R.id.countdown_symbol).visibility)
             assertNull(CountdownState.prefs(context).getString("notificationViewError", null))
           }
         }
@@ -99,15 +104,19 @@ class CountdownNotificationTest {
     })
   }
 
-  @Test fun startupUsesOnlySystemResourcesAndNoCustomLayouts() {
+  @Test fun startupUsesAppBitmapAndNoCustomLayouts() {
     val notification = roundTrip(CountdownNotification.startup(context))
-    assertEquals("android", notification.smallIcon.resPackage)
-    assertEquals(android.R.drawable.ic_lock_idle_alarm, notification.smallIcon.resId)
+    assertEquals(Icon.TYPE_BITMAP, notification.smallIcon.type)
+    val mark = (notification.smallIcon.loadDrawable(context) as BitmapDrawable).bitmap
+    val expected = requireNotNull(BitmapFactory.decodeResource(context.resources, R.drawable.nurvaxt_countdown_app_mark))
+    assertEquals(96, mark.width)
+    assertEquals(96, mark.height)
+    assertTrue("Startup icon must match the application mark", mark.sameAs(expected))
     assertNull(notification.contentView)
     assertNull(notification.bigContentView)
   }
 
-  @Test fun statusIconStacksAppMarkAboveTimeAndPreservesDurationBoundaries() {
+  @Test fun statusIconStacksWordmarkAboveTimeAndPreservesDurationBoundaries() {
     val now = System.currentTimeMillis()
     fun icon(left: Long) = CountdownPrayer("Sübh", "2026-10-12", "06:45", now + left, null).let { prayer ->
       val notification = CountdownNotification.build(context, CountdownPlan(true, "Bakı", "24", listOf(prayer)), prayer, now)
@@ -118,23 +127,25 @@ class CountdownNotificationTest {
         if (bitmap.getPixel(x, y).ushr(24) > 128) union(x, y, x + 1, y + 1)
       }
     }
-    val mark = Bitmap.createBitmap(96, 48, Bitmap.Config.ARGB_8888)
-    requireNotNull(context.getDrawable(R.drawable.nurvaxt_countdown_app_mark)).apply {
-      setBounds(24, 0, 72, 48)
-      draw(Canvas(mark))
-    }
+    val stackedMark = icon(40 * 60_000L)
+    val artwork = bounds(stackedMark, 0, 48)
+    assertFalse("Wordmark is missing above the time", artwork.isEmpty)
+    assertTrue("Wordmark overlaps the time", artwork.bottom <= 48)
+    assertEquals(48f, artwork.exactCenterX(), 2f)
     for (left in listOf(1_000L, 30_000L, 59_000L, 59_999L, 60_000L, 120_000L,
         40 * 60_000L, 59 * 60_000L, 3_599_999L)) {
       val count = icon(left)
       assertEquals(96, count.width)
       assertEquals(96, count.height)
-      assertTrue("App mark changed size: $left", Bitmap.createBitmap(count, 0, 0, 96, 48).sameAs(mark))
       val number = bounds(count, 48, 96)
-      assertTrue("Duration is too small: $left", number.height() >= 24)
+      assertTrue("Duration is too small: $left", number.height() >= 36)
       assertEquals(48f, number.exactCenterX(), 2f)
       assertEquals(72f, number.exactCenterY(), 2f)
-      assertTrue("Duration is clipped: $left", number.left >= 2 && number.right <= 94)
-      assertTrue("Rows overlap: $left", number.top >= 52 && number.bottom <= 92)
+      assertTrue("Duration is clipped: $left ${number.toShortString()}", number.left >= 2 && number.right <= 94)
+      assertTrue("Duration overlaps the wordmark: $left", number.top >= 50 && number.bottom <= 94)
+      for (y in 0 until 48) for (x in 0 until 96) {
+        assertEquals("Wordmark changed with duration: $left", stackedMark.getPixel(x, y), count.getPixel(x, y))
+      }
     }
     assertTrue(icon(59_000).sameAs(icon(59 * 60_000L)))
     assertTrue(icon(60_000).sameAs(icon(1_000)))
@@ -143,14 +154,10 @@ class CountdownNotificationTest {
     assertTrue(icon(1_001).sameAs(icon(2_000)))
     assertTrue(icon(0).sameAs(icon(1_000)))
     assertFalse(icon(40 * 60_000L).sameAs(icon(39 * 60_000L)))
-    val fullMark = Bitmap.createBitmap(96, 96, Bitmap.Config.ARGB_8888)
-    requireNotNull(context.getDrawable(R.drawable.nurvaxt_countdown_app_mark)).apply {
-      setBounds(0, 0, 96, 96)
-      draw(Canvas(fullMark))
-    }
+    val mark = requireNotNull(BitmapFactory.decodeResource(context.resources, R.drawable.nurvaxt_countdown_app_mark))
     for (left in listOf(3_600_000L, 3_600_001L, 99 * 60_000L, 180 * 60_000L, 24 * 3_600_000L)) {
-      assertTrue("Expected only the app mark: $left", icon(left).sameAs(fullMark))
+      assertTrue("Expected only the app icon: $left", icon(left).sameAs(mark))
     }
-    assertFalse(icon(3_599_999L).sameAs(fullMark))
+    assertFalse(icon(3_599_999L).sameAs(mark))
   }
 }

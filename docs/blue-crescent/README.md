@@ -13,8 +13,8 @@ The countdown retains its separate amber/coral urgency indicators and live timin
 Android's adaptive launcher requires a full-bleed image with a smaller, centered mark.
 Its source is `assets/adaptive-source.png`; the packaging script adds safe-area spacing
 and generates `assets/adaptive-icon.png`. The themed launcher uses the small
-crescent in `assets/brand.svg`. Notifications use the full supplied Nur Vaxt wordmark and
-crescent, extracted from `assets/mark-mono.png` onto transparency with a 2 dp inset. Android
+crescent in `assets/brand.svg`. Notifications use only the supplied Nur Vaxt wordmark,
+with the crescent masked out of `assets/mark-mono.png`, on transparency with a 2 dp inset. Android
 tints that silhouette in the status bar. The original artwork remains unchanged.
 
 ## Image adaptation provenance

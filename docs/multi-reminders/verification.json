@@ -1,0 +1,22 @@
+{
+  "serial": "emulator-5586",
+  "androidSdk": 35,
+  "physicalDeviceTested": false,
+  "deviceClockChanged": false,
+  "onboardingAllThreeSelected": true,
+  "independentDeselectReselect": true,
+  "choicesSurviveColdRestart": true,
+  "atTimeAlertsPreserved": true,
+  "allFiveNativePrayerPlansHaveEveryOffset": true,
+  "nativeQueuedEvents": 1592,
+  "installedApkMatchesArtifact": true,
+  "apkSha256": "7dbe43338ac947e83d8d46bdffb550029c3ea5cf0aa1ca4d1f31fed6ec228ce9",
+  "focusedJestTestsPassed": 31,
+  "typecheckPassed": true,
+  "focusedLintPassed": true,
+  "screenshots": [
+    "docs/multi-reminders/all-selected.png",
+    "docs/multi-reminders/ten-deselected.png",
+    "docs/multi-reminders/settings-after-restart.png"
+  ]
+}

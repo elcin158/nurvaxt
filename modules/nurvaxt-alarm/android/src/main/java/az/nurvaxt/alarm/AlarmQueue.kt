@@ -108,7 +108,7 @@ object AlarmQueue {
       val tap = launch?.let { PendingIntent.getActivity(context, 0, it, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE) }
       val body = due.joinToString("\n") { it.getString("body") }
       val notification = NotificationCompat.Builder(context, channelId)
-        .setSmallIcon(R.drawable.nurvaxt_countdown_clock).setContentTitle("NurVaxt").setContentText(body)
+        .setSmallIcon(CountdownNotification.appIcon(context)).setContentTitle("NurVaxt").setContentText(body)
         .setStyle(NotificationCompat.BigTextStyle().bigText(body)).setAutoCancel(true)
         .setContentIntent(tap).setPriority(NotificationCompat.PRIORITY_HIGH)
       if (Build.VERSION.SDK_INT < 26) {

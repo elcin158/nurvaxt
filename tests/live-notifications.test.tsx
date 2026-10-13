@@ -78,13 +78,13 @@ test('onboarding invitation navigates to the guide without changing system setti
   expect(Alarm!.openLiveNotificationSettings).not.toHaveBeenCalled();
 });
 
-test('release guide uses only app-specific live settings and explains the imminent window', async () => {
+test('release guide uses only app-specific live settings and explains the status chip format', async () => {
   await render(
     <ThemeProvider>
       <LiveNotifications />
     </ThemeProvider>,
   );
-  expect(screen.getByText(/Canlı nişan son 30 dəqiqədə/)).toBeOnTheScreen();
+  expect(screen.getByText(/Canlı nişan növbəti namaza qədər görünür/)).toBeOnTheScreen();
   expect(screen.queryByText(/Developer options|Build number|7 dəfə/)).not.toBeOnTheScreen();
   expect(Alarm!.openLiveNotificationSettings).not.toHaveBeenCalled();
   await fireEvent.press(screen.getByText('Canlı bildiriş ayarını aç'));

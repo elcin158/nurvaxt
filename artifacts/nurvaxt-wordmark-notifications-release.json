@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-10-13T09:21:11.727771+00:00",
+  "apk": "artifacts/nurvaxt-wordmark-notifications-release.apk",
+  "version": "1.0.6",
+  "versionCode": 7,
+  "applicationId": "az.nurvaxt.app",
+  "bytes": 106062400,
+  "sha256": "5768717fa5e81e206c09094961514eec09d08062d1cf0e674f24e0232954be45",
+  "certificateSha256": "01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e",
+  "signatureVerified": true,
+  "matchesPreviousReleaseCertificate": true,
+  "abis": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86",
+    "x86_64"
+  ],
+  "embeddedBundleBytes": 3728940,
+  "countdownResourcesVerified": true,
+  "packagedNotificationIconsMatchSource": [
+    "nodpi countdown wordmark",
+    "mdpi",
+    "hdpi",
+    "xhdpi",
+    "xxhdpi",
+    "xxxhdpi"
+  ],
+  "notificationWordmarkLetterComponents": 7,
+  "notificationCrescentRemoved": true,
+  "finalHourIconAboveCount": true,
+  "typecheckPassed": true,
+  "assetGeneratorLintPassed": true,
+  "notificationJestTestsPassed": 23,
+  "nativeUnitTestsPassed": 12,
+  "androidInstrumentationTestsPassed": 7,
+  "displayCombinationsTested": 48,
+  "releaseVitalLintPassed": true,
+  "physicalDeviceVerified": false,
+  "debuggable": false,
+  "emulatorVisualVerified": true,
+  "emulatorInstalledApkMatchesArtifact": true,
+  "qaReport": "docs/wordmark-notifications/verification.json"
+}

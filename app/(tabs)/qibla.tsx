@@ -67,9 +67,19 @@ export default function Qibla() {
         <View style={{ flex: 1 }}>
           <AppText variant="title">Qiblə</AppText>
         </View>
-        <BrandIcon size={44} />
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            maxWidth: '65%',
+            flexShrink: 1,
+          }}
+        >
+          <CityButton compact />
+          <BrandIcon size={44} />
+        </View>
       </View>
-      <CityButton />
       <ChoiceGroup>
         <Chip
           segment

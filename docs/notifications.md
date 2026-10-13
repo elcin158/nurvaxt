@@ -20,6 +20,10 @@ When reminders are enabled, all five daily prayers receive an at-time notificati
 even when no advance offset is selected. The `Namaz vaxtı bildirişi` switch controls this.
 İmsak remains a separate opt-in event. Quiet hours and global notification disable still apply.
 Existing stored preferences gain the new switches without losing city, sound or offset choices.
+The onboarding 5/10/15-minute choices are independent toggles and can all be selected
+together. They apply to all five daily prayers while preserving İmsak and other saved
+offsets. Each selected offset produces a distinct reminder, alongside the at-time alert.
+The reminders screen retains independent multiple selections for each prayer.
 
 Local module `modules/nurvaxt-alarm` uses PendingIntent-based AlarmManager requests.
 `SCHEDULE_EXACT_ALARM` is declared for user-selected precisely timed religious reminders.
@@ -37,20 +41,27 @@ Android 13+. Prayer reminder delivery remains independent of the countdown foreg
 `Daimi vaxt göstəricisi` defaults on once notifications are enabled, and switching it off posts
 nothing at all — no panel entry and no status-bar slot. While on, a native
 `CountdownService` shows a silent, default-importance ongoing notification and a status icon.
-At one hour or more, the countdown status icon shows only the app's supplied wordmark
-and crescent. Below one hour it stacks that app mark above the remaining-minute count,
-switching to a second count below one minute. The cutoffs use the actual remaining time;
-numeric counts retain their upward rounding. Text is fitted to the slot width.
-The brief startup notification uses a system clock icon while
-the plan loads. Android controls the square slot
+At one hour or more, the countdown status icon shows only the NurVaxt wordmark, with the
+crescent removed. Below one hour it stacks that same wordmark above the remaining-minute
+count, switching to a second count below one minute.
+The cutoffs use the actual remaining time; numeric counts retain their upward rounding.
+Text is fitted to the slot width. The brief startup notification uses the same application mark,
+decoded locally and sent as bitmap bytes while the plan loads.
+Android controls the square slot
 dimensions; increasing bitmap resolution cannot enlarge it.
 The earlier side-by-side implementation measured 13 px for each shape on the connected Samsung
 and was rejected as too small; its screenshots are retained as historical evidence.
 
-On Android 16 QPR2 (full SDK 36.1)+, the last 30 minutes before the next verified prayer can request a public
-Android Live Update. Earlier hours remain an ordinary, expandable permanent countdown. The
-native `ProgressStyle` tracks that 30-minute interval through amber/coral segments and a clock
-marker. The header/status-chip countdown is rendered by SystemUI. The notification validates `hasPromotableCharacteristics()` before choosing the native card and declares
+On Android 16 QPR2 (full SDK 36.1)+, the whole countdown to the next verified prayer can request a public
+Android Live Update. The native `ProgressStyle` tracks the interval since the previous prayer
+through normal/amber/coral segments (the last two cover the final 30 and 15 minutes) without a
+custom tracker icon; with no previous prayer it covers the final 30 minutes. SystemUI prefers a
+chronometer over `shortCriticalText` but leaves the chip icon-only for countdowns above one hour,
+so there the chronometer is removed and the chip shows minute-rounded-up hours:minutes text,
+refreshed by the minute service tick and an exact one-hour boundary alarm; the final hour uses the
+SystemUI minutes:seconds chronometer.
+The promoted card keeps the plain wordmark small icon because the chip already shows the time;
+the stacked wordmark/minute icon is used only by the ordinary fallback card. The notification validates `hasPromotableCharacteristics()` before choosing the native card and declares
 `POST_PROMOTED_NOTIFICATIONS`, requests `android.requestPromotedOngoing`, stays ongoing and
 contains no custom RemoteViews. Promotion also requires `canPostPromotedNotifications()`;
 Android and the manufacturer determine whether the eligible notification is actually promoted.
@@ -70,7 +81,7 @@ Samsung SDK 36.0 and other unsupported phones keep the ordinary system-expandabl
 The optional Samsung developer-test path has been removed at the user's request. The app no
 longer reads its secure switch, emits private ongoing-activity extras or opens Developer options.
 Unsupported phones have no Live Updates setup invitation; the ordinary countdown continues.
-Public SDK 36.1+ retains the permission check, imminent window and dismissal suppression.
+Public SDK 36.1+ retains the permission check and dismissal suppression.
 
 Official references: [Live Updates](https://developer.android.com/develop/ui/views/notifications/live-update)
 and [ProgressStyle](https://developer.android.com/reference/android/app/Notification.ProgressStyle).
@@ -79,10 +90,11 @@ system expander. The earlier Samsung developer-test screenshots in `docs/modern-
 are historical design evidence, not proof of public Live Update support on that phone. The
 reverted Samsung experiment is described in `docs/dual-live-updates` as historical work.
 
-The `notification_icon` asset and native prayer reminders use a clock.
-Asset generation and Expo prebuild preserve that reminder clock.
-The ongoing countdown shows the app mark alone at one hour or more and stacks it above
-its remaining-minute/second count in the final hour. It sends the artwork as bitmap bytes
+The `notification_icon` asset and native prayer reminders use only the supplied NurVaxt
+lettering. Asset generation masks out the crescent before fitting the wordmark, and Expo
+prebuild preserves that notification artwork. The ongoing countdown shows the wordmark
+at one hour or more and stacks it above its remaining-minute/second count in the final hour.
+Startup and independent reminders use the same crescent-free wordmark. It sends the artwork as bitmap bytes
 to SystemUI, so the small icon does not depend on resolving an app resource in another process.
 Launcher icons retain the app artwork.
 The notification panel uses `DecoratedCustomViewStyle`, preserving Android's header and expander.
@@ -91,9 +103,9 @@ Its custom layouts may contain only `@RemoteView` classes — `LinearLayout`,
 `FrameLayout`, `TextView`, `ImageView`, `ProgressBar`, `Chronometer` and the like. A plain
 `android.view.View`, even as a hairline divider, fails SystemUI inflation and crashes the app with
 `BadForegroundServiceNotificationException`, so dividers are 1 dp `ImageView`s with a background. Its compact content fits the 48 dp system limit and shows a 26 sp live countdown
-beside the prayer/time. Expanded content groups the prayer and time beside a 36 dp symbol badge,
+beside the prayer/time. Expanded content groups the prayer and time beside an optional 36 dp urgency badge,
 with a right-aligned 32 sp countdown, urgency text and a slim rounded progress track.
-The symbol changes to a circle at 30 minutes and a diamond at 15 minutes;
+The badge is hidden above 30 minutes, shows a circle at 30 minutes and a diamond at 15 minutes;
 blue/amber/coral colors have separate light/dark resources. Only that one urgency accent is
 colored: the badge, tracks, dividers and secondary meters use neutral light/dark resources, and
 notification text inherits Android's notification styles instead of a fixed background/text
@@ -129,7 +141,7 @@ restores from the durable plan after supported boot/time/package broadcasts and 
 restart. Android force-stop/Task Manager stop and OEM restrictions can still stop it until launch.
 
 Every service start first calls `ServiceCompat.startForeground()` with a fresh ordinary startup
-notification that uses a system icon and no custom layouts. Cached custom cards are never reused
+notification that uses the application mark as bitmap bytes and no custom layouts. Cached custom cards are never reused
 for foreground acknowledgement. Plan decoding, bitmap/RemoteViews preparation and Live
 Update checks run after that acknowledgement. Disabled, exhausted or invalid plans still remove
 the notification and stop the service. Preparation failures are saved in countdown diagnostics

@@ -67,7 +67,8 @@ export default function LiveNotifications() {
           </View>
         </View>
         <AppText variant="caption" style={{ color: colors.muted, marginTop: 16 }}>
-          Canlı nişan son 30 dəqiqədə görünür. Əvvəlki saatlarda adi daimi geri sayım qalır.
+          Canlı nişan növbəti namaza qədər görünür: bir saatdan çox qalanda saat:dəqiqə, son saatda
+          dəqiqə:saniyə.
         </AppText>
       </Card>
       {access.mode === 'unsupported' ? (
@@ -107,7 +108,7 @@ export default function LiveNotifications() {
             </View>
             <AppText style={{ color: colors.muted, marginTop: 16 }}>
               {access.enabled
-                ? 'Namaza son 30 dəqiqədə sistem canlı nişanı göstərə bilər. Görünüş telefonun dəstəyindən və sistem ayarlarından asılıdır.'
+                ? 'Namaza qalan vaxtı sistem canlı nişanda göstərə bilər. Görünüş telefonun dəstəyindən və sistem ayarlarından asılıdır.'
                 : 'Açılan NurVaxt bildiriş ayarında canlı bildirişlərə icazə verin.'}
             </AppText>
             {access.canOpenSettings && (

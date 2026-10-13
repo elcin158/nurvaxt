@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-10-13T05:47:17.824842+00:00",
+  "apk": "artifacts/nurvaxt-clean-notifications-release.apk",
+  "version": "1.0.6",
+  "versionCode": 7,
+  "applicationId": "az.nurvaxt.app",
+  "bytes": 106855208,
+  "sha256": "f33e44716200482d77f378c80618cff465cd4fd75330ce6efde4946e34dd0520",
+  "certificateSha256": "01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e",
+  "signatureVerified": true,
+  "matchesPreviousReleaseCertificate": true,
+  "debuggable": false,
+  "abis": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86",
+    "x86_64"
+  ],
+  "countdownResourcesVerified": true,
+  "clockAndCrescentNotificationResourcesRemoved": true,
+  "nativeUnitTestsPassed": 12,
+  "notificationJestTestsPassed": 23,
+  "androidInstrumentationTestsPassed": 7,
+  "displayCombinationsTested": 48,
+  "typecheckPassed": true,
+  "assetGeneratorLintPassed": true,
+  "releaseVitalLintPassed": true,
+  "physicalDeviceVerified": false,
+  "emulatorVisualVerified": true,
+  "countdownLayouts": {
+    "nurvaxt_countdown_compact": {
+      "id": "0x7f0d0088",
+      "packagedXml": "res/k2.xml",
+      "viewIdsVerified": [
+        "countdown_prayer",
+        "countdown_stage",
+        "countdown_timer"
+      ]
+    },
+    "nurvaxt_countdown_expanded": {
+      "id": "0x7f0d0089",
+      "packagedXml": "res/Nr.xml",
+      "viewIdsVerified": [
+        "countdown_prayer",
+        "countdown_time",
+        "countdown_stage",
+        "countdown_timer",
+        "countdown_symbol",
+        "countdown_progress",
+        "countdown_kerahat",
+        "countdown_kerahat_label",
+        "countdown_kerahat_stage",
+        "countdown_kerahat_timer"
+      ]
+    }
+  },
+  "emulatorInstalledApkMatchesArtifact": true,
+  "emulatorPrayerReminderDelivered": true,
+  "qaReport": "docs/clean-notifications/verification.json"
+}

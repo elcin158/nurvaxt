@@ -313,6 +313,47 @@ test('after İşa the hero keeps Sübh primary without a separate sunrise sectio
   expect(screen.queryByText('Sabah · 06:45')).not.toBeOnTheScreen();
   expect(screen.queryByLabelText('İşadan günçıxmaya qədər keçən vaxt')).not.toBeOnTheScreen();
 });
+test('hero progress continues across midnight until Sübh and resets at its start', async () => {
+  jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T19:59:59Z'));
+  const onPrayerChange = jest.fn();
+  const card = () => (
+    <ThemeProvider>
+      <NextPrayerCard onPrayerChange={onPrayerChange} />
+    </ThemeProvider>
+  );
+  const view = await render(card());
+  expect(screen.getByRole('progressbar')).toHaveProp('accessibilityValue', {
+    min: 0,
+    max: 100,
+    now: 46,
+  });
+
+  jest.mocked(useToday).mockReturnValue('2026-10-09');
+  jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T20:00:00Z'));
+  await view.rerender(card());
+  expect(screen.getByRole('progressbar')).toHaveProp('accessibilityValue', {
+    min: 0,
+    max: 100,
+    now: 46,
+  });
+  expect(screen.getByText('Sübh')).toBeOnTheScreen();
+
+  jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T22:00:00Z'));
+  await view.rerender(card());
+  expect(screen.getByRole('progressbar')).toHaveProp('accessibilityValue', {
+    min: 0,
+    max: 100,
+    now: 66,
+  });
+
+  jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-09T01:26:00Z'));
+  await view.rerender(card());
+  expect(screen.getByRole('progressbar', { name: 'Sübh vaxtının irəliləyişi' })).toHaveProp(
+    'accessibilityValue',
+    { min: 0, max: 100, now: 0 },
+  );
+  expect(onPrayerChange).toHaveBeenLastCalledWith('fajr', '2026-10-09', 'end');
+});
 test('Sübh hero counts down to sunrise and changes to Zöhr exactly at sunrise', async () => {
   const day = datasetSchema.parse(dataset).records[7]!;
   const onPrayerChange = jest.fn();

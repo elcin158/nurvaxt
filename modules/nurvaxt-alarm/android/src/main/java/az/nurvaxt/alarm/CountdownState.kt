@@ -108,7 +108,7 @@ object CountdownState {
 
   fun armBoundary(context: Context, plan: CountdownPlan, prayer: CountdownPrayer, now: Long) {
     // Only the next visual threshold wakes the device; the per-second timer is system-rendered.
-    val prayerBoundary = listOf(prayer.timestamp - 1_800_000, prayer.timestamp - 900_000, prayer.timestamp)
+    val prayerBoundary = listOf(prayer.timestamp - CountdownStatusTime.HOUR, prayer.timestamp - 1_800_000,prayer.timestamp - 900_000, prayer.timestamp)
       .firstOrNull { it > now }
     val timestamp = listOfNotNull(prayerBoundary, CountdownSolar.boundary(plan.kerahat, now))
       .minOrNull() ?: return

@@ -62,8 +62,8 @@ export default function Reminders() {
       header={<ScreenHeader title="Xatırlatmalar" action="close" onBack={() => router.back()} />}
     >
       <AppText style={{ color: colors.muted }}>
-        Namaz vaxtı çatanda bildiriş alın. Əlavə olaraq hər namazdan əvvəl xatırlatma seçə
-        bilərsiniz.
+        Namaz vaxtı çatanda bildiriş alın. Hər namaz üçün bir neçə vaxtı birlikdə seçə bilərsiniz.
+        Seçdiyiniz hər vaxtda ayrıca xatırlatma gələcək.
       </AppText>
       <Card>
         <SettingsRow
@@ -81,7 +81,7 @@ export default function Reminders() {
         {Platform.OS === 'android' && (
           <SettingsRow
             title="Daimi vaxt göstəricisi"
-            subtitle="Yuxarı sətirdə NurVaxt nişanı, son 99 dəqiqədə qalan dəqiqələr · paneldə iri canlı geri sayım"
+            subtitle="Yuxarı sətirdə NurVaxt nişanı, son saatda ikonun altında qalan vaxt · paneldə iri canlı geri sayım"
           >
             <Toggle
               label="Daimi vaxt göstəricisi"

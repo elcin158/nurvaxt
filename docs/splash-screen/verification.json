@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-10-13T06:29:28.524992+00:00",
+  "apk": "artifacts/nurvaxt-splash-release.apk",
+  "sha256": "c121881942d5690a70c3d15756530eff0f58a6c2f77746cf2376dcf0aa6bb1fd",
+  "bytes": 106064512,
+  "certificateSha256": "01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e",
+  "signatureVerified": true,
+  "installedApkMatchesArtifact": true,
+  "emulator": "emulator-5582",
+  "androidApi": 35,
+  "freshDataLaunchLightVerified": true,
+  "freshDataLaunchDarkVerified": true,
+  "onboardingReachedInBothThemes": true,
+  "packagedSplashDensities": [
+    "mdpi",
+    "night-mdpi",
+    "hdpi",
+    "night-hdpi",
+    "xhdpi",
+    "night-xhdpi",
+    "xxhdpi",
+    "night-xxhdpi",
+    "xxxhdpi",
+    "night-xxxhdpi"
+  ],
+  "physicalDeviceTested": false,
+  "iosAssetsGenerated": true,
+  "iosRuntimeTested": false
+}

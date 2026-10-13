@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Linking, Pressable, useWindowDimensions, View } from 'react-native';
+import { Pressable, useWindowDimensions, View } from 'react-native';
 import { AppText, Icon } from '../../components/ui';
 import { useActiveClock } from '../../hooks/useActiveClock';
 import { usePrayerDays } from '../../hooks/usePrayerDays';
@@ -7,7 +7,7 @@ import { useToday } from '../../hooks/useToday';
 import { usePreferences } from '../../store/preferences';
 import { tokens, useTheme } from '../../theme';
 import { formatCountdown, formatTime } from '../../utils/time';
-import { KERAHAT_SOURCE_URL, kerahatStatus, kerahatWindows, solarClock } from './solar';
+import { kerahatStatus, kerahatWindows, solarClock } from './solar';
 
 export function KerahatTimesCard({ compact = false, date }: { compact?: boolean; date?: string }) {
   const today = useToday();
@@ -210,17 +210,9 @@ export function KerahatTimesCard({ compact = false, date }: { compact?: boolean;
               Günçıxmadan sonrakı 45 dəqiqə, Zöhrdən əvvəlki 10 dəqiqə və günbatımından əvvəlki 45
               dəqiqə göstərilir. Bunlar günəşin mövqeyinə bağlı təxmini intervallardır.
             </AppText>
-            <Pressable
-              accessibilityRole="link"
-              onPress={() => {
-                void Linking.openURL(KERAHAT_SOURCE_URL);
-              }}
-              style={{ minHeight: 44, justifyContent: 'center' }}
-            >
-              <AppText variant="caption" style={{ color: colors.selectedText }}>
-                Mənbə: Diyanət · kərahət vaxtları
-              </AppText>
-            </Pressable>
+            <AppText variant="caption" style={{ color: colors.muted }}>
+              Mənbə: Diyanət · kərahət vaxtları
+            </AppText>
           </View>
         )}
       </View>

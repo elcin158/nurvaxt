@@ -7,7 +7,7 @@ export default function TabsLayout() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { fontScale } = useWindowDimensions();
-  const bottomPadding = Math.max(insets.bottom, 8);
+  const bottomPadding = insets.bottom + 8;
   return (
     <Tabs
       screenOptions={{
@@ -18,17 +18,18 @@ export default function TabsLayout() {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
           elevation: 0,
-          height: 52 + bottomPadding + Math.max(0, fontScale - 1) * 24,
-          paddingTop: 3,
+          height: 48 + bottomPadding + Math.max(0, fontScale - 1) * 24,
+          paddingTop: 4,
           paddingBottom: bottomPadding,
         },
         tabBarLabelStyle: {
           fontFamily: tokens.font.medium,
           fontSize: 11,
-          lineHeight: 16,
+          lineHeight: 14,
           flexShrink: 0,
         },
-        tabBarItemStyle: { minHeight: 44, paddingVertical: 1 },
+        tabBarIconStyle: { height: 22 },
+        tabBarItemStyle: { minHeight: 44, paddingVertical: 0 },
       }}
     >
       <Tabs.Screen

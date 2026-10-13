@@ -25,4 +25,3 @@ export const LABELS: Record<PrayerField, string> = {
   isha: 'İşa',
   midnight: 'Gecəyarısı',
 };
-export const SOURCE_URL = 'https://www.qafqazislam.com/index.php?lang=az&sectionid=123';

@@ -1,0 +1,26 @@
+{
+  "serial": "emulator-5584",
+  "androidSdk": 35,
+  "physicalDeviceTested": false,
+  "fixtureTimetable": true,
+  "deviceClockChanged": false,
+  "screenshots": [
+    "docs/wordmark-notifications/wordmark-countdown.png",
+    "docs/wordmark-notifications/wordmark-countdown-statusbar.png",
+    "docs/wordmark-notifications/stacked-minutes.png",
+    "docs/wordmark-notifications/stacked-minutes-statusbar.png",
+    "docs/wordmark-notifications/stacked-seconds.png",
+    "docs/wordmark-notifications/stacked-seconds-statusbar.png",
+    "docs/wordmark-notifications/prayer-reminder.png"
+  ],
+  "apkSha256": "5768717fa5e81e206c09094961514eec09d08062d1cf0e674f24e0232954be45",
+  "installedApkMatchesArtifact": true,
+  "notificationCrescentRemovedVisuallyVerified": true,
+  "finalHourIconAboveMinuteCountVisuallyVerified": true,
+  "finalMinuteIconAboveSecondCountVisuallyVerified": true,
+  "prayerReminderWordmarkVisuallyVerified": true,
+  "nativeUnitTestsPassed": 12,
+  "notificationJestTestsPassed": 23,
+  "androidInstrumentationTestsPassed": 7,
+  "displayCombinationsTested": 48
+}

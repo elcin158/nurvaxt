@@ -4,8 +4,6 @@ import type { PrayerDay } from '../../types/data';
 import { atTime } from '../../utils/time';
 
 const MINUTE = 60_000;
-export const KERAHAT_SOURCE_URL =
-  'https://fetva.diyanet.gov.tr/tr/fetva/mekruh-vakitler-hangileridir-hangi-vakitlerde-kaza-ve-hangi-vakitlerde-nafile-namaz-kilinmaz/0193c42d-52b7-7186-d5b4-f1d3c950ad73';
 
 export type KerahatWindow = {
   id: 'morning' | 'noon' | 'evening';

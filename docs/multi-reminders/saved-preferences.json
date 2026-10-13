@@ -1,0 +1,67 @@
+{
+  "locationId": "qmi-1",
+  "recentLocations": [],
+  "theme": "system",
+  "timeFormat": "24",
+  "showHijri": false,
+  "showKerahat": false,
+  "kerahatWarnings": {
+    "morning": 45,
+    "noon": 45,
+    "evening": 45
+  },
+  "hijriAdjustment": 0,
+  "visibleFields": [
+    "imsak",
+    "fajr",
+    "sunrise",
+    "dhuhr",
+    "asr",
+    "sunset",
+    "maghrib",
+    "isha",
+    "midnight"
+  ],
+  "qiblaSource": "city",
+  "onboardingComplete": true,
+  "reminders": {
+    "enabled": true,
+    "atPrayerTime": true,
+    "ongoingCountdown": true,
+    "offsets": {
+      "imsak": [],
+      "fajr": [
+        5,
+        10,
+        15
+      ],
+      "dhuhr": [
+        5,
+        10,
+        15
+      ],
+      "asr": [
+        5,
+        10,
+        15
+      ],
+      "maghrib": [
+        5,
+        10,
+        15
+      ],
+      "isha": [
+        5,
+        10,
+        15
+      ]
+    },
+    "sound": "default",
+    "vibration": true,
+    "quietHours": {
+      "enabled": false,
+      "start": "23:00",
+      "end": "05:00"
+    }
+  }
+}

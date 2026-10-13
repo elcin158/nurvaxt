@@ -15,7 +15,7 @@ export function LiveNotificationEntry({ onboarding = false }: { onboarding?: boo
       <SettingsRow
         title="Canlı göstərici"
         subtitle={
-          access.enabled ? 'Son 30 dəqiqədə canlı geri sayım' : 'Android canlı bildiriş ayarı'
+          access.enabled ? 'Növbəti namaza canlı geri sayım' : 'Android canlı bildiriş ayarı'
         }
         onPress={open}
       />
@@ -30,7 +30,7 @@ export function LiveNotificationEntry({ onboarding = false }: { onboarding?: boo
         <AppText style={{ color: colors.muted }}>
           {access.enabled
             ? 'Canlı bildiriş üçün sistem ayarı aktivdir.'
-            : 'Namaza son 30 dəqiqədə qalan vaxt yuxarı sətirdə görünsün.'}
+            : 'Namaza qalan vaxt yuxarı sətirdə görünsün.'}
         </AppText>
         <Button
           title={access.enabled ? 'Görünüşə bax' : 'Canlı göstəricini quraşdır'}
