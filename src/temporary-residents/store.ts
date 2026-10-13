@@ -1,4 +1,6 @@
 import { pending, type ReportState, type ResidentData, type ResidentDraft, type ServerResidentDetail, type SyncConflict, type SyncReceipt, type SyncStatusItem } from './types';
+import { appendEvents, locateEvents, type StepChange } from '../history/events';
+import type { Fix } from '../location/fix';
 import type { LocalStorage } from '../storage/encryptedStorage';
 
 export type { LocalStorage };
@@ -45,7 +47,9 @@ export class ResidentStore {
     // An edit made during upload remains pending; acknowledge only the revision actually sent.
     return this.put({ ...current, syncedRevision: Math.max(current.syncedRevision, sent.revision), syncedAt: this.now(),
       server: { ...current.server, rootReportId: state.rootReportId, reportId: state.reportId, version: state.version, personalAccountNumber: receipt.personalAccountNumber },
-      status: { ...state, changed: false, checkedAt: this.now() }, conflict: undefined, lastError: undefined });
+      status: { ...state, changed: false, checkedAt: this.now() }, conflict: undefined, lastError: undefined,
+      // The server wrote the history it was sent; saves made during the upload go with the next sync.
+      events: current.events?.filter(event => !sent.events?.some(x => x.id === event.id)) });
   }
   /** Stores a report checked out from the server, or adopts the server copy for an existing record. */
   adopt(id: string, revision: number, report: ServerResidentDetail): ResidentDraft {
@@ -58,7 +62,8 @@ export class ResidentStore {
       revision: nextRevision, syncedRevision: nextRevision, syncedAt: now,
       server: { rootReportId: report.state.rootReportId, reportId: report.state.reportId, version: report.state.version,
         personalAccountNumber: report.accountNumber, downloaded: current ? current.server?.downloaded : true },
-      status: { ...report.state, changed: false, checkedAt: now },
+      // Taking the server copy discards the local changes, and with them their history.
+      status: { ...report.state, changed: false, checkedAt: now }, events: undefined,
     });
   }
   conflict(id: string, conflict: SyncConflict) {
@@ -93,6 +98,13 @@ export class ResidentStore {
   }
   findByRoot(rootReportId: number): ResidentDraft | null {
     return this.list().find(x => x.server?.rootReportId === rootReportId) ?? null;
+  }
+  /** Adds step saves to the record's history; a position given also confirms the saves still waiting for one. */
+  record(id: string, steps: StepChange[], location: Fix | null): ResidentDraft | null {
+    const current = this.get(id);
+    if (!current || !steps.length && !(location && current.events?.some(event => !event.location))) return current;
+    const events = appendEvents(current.events, steps, location, this.uuid, this.now());
+    return this.put({ ...current, events: location ? locateEvents(events, location) : events });
   }
   fail(id: string, message: string) {
     const current = this.get(id);

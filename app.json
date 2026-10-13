@@ -37,6 +37,12 @@
         }
       ],
       "react-native-quick-crypto",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Hər addım saxlananda və əməliyyat icra ediləndə yeriniz GPS ilə qeyd olunur. Bu, sahə işinin təsdiqi üçündür."
+        }
+      ],
       "expo-router",
       "expo-sqlite",
       "@react-native-community/datetimepicker",

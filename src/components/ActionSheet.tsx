@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, colors, ui } from './ResidentControls';
 
 /** An item decides itself whether the sheet closes, so it can open a follow-up dialog. */
@@ -8,21 +10,26 @@ export type SheetItem = { label: string; onPress(): void; danger?: boolean; disa
 export function ActionSheet({ title, subtitle, items, loading, error, onClose }: {
   title: string; subtitle?: string; items: SheetItem[]; loading?: boolean; error?: string; onClose(): void;
 }) {
-  return <Modal visible transparent animationType="fade" onRequestClose={onClose}>
-    <Pressable accessibilityLabel="Menyunu bağla" style={styles.backdrop} onPress={onClose}>
-      <Pressable style={styles.sheet} onPress={() => {}}>
+  const insets = useSafeAreaInsets();
+  // The backdrop fades in and the sheet slides up from the bottom edge, clear of the home indicator / gesture bar.
+  return <Modal visible transparent statusBarTranslucent navigationBarTranslucent animationType="none" onRequestClose={onClose}>
+    <Animated.View entering={FadeIn.duration(180)} style={styles.backdrop}>
+      <Pressable accessibilityLabel="Menyunu bağla" style={StyleSheet.absoluteFill} onPress={onClose} />
+      <Animated.View entering={SlideInDown.duration(220)} style={[styles.sheet, { paddingBottom: insets.bottom + 20 }]}>
         <Text style={styles.title}>{title}</Text>{!!subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
         {loading ? <ActivityIndicator style={{ margin: 24 }} color={colors.primary} />
-          : <>{!!error && <Text accessibilityRole="alert" style={styles.error}>{error}</Text>}
+          : <ScrollView style={{ flexGrow: 0 }} contentContainerStyle={{ gap: 6 }}>
+            {!!error && <Text accessibilityRole="alert" style={styles.error}>{error}</Text>}
             {items.map(item => <Pressable key={item.label} accessibilityRole="menuitem" accessibilityState={{ disabled: item.disabled }} disabled={item.disabled}
               onPress={item.onPress} style={({ pressed }) => [styles.item, (pressed || item.disabled) && { opacity: 0.5 }]}>
               <Text style={[styles.itemText, item.danger && { color: '#B91C1C' }]}>{item.label}</Text>
               {!!item.hint && <Text style={styles.hint}>{item.hint}</Text>}
             </Pressable>)}
-            {!items.length && !error && <Text style={styles.hint}>Bu qeyd üzrə əməliyyat yoxdur.</Text>}</>}
+            {!items.length && !error && <Text style={styles.hint}>Bu qeyd üzrə əməliyyat yoxdur.</Text>}
+          </ScrollView>}
         <Button secondary label="Bağla" onPress={onClose} />
-      </Pressable>
-    </Pressable>
+      </Animated.View>
+    </Animated.View>
   </Modal>;
 }
 /** Confirmation in the wording of Tbu.Web's workflow dialog, optionally asking for a reason. */
@@ -45,7 +52,7 @@ export function ConfirmDialog({ title, text, confirmLabel, danger, descriptionRe
 }
 const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: '#0F172A66', justifyContent: 'flex-end' },
-  sheet: { backgroundColor: '#FFF', borderTopLeftRadius: 14, borderTopRightRadius: 14, padding: 20, paddingBottom: 32, gap: 6, width: '100%', maxWidth: 560, alignSelf: 'center' },
+  sheet: { backgroundColor: '#FFF', borderTopLeftRadius: 14, borderTopRightRadius: 14, padding: 20, gap: 6, width: '100%', maxWidth: 560, maxHeight: '85%', alignSelf: 'center' },
   center: { flex: 1, backgroundColor: '#0F172A66', justifyContent: 'center', padding: 20 },
   dialog: { backgroundColor: '#FFF', borderRadius: 12, padding: 20, gap: 14, width: '100%', maxWidth: 480, alignSelf: 'center' },
   title: { color: colors.text, fontSize: 17, fontWeight: '600', lineHeight: 25 }, subtitle: { color: colors.muted, fontSize: 13, lineHeight: 20, marginBottom: 6 },

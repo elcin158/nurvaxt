@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { ActionSheet, ConfirmDialog, type SheetItem } from '../components/ActionSheet';
-import { Button, colors } from '../components/ResidentControls';
+import { HistorySheet } from '../history/HistorySheet';
 import { useHouseholds } from './context';
 import { getHistory, getServerHousehold } from './server';
-import { pending, type HistoryItem, type ServerHouseholdDetail, type ServerHouseholdItem, type WorkflowAction } from './types';
+import { pending, type ServerHouseholdDetail, type ServerHouseholdItem, type WorkflowAction } from './types';
 
 type Dialog = { action: WorkflowAction; title: string; confirmLabel: string; danger?: boolean; descriptionRequired?: boolean; syncFirst?: string };
 const message = (cause: unknown, fallback: string) => cause instanceof Error ? cause.message : fallback;
@@ -19,7 +17,7 @@ export function ServerActions({ item, onClose, onDone }: { item: ServerHousehold
   const households = useHouseholds();
   const [detail, setDetail] = useState<ServerHouseholdDetail | null>(null), [error, setError] = useState('');
   const [dialog, setDialog] = useState<Dialog | null>(null), [busy, setBusy] = useState(false), [dialogError, setDialogError] = useState('');
-  const [history, setHistory] = useState<HistoryItem[] | null>(null), [showHistory, setShowHistory] = useState(false), [opening, setOpening] = useState(false);
+  const [showHistory, setShowHistory] = useState(false), [opening, setOpening] = useState(false);
   useEffect(() => {
     let cancelled = false;
     void households.accessToken().then(token => getServerHousehold(token, item.reportId))
@@ -38,11 +36,6 @@ export function ServerActions({ item, onClose, onDone }: { item: ServerHousehold
       onClose(); router.push({ pathname: '/households/[id]', params: { id } });
     } catch (cause) { setError(message(cause, 'Təsərrüfat cihaza endirilmədi.')); }
     finally { setOpening(false); }
-  }
-  async function openHistory() {
-    setShowHistory(true);
-    try { setHistory(await getHistory(await households.accessToken(), item.reportId)); }
-    catch (cause) { setShowHistory(false); setError(message(cause, 'Tarixçə yüklənmədi.')); }
   }
   async function confirm(description: string) {
     if (!dialog || !detail) return;
@@ -66,7 +59,7 @@ export function ServerActions({ item, onClose, onDone }: { item: ServerHousehold
   }
   const items: SheetItem[] = !detail ? [] : [
     { label: 'Ətraflı bax', onPress: () => { onClose(); router.push({ pathname: '/households/server/[reportId]', params: { reportId: String(detail.state.reportId) } }); } },
-    { label: 'Tarixçə', onPress: () => void openHistory() },
+    { label: 'Tarixçə', onPress: () => setShowHistory(true) },
     ...a?.canEdit ? [{ label: bound ? 'Redaktə et (cihazdakı qeyd)' : 'Redaktə et', onPress: () => void openEditor(),
       hint: bound ? undefined : 'Təsərrüfat redaktə üçün cihaza endiriləcək. Dəyişiklik etmədən çıxsanız, cihazdan silinəcək.' }] : [],
     ...a?.canSubmitForApprovalWhenCompleted ? [{ label: 'Təsdiqə göndər', disabled: !a.canSubmitForApproval,
@@ -84,22 +77,6 @@ export function ServerActions({ item, onClose, onDone }: { item: ServerHousehold
       loading={(!detail && !error) || opening} error={error} items={items} onClose={close} />}
     {dialog && <ConfirmDialog title={dialog.title} confirmLabel={dialog.confirmLabel} danger={dialog.danger} descriptionRequired={dialog.descriptionRequired}
       busy={busy} error={dialogError} onConfirm={description => void confirm(description)} onCancel={() => { if (!busy) { setDialog(null); setDialogError(''); onClose(); } }} />}
-    {showHistory && <Modal visible animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <SafeAreaView style={styles.history}><View style={styles.historyHeader}><Text style={styles.title}>Təsərrüfatın tarixçəsi</Text><Button secondary label="Bağla" onPress={onClose} /></View>
-        {!history ? <ActivityIndicator style={{ margin: 40 }} color={colors.primary} /> : <FlatList data={history} keyExtractor={(x, i) => `${x.actionDate}-${i}`}
-          ListEmptyComponent={<Text style={styles.muted}>Tarixçə boşdur.</Text>}
-          renderItem={({ item: h }) => <View style={styles.historyRow}>
-            <Text style={styles.label}>{h.action}</Text>
-            <Text style={styles.muted}>{new Date(h.actionDate).toLocaleString('az-AZ')}{h.actorName ? ` · ${h.actorName}` : ''}</Text>
-            <Text style={styles.muted}>{h.previousStatus} → {h.newStatus}</Text>
-            {!!h.description && <Text style={styles.value}>{h.description}</Text>}
-          </View>} />}
-      </SafeAreaView>
-    </Modal>}
+    {showHistory && <HistorySheet title="Təsərrüfatın tarixçəsi" load={async () => getHistory(await households.accessToken(), item.reportId)} onClose={onClose} />}
   </>;
 }
-const styles = StyleSheet.create({
-  history: { flex: 1, backgroundColor: '#FFF', padding: 20, gap: 12 }, historyHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
-  title: { color: colors.text, fontSize: 18, fontWeight: '600' }, historyRow: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: colors.line, gap: 4 },
-  label: { color: colors.text, fontSize: 14, fontWeight: '600' }, value: { color: colors.text, fontSize: 14, lineHeight: 21 }, muted: { color: colors.muted, fontSize: 12, lineHeight: 18 },
-});

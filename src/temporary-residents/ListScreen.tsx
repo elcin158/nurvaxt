@@ -12,6 +12,8 @@ import { NotificationBell } from '../notifications/NotificationBell';
 import { PageMessages, ReferenceStatus } from '../components/ReferenceStatus';
 import { ModuleTabs } from '../components/ModuleTabs';
 import { ActionSheet, ConfirmDialog } from '../components/ActionSheet';
+import { HistorySheet } from '../history/HistorySheet';
+import { getHistory } from './server';
 import { draftNotice } from '../components/StateBanner';
 import { RecordHeader, RecordRow, type RowChip } from '../components/RecordRow';
 import { residentTone } from '../components/StatusChip';
@@ -41,6 +43,7 @@ export default function ListScreen() {
   // Incomplete, locked and deleted records cannot be sent; they wait for the operator instead.
   const selectable = visible.filter(x => pending(x) && !x.deleted && x.status?.canEdit !== false && !incomplete.has(x.id)).map(x => x.id);
   const [menu, setMenu] = useState<ResidentDraft | null>(null), [removing, setRemoving] = useState<ResidentDraft | null>(null);
+  const [history, setHistory] = useState<ResidentDraft | null>(null);
   const selected = selection.filter(id => selectable.includes(id));
   const waiting = residents.drafts.filter(pending).length;
   // The field tablet is 800 dp wide in portrait; from 720 dp the list is Tbu.Web's table, below it phone cards.
@@ -100,11 +103,17 @@ export default function ListScreen() {
     {menu && <ActionSheet title={[menu.data.personal.lastName, menu.data.personal.firstName].filter(Boolean).join(' ') || 'Yeni müvəqqəti yaşayan şəxs'}
       subtitle={draftNotice(menu)?.title} onClose={() => setMenu(null)} items={[
         { label: editable(menu) ? 'Redaktə et' : 'Bax', onPress: () => { setMenu(null); openRecord(menu.id); } },
+        { label: 'Tarixçə', onPress: () => { setHistory(menu); setMenu(null); } },
         ...menu.conflict ? [{ label: 'Fərqlərə bax və qərar ver', onPress: () => { setMenu(null); router.push({ pathname: '/temporary-residents/conflict/[id]', params: { id: menu.id } }); } }] : [],
         { label: menu.server ? 'Cihazdan çıxar' : 'Qaralamanı sil', danger: true, disabled: residents.syncing,
           hint: menu.server && !menu.deleted ? 'Hesabat serverdə qalır, yalnız bu cihazdan silinir.' : undefined,
           onPress: () => { setRemoving(menu); setMenu(null); } },
       ]} />}
+    {/* The steps saved here and not yet sent, above the server's history once the record has reached it. */}
+    {history && <HistorySheet title="Hesabatın tarixçəsi" local={history.events} onClose={() => setHistory(null)}
+      load={history.server && residents.online ? async () => getHistory(await residents.accessToken(), history.server!.reportId) : undefined}
+      note={!history.server ? 'Qeyd hələ serverə göndərilməyib; yalnız cihazdakı addımlar göstərilir.'
+        : !residents.online ? 'Serverdəki tarixçəni görmək üçün internetə qoşulun.' : undefined} />}
     {removing && <ConfirmDialog danger confirmLabel={removing.server ? 'Cihazdan çıxar' : 'Sil'}
       title={removing.server ? 'Qeyd bu cihazdan çıxarılsın?' : 'Qaralama silinsin?'}
       text={!removing.server ? 'Bu qaralama serverə göndərilməyib və birdəfəlik silinəcək.'

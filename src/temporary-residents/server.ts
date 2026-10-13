@@ -1,4 +1,6 @@
 import { apiRequest } from '../auth/api';
+import { eventsToServer } from '../history/events';
+import type { Fix } from '../location/fix';
 import type { CheckoutResult, FieldValue, HistoryItem, PersonalData, ResidentData, ResidentDraft, ServerResidentDetail, ServerResidentPage,
   SyncReceipt, SyncStatusItem, WorkflowAction } from './types';
 
@@ -12,9 +14,10 @@ export const getServerResident = async (accessToken: string, reportId: number) =
   detail(await apiRequest<ServerResidentDetail>('GET', `temporary-residents/reports/${reportId}`, { accessToken }));
 export const getHistory = (accessToken: string, reportId: number) =>
   apiRequest<HistoryItem[]>('GET', `temporary-residents/reports/${reportId}/history`, { accessToken });
-export const runWorkflow = (accessToken: string, reportId: number, action: WorkflowAction, version: number, description?: string) =>
+/** `location` is where the operator took the action; the server refuses a mobile action without one. */
+export const runWorkflow = (accessToken: string, reportId: number, action: WorkflowAction, version: number, location: Fix, description?: string) =>
   apiRequest<{ reportId: number; message: string }>('POST', `temporary-residents/reports/${reportId}/workflow`,
-    { accessToken, body: { action, version, description: description?.trim() || null } });
+    { accessToken, body: { action, version, description: description?.trim() || null, location } });
 export async function checkout(accessToken: string, reportId: number, clientId: string): Promise<CheckoutResult> {
   const value = await apiRequest<CheckoutResult>('POST', `temporary-residents/reports/${reportId}/checkout`, { accessToken, body: { clientId } });
   return { ...value, report: detail(value.report) };
@@ -31,6 +34,7 @@ export const syncResident = (accessToken: string, draft: ResidentDraft, confirme
     clientId: draft.id, revision: draft.revision, knownRootReportId: draft.server?.rootReportId ?? null,
     confirmedVersion: confirmed && draft.conflict?.code === 'VERSION_CONFLICT'
       ? { reportId: draft.conflict.server.state.reportId, version: draft.conflict.server.state.version } : null,
+    events: eventsToServer(draft.events),
     data: draft.data,
   } });
 // The API sends dates as ISO date-times; the form schema works with plain YYYY-MM-DD values.

@@ -4,6 +4,8 @@ import { useAuth } from '../../App';
 import { useReference } from '../reference/context';
 import * as Crypto from 'expo-crypto';
 import { ApiError } from '../auth/api';
+import { historyIssue, type StepChange } from '../history/events';
+import { currentFix, DEFAULT_MAX_ACCURACY, type Fix } from '../location/gps';
 import { openResidentStore } from './deviceStore';
 import type { ResidentStore } from './store';
 import { ownerKey, pending, type Catalog, type ResidentData, type ResidentDraft, type ServerResidentDetail, type WorkflowAction } from './types';
@@ -24,6 +26,10 @@ type Context = {
   /** Drops a server record the device has nothing to send for, e.g. one opened and left unchanged. */
   release(id: string): void;
   workflow(reportId: number, action: WorkflowAction, version: number, description?: string): Promise<string>;
+  /** The GPS error radius, in metres, a position must be within to be recorded. */
+  maxAccuracy: number;
+  /** Records step saves made in the form; `location` also confirms saves still waiting for a position. */
+  record(id: string, steps: StepChange[], location: Fix | null): void;
 };
 const ResidentContext = createContext<Context | null>(null);
 export function useResidents() {
@@ -71,7 +77,8 @@ export function ResidentProvider({ children, enabled }: { children: ReactNode; e
         const accessToken = await authRef.current.getAccessToken();
         if (!live.current) throw new Error('Tətbiq kilidlənib.');
         return syncResident(accessToken, draft, options.confirmOverwrite === true);
-      }, draft => Object.values(validate(draft.data, catalog))[0]);
+      // A record whose saves are not all confirmed by a GPS position is held back, as the server would refuse it.
+      }, draft => historyIssue(draft.events, pending(draft)) ?? Object.values(validate(draft.data, catalog))[0]);
       const result = await sync.selected(ids, (done, total) => {
         if (live.current) setProgress(`${done} / ${total}`);
       }, () => live.current);
@@ -136,7 +143,9 @@ export function ResidentProvider({ children, enabled }: { children: ReactNode; e
   }
   async function workflow(reportId: number, action: WorkflowAction, version: number, description?: string) {
     const local = requireOnline();
-    const result = await runWorkflow(await accessToken(), reportId, action, version, description);
+    // Every mobile action is recorded where it is taken; without a GPS-grade position it is not sent.
+    const location = await currentFix(maxAccuracy);
+    const result = await runWorkflow(await accessToken(), reportId, action, version, location, description);
     const bound = local.list().find(x => x.server?.reportId === reportId);
     if (action === 'delete' && bound) {
       if (pending(bound)) local.markDeleted(bound.id, 'Hesabat serverdə silinib. Lokal məlumatlar cihazda saxlanıldı.');
@@ -145,6 +154,11 @@ export function ResidentProvider({ children, enabled }: { children: ReactNode; e
     } else await refreshStatuses();
     return result.message;
   }
+  const maxAccuracy = catalog?.locationMaxAccuracyMeters ?? DEFAULT_MAX_ACCURACY;
+  const record = (id: string, steps: StepChange[], location: Fix | null) => {
+    const value = store?.record(id, steps, location);
+    if (value) setDrafts(current => current.map(draft => draft.id === id ? value : draft));
+  };
   const save = (id: string, data: ResidentData) => {
     if (!store) throw new Error('Lokal yaddaş hazır deyil.');
     const value = store.save(id, data); setDrafts(current => current.map(draft => draft.id === id ? value : draft)); return value;
@@ -162,7 +176,7 @@ export function ResidentProvider({ children, enabled }: { children: ReactNode; e
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusKey]);
   return <ResidentContext.Provider value={{ store, catalog, drafts, error, online, loading, catalogLoading: reference.loading, syncing, progress, notice, dismiss: () => { setError(''); setNotice(''); }, sync, save, create,
-    accessToken, refreshStatuses, edit, adoptServer, remove, release, workflow }}>
+    accessToken, refreshStatuses, edit, adoptServer, remove, release, workflow, maxAccuracy, record }}>
     {children}
   </ResidentContext.Provider>;
 }

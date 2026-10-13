@@ -68,6 +68,8 @@ export type ReferenceData = {
   landCategories: { id: number; parentId: number | null; code: string; label: string; isComputed: boolean }[];
   /** The admin units where the user may keep accounts. */
   accountAdminUnitIds: number[];
+  /** The GPS error radius the server accepts, in metres; a catalogue downloaded before it existed falls back to 50. */
+  locationMaxAccuracyMeters?: number;
 };
 /** The reference data the forms read: the stored lists and the address register, which may still be downloading. */
 export type ReferenceCatalog = ReferenceData & { addresses: AddressBook };

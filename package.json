@@ -14,6 +14,7 @@
     "expo-file-system": "~57.0.7",
     "expo-linking": "~57.0.11",
     "expo-local-authentication": "~57.0.3",
+    "expo-location": "~57.0.21",
     "expo-network": "~57.0.2",
     "expo-router": "~57.0.24",
     "expo-screen-capture": "~57.0.3",
@@ -63,6 +64,7 @@
     "test:auth": "node --require tsx/cjs tests/auth.test.mjs",
     "test:residents": "node --require tsx/cjs tests/residents.test.mjs",
     "test:households": "node --require tsx/cjs tests/households.test.mjs",
+    "test:history": "node --require tsx/cjs tests/history.test.mjs",
     "export:android": "node scripts/with-env.mjs production export --platform android",
     "export:ios": "node scripts/with-env.mjs production export --platform ios",
     "lint": "expo lint"

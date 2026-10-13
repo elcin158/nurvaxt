@@ -14,6 +14,10 @@ import { useResidents } from './context';
 import { documentSeries, fieldOptions, firstIssue, sections, settlementStatuses, updatePersonal, validate, type Errors } from './schema';
 import { draftNotice, StateBanner } from '../components/StateBanner';
 import { editable, pending, type PersonalData, type ResidentData, type ResidentDraft } from './types';
+import { residentSteps } from './history';
+import { useStepHistory } from '../history/useStepHistory';
+import { LocationGate } from '../location/LocationGate';
+import { gpsLabel, useGps } from '../location/gps';
 const steps = ['Şəxsi hesab', 'Şəxsin məlumatları', 'Heyvanlar'];
 const icons: StepIconName[] = ['account', 'person', 'animal'];
 export default function FormScreen() {
@@ -30,7 +34,10 @@ export default function FormScreen() {
         {!!draft.conflict && <Button secondary label="Fərqlərə bax və qərar ver" onPress={() => router.push({ pathname: '/temporary-residents/conflict/[id]', params: { id: draft.id } })} />}</View> }} />;
   }
   // Data adopted from the server remounts the editor, so it never saves its older copy over it.
-  return <FormEditor key={`${id}:${draft.adoptedAt ?? ''}`} initialDraft={draft} showIssues={check === '1'} />;
+  // Every step save is recorded with a GPS position, so editing needs precise location first.
+  return <LocationGate onCancel={() => { router.replace('/temporary-residents'); residents.release(draft.id); }}>
+    <FormEditor key={`${id}:${draft.adoptedAt ?? ''}`} initialDraft={draft} showIssues={check === '1'} />
+  </LocationGate>;
 }
 /** Tbu.Web's review mode (?review=true): the same steps and controls, all disabled, with its own close. */
 export type Review = { hint: string; banner?: ReactNode; onClose(): void };
@@ -50,6 +57,13 @@ export function FormEditor({ initialDraft, showIssues = false, review }: { initi
   // On a tablet the step sidebar starts folded to its markers; the steps above the form on a phone are not folded.
   const [collapsed, setCollapsed] = useState(true);
   const wide = width >= 761, catalog = residents.catalog;
+  const gps = useGps(!readOnly, residents.maxAccuracy);
+  const checkpoint = useStepHistory({ enabled: !readOnly, data, diff: residentSteps, location: gps.current,
+    record: (changes, location) => residents.record(id, changes, location),
+    unconfirmed: () => { const saved = residents.store?.get(id); return !!saved && pending(saved) && !saved.events?.length; } });
+  // Leaving a step is the web's "Yadda saxla": what changed on it becomes one history entry.
+  const shown = useRef(step);
+  useEffect(() => { if (shown.current !== step) { shown.current = step; checkpoint(); } });
   useEffect(() => {
     const listener = BackHandler.addEventListener('hardwareBackPress', () => {
       if (!unsaved.current) { closeRef.current(); return true; }
@@ -70,6 +84,7 @@ export function FormEditor({ initialDraft, showIssues = false, review }: { initi
       try { residents.save(id, data); unsaved.current = false; }
       catch { Alert.alert('Dəyişiklik saxlanmadı', 'Lokal yaddaşa yazmaq alınmadı. Məlumatlar hələ bu formadadır.'); return; }
     }
+    checkpoint(true);
     router.replace('/temporary-residents');
     // A report opened from the server and left unchanged is not kept on the device.
     residents.release(id);
@@ -89,7 +104,7 @@ export function FormEditor({ initialDraft, showIssues = false, review }: { initi
   if (!catalog || !data || !draft) return <SafeAreaView style={[styles.safe, { padding: 24, gap: 20 }]}><Text style={styles.title}>{saveError || (!catalog ? 'Formanı açmaq üçün arayışları onlayn yükləyin.' : 'Qeyd tapılmadı.')}</Text><Button label="Siyahıya qayıt" onPress={close} /></SafeAreaView>;
   return <SafeAreaView style={styles.safe}><StatusBar style="dark" />
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={styles.header}><View style={{ flex: 1 }}><Text style={styles.headerTitle}>{draft.server?.personalAccountNumber ? `Təsərrüfat № ${draft.server.personalAccountNumber}` : 'Yeni müvəqqəti yaşayan şəxs'}</Text><Text style={styles.headerHint}>{review ? review.hint : `Lokal qeyd · ${residents.online ? 'Onlayn' : 'Oflayn'}`}</Text></View><Button secondary small label="✕  Bağla" onPress={close} /></View>
+      <View style={styles.header}><View style={{ flex: 1 }}><Text style={styles.headerTitle}>{draft.server?.personalAccountNumber ? `Təsərrüfat № ${draft.server.personalAccountNumber}` : 'Yeni müvəqqəti yaşayan şəxs'}</Text><Text style={styles.headerHint}>{review ? review.hint : `Lokal qeyd · ${residents.online ? 'Onlayn' : 'Oflayn'} · ${gpsLabel(gps.latest, residents.maxAccuracy)}`}</Text></View><Button secondary small label="✕  Bağla" onPress={close} /></View>
       <View style={[styles.body, wide && { flexDirection: 'row' }]}>
         <View style={[styles.sidebar, wide && styles.wideSidebar, wide && collapsed && styles.foldedSidebar]}><ScrollView horizontal={!wide} showsHorizontalScrollIndicator={false} contentContainerStyle={[styles.steps, wide && { flexDirection: 'column', gap: 0 }, wide && collapsed && styles.foldedSteps]}>
           {wide && <View style={[styles.toggleRow, collapsed && { alignItems: 'center', paddingHorizontal: 0 }]}><SidebarToggle collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} /></View>}
@@ -109,6 +124,8 @@ export function FormEditor({ initialDraft, showIssues = false, review }: { initi
                 {!!draft.conflict && <Button secondary label="Fərqlərə bax və qərar ver" onPress={() => router.push({ pathname: '/temporary-residents/conflict/[id]', params: { id: draft.id } })} />}</View>; })()}
               {!review && !!draft.server && !pending(draft) && !draft.conflict && <StateBanner tone="info" title="Dəyişiklik etmədən çıxsanız, qeyd cihazdan silinəcək."
                 text="Hesabat serverdə qalır; lazım olsa, «Serverdə» tabından yenidən aça bilərsiniz." />}
+              {!review && !!draft.events?.some(event => !event.location) && <StateBanner tone="warning" title="Bəzi addımlar GPS məkanı gözləyir."
+                text="GPS tutulduqdan sonra addımdan çıxın və ya formanı bağlayın; o vaxta qədər qeyd göndərilə bilməz." />}
               {!!saveError && <Text accessibilityRole="alert" style={styles.error}>{saveError} Dəyişiklik hələ yadda saxlanmayıb.</Text>}
               {!!Object.keys(errors).length && <Text accessibilityRole="alert" style={styles.error}>{Object.values(errors).join('\n')}</Text>}
               {view === 0 && <View style={styles.account}>

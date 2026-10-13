@@ -1,5 +1,6 @@
 import type { FieldValue, HistoryItem, Option, OperatorActions, PersonalData, ReportState, SyncStatusItem, WorkflowAction } from '../temporary-residents/types';
 import type { ReferenceCatalog, TreeType } from '../reference/types';
+import type { HistoryEvent } from '../history/events';
 
 export type { FieldValue, HistoryItem, Option, OperatorActions, PersonalData, ReportState, SyncStatusItem, TreeType, WorkflowAction };
 /** The household wizard reads the whole shared reference data; steps 4-6 add the type trees and land categories. */
@@ -58,6 +59,8 @@ export type HouseholdDraft = {
   adoptedAt?: string;
   conflict?: SyncConflict;
   lastError?: string;
+  /** Step saves not yet sent, each to become a history row on the server. */
+  events?: HistoryEvent[];
 };
 /** `ids` gives the server id of every member, building and land the sync carried, by device key. */
 export type RecordIds = { members: Record<string, number>; buildings: Record<string, number>; lands: Record<string, number> };

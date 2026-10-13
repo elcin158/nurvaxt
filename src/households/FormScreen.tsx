@@ -16,6 +16,10 @@ import { BuildingEditor, landArea, LandEditor, LivestockStep, VehiclesStep } fro
 import { firstIssue, STEPS, validate, validateBuilding, validateLand } from './steps';
 import { editable, memberName, pending, newBuilding, newLand, newMember, type HouseholdData, type HouseholdDraft, type MemberData, type PersonalData } from './types';
 import { Checkbox, EmptyState, Info, Notice, PageTitle, WebButton, web } from './web';
+import { householdSteps } from './history';
+import { useStepHistory } from '../history/useStepHistory';
+import { LocationGate } from '../location/LocationGate';
+import { gpsLabel, useGps } from '../location/gps';
 
 const SUBJECT = 'Təsərrüfat';
 export default function FormScreen() {
@@ -32,7 +36,10 @@ export default function FormScreen() {
         {!!draft.conflict && <Button secondary label="Fərqlərə bax və qərar ver" onPress={() => router.push({ pathname: '/households/conflict/[id]', params: { id: draft.id } })} />}</View> }} />;
   }
   // Data adopted from the server remounts the editor, so it never saves its older copy over it.
-  return <FormEditor key={`${id}:${draft.adoptedAt ?? ''}`} initialDraft={draft} showIssues={check === '1'} />;
+  // Every step save is recorded with a GPS position, so editing needs precise location first.
+  return <LocationGate onCancel={() => { router.replace('/households'); households.release(draft.id); }}>
+    <FormEditor key={`${id}:${draft.adoptedAt ?? ''}`} initialDraft={draft} showIssues={check === '1'} />
+  </LocationGate>;
 }
 /** Tbu.Web's review mode (?review=true): the same steps and controls, all disabled, with its own close. */
 export type Review = { hint: string; banner?: ReactNode; address?: string | null; onClose(): void };
@@ -71,6 +78,18 @@ export function FormEditor({ initialDraft, showIssues = false, review }: { initi
   const [makingHead, setMakingHead] = useState<MemberData | null>(null);
   const scroll = useRef<ScrollView>(null), unsaved = useRef(false), backRef = useRef<() => boolean>(() => false);
   const wide = width >= 761, catalog = households.catalog;
+  const gps = useGps(!readOnly, households.maxAccuracy);
+  const checkpoint = useStepHistory({ enabled: !readOnly, data, diff: householdSteps, location: gps.current,
+    record: (changes, location) => households.record(id, changes, location),
+    unconfirmed: () => { const saved = households.store?.get(id); return !!saved && pending(saved) && !saved.events?.length; } });
+  // Leaving a step or a member, building or land form is the web's "Yadda saxla": what changed becomes history entries.
+  // Opening a record form is not: a record added and left untouched is dropped, as the web never created it.
+  const shown = useRef<{ step: number; record: string | null }>({ step, record: null });
+  useEffect(() => {
+    const before = shown.current, record = editing?.key ?? null;
+    shown.current = { step, record };
+    if (before.step !== step || before.record && before.record !== record) checkpoint();
+  });
   useEffect(() => {
     const listener = BackHandler.addEventListener('hardwareBackPress', () => backRef.current());
     return () => listener.remove();
@@ -87,6 +106,7 @@ export function FormEditor({ initialDraft, showIssues = false, review }: { initi
       try { households.save(id, data); unsaved.current = false; }
       catch { Alert.alert('Dəyişiklik saxlanmadı', 'Lokal yaddaşa yazmaq alınmadı. Məlumatlar hələ bu formadadır.'); return; }
     }
+    checkpoint(true);
     router.replace('/households');
     // A household opened from the server and left unchanged is not kept on the device.
     households.release(id);
@@ -187,7 +207,7 @@ export function FormEditor({ initialDraft, showIssues = false, review }: { initi
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.header}><View style={{ flex: 1 }}>
         <Text style={styles.headerTitle}>{draft.server?.personalAccountNumber ? `Təsərrüfat № ${draft.server.personalAccountNumber}` : 'Yeni təsərrüfat'}</Text>
-        <Text style={styles.headerHint}>{review ? review.hint : `Lokal qeyd · ${households.online ? 'Onlayn' : 'Oflayn'}`}</Text></View>
+        <Text style={styles.headerHint}>{review ? review.hint : `Lokal qeyd · ${households.online ? 'Onlayn' : 'Oflayn'} · ${gpsLabel(gps.latest, households.maxAccuracy)}`}</Text></View>
         <Pressable accessibilityRole="button" accessibilityLabel="Bağla" onPress={close} hitSlop={8} style={styles.ghost}>
           <Text style={styles.ghostX}>×</Text><Text style={styles.ghostText}>Bağla</Text></Pressable>
       </View>
@@ -203,6 +223,8 @@ export function FormEditor({ initialDraft, showIssues = false, review }: { initi
                 {!!draft.conflict && <Button secondary label="Fərqlərə bax və qərar ver" onPress={() => router.push({ pathname: '/households/conflict/[id]', params: { id: draft.id } })} />}</View>}
               {!review && !!draft.server && !pending(draft) && !draft.conflict && <StateBanner tone="info" title="Dəyişiklik etmədən çıxsanız, qeyd cihazdan silinəcək."
                 text="Təsərrüfat serverdə qalır; lazım olsa, «Serverdə» tabından yenidən aça bilərsiniz." />}
+              {!review && !!draft.events?.some(event => !event.location) && <StateBanner tone="warning" title="Bəzi addımlar GPS məkanı gözləyir."
+                text="GPS tutulduqdan sonra addımdan çıxın və ya formanı bağlayın; o vaxta qədər qeyd göndərilə bilməz." />}
               {!!saveError && <Text accessibilityRole="alert" style={styles.alert}>{saveError} Dəyişiklik hələ yadda saxlanmayıb.</Text>}
               {!!Object.keys(issueList).length && <Text accessibilityRole="alert" style={styles.alert}>{Object.values(issueList).join('\n')}</Text>}
 

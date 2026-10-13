@@ -1,11 +1,12 @@
 import type { AddressBook, AdminUnit, Entrance, Option, ReferenceCatalog, Street } from '../reference/types';
+import type { HistoryEvent } from '../history/events';
 
 export type { AddressBook, AdminUnit, Entrance, Option, Street };
 export type Animal = Option & { isComputed?: boolean };
 /** The part of the reference data the address blocks read. */
 export type AddressCatalog = { lookups: Record<string, Option[]>; addresses: AddressBook };
 /** The part of the shared reference data the temporary resident form reads. */
-export type Catalog = Pick<ReferenceCatalog, 'downloadedAt' | 'reportYear' | 'lookups' | 'employmentStatuses' | 'accountAdminUnitIds' | 'addresses'> & { animals: Animal[] };
+export type Catalog = Pick<ReferenceCatalog, 'downloadedAt' | 'reportYear' | 'lookups' | 'employmentStatuses' | 'accountAdminUnitIds' | 'addresses' | 'locationMaxAccuracyMeters'> & { animals: Animal[] };
 export type FieldValue = string | number | boolean | null;
 export type PersonalData = Record<string, FieldValue>;
 export type ResidentData = {
@@ -42,11 +43,17 @@ export type ResidentDraft = {
   adoptedAt?: string;
   conflict?: SyncConflict;
   lastError?: string;
+  /** Step saves not yet sent, each to become a history row on the server. */
+  events?: HistoryEvent[];
 };
 export type SyncReceipt = { clientId: string; revision: number; personalAccountNumber: string; state: ReportState };
 export type SyncStatusItem = { clientId: string; deleted: boolean; changed: boolean; state: ReportState | null };
 export type CheckoutResult = { clientId: string; revision: number; report: ServerResidentDetail };
-export type HistoryItem = { actionDate: string; action: string; previousStatus: string; newStatus: string; description: string | null; actorName: string | null };
+export type HistoryItem = {
+  actionDate: string; action: string; previousStatus: string; newStatus: string; description: string | null; actorName: string | null;
+  /** 1 web, 2 mobile, 3 integration; the rest only where the action recorded a GPS position. */
+  source?: number; latitude?: number | null; longitude?: number | null; locationAccuracy?: number | null; deviceActionDate?: string | null;
+};
 export type WorkflowAction = 'delete' | 'submit-for-approval' | 'close';
 export const pending = (draft: ResidentDraft) => draft.revision > draft.syncedRevision;
 /** Editing stays open offline on the last known state; only a state known to be locked closes it. */
