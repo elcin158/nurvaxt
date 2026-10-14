@@ -8,6 +8,21 @@ class CountdownStateTest {
   private fun stamp(time: String): Long =
     ZonedDateTime.parse("2026-10-08T$time+04:00").toInstant().toEpochMilli()
 
+  @Test fun ishaAdvancesToImsakAcrossMidnightThenFajr() {
+    val isha = CountdownPrayer("İşa", "2026-10-08", "19:25", stamp("19:25:00"), null)
+    val imsak = CountdownPrayer("İmsak", "2026-10-09", "05:21", stamp("05:21:00") + 86_400_000, isha.timestamp)
+    val fajr = CountdownPrayer("Sübh", "2026-10-09", "05:26", stamp("05:26:00") + 86_400_000, imsak.timestamp)
+    val plan = CountdownPlan(true, "Bakı", "24", listOf(isha, imsak, fajr))
+    val midnight = stamp("00:00:00") + 86_400_000
+    assertEquals(isha, CountdownState.next(plan, isha.timestamp - 1))
+    assertEquals(imsak, CountdownState.next(plan, isha.timestamp))
+    assertEquals(imsak, CountdownState.next(plan, midnight - 1))
+    assertEquals(imsak, CountdownState.next(plan, midnight))
+    assertEquals(imsak, CountdownState.next(plan, imsak.timestamp - 1))
+    assertEquals(fajr, CountdownState.next(plan, imsak.timestamp))
+    assertEquals(fajr, CountdownState.next(plan, fajr.timestamp - 1))
+  }
+
   @Test fun fajrContinuesUntilSunriseThenAdvancesToDhuhr() {
     val start = CountdownPrayer("Sübh", "2026-10-08", "05:25", stamp("05:25:00"), null)
     val end = CountdownPrayer("Sübh", "2026-10-08", "06:44", stamp("06:44:00"), start.timestamp, "end")

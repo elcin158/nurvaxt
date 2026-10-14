@@ -41,11 +41,14 @@ export default function Home() {
   const showHijri = usePreferences((s) => s.showHijri);
   const showKerahat = usePreferences((s) => s.showKerahat);
   const adjustment = usePreferences((s) => s.hijriAdjustment);
+  const availableHeight = height - insets.top - tabBarHeight;
+  const fitOnScreen = fontScale <= 1.1 && !showKerahat && availableHeight >= 540;
   const navigate = (offset: number) => {
     setSelectedDate(shiftDate(date, offset));
   };
   return (
     <Screen
+      scroll={!fitOnScreen}
       contentStyle={{
         paddingHorizontal: 18,
         paddingTop: compact ? 6 : 10,
@@ -78,7 +81,12 @@ export default function Home() {
         </View>
       </View>
       <NextPrayerCard compact={compact} onPrayerChange={onChange} />
-      <View style={{ gap: compact ? 2 : 8 }}>
+      <View
+        style={{
+          gap: compact ? 2 : 8,
+          ...(fitOnScreen ? { flex: 1, minHeight: 0 } : {}),
+        }}
+      >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <Pressable
             accessibilityRole="button"
@@ -142,6 +150,7 @@ export default function Home() {
           <PrayerList
             day={day}
             showShare={false}
+            fit={fitOnScreen}
             upcoming={upcoming.date === date ? upcoming.field : undefined}
             ending={upcoming.phase === 'end'}
           />

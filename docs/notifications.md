@@ -41,14 +41,25 @@ Android 13+. Prayer reminder delivery remains independent of the countdown foreg
 `Daimi vaxt göstəricisi` defaults on once notifications are enabled, and switching it off posts
 nothing at all — no panel entry and no status-bar slot. While on, a native
 `CountdownService` shows a silent, default-importance ongoing notification and a status icon.
-At one hour or more, the countdown status icon shows only the NurVaxt wordmark, with the
-crescent removed. Below one hour it stacks that same wordmark above the remaining-minute
+At one hour or more, the countdown status icon shows the full NurVaxt mark, including the
+crescent above its lettering. Below one hour it stacks that same mark above the remaining-minute
 count, switching to a second count below one minute.
 The cutoffs use the actual remaining time; numeric counts retain their upward rounding.
 Text is fitted to the slot width. The brief startup notification uses the same application mark,
 decoded locally and sent as bitmap bytes while the plan loads.
+The native standalone mark reduces the source bitmap's transparent border from 8 px
+to 4 px in the same 96 px bitmap, making the artwork 10% larger. The stacked countdown
+keeps the original mark size. Startup, native reminders and Live Updates use the
+enlarged standalone mark too.
 Android controls the square slot
 dimensions; increasing bitmap resolution cannot enlarge it.
+When Android automatically groups notifications with different small icons, it can select the
+adaptive launcher's monochrome layer for the group summary. That layer now contains the full
+NurVaxt lettering and crescent too; the former crescent-only layer explains why only a moon
+could sometimes appear despite the ordinary notification using the wordmark. The full mark
+fits inside the adaptive safe circle. See Android's
+[group-summary icon selection](https://android.googlesource.com/platform/frameworks/base/+/master/services/core/java/com/android/server/notification/GroupHelper.java)
+and the local verification in `crescent-notifications/`.
 The earlier side-by-side implementation measured 13 px for each shape on the connected Samsung
 and was rejected as too small; its screenshots are retained as historical evidence.
 
@@ -60,8 +71,8 @@ chronometer over `shortCriticalText` but leaves the chip icon-only for countdown
 so there the chronometer is removed and the chip shows minute-rounded-up hours:minutes text,
 refreshed by the minute service tick and an exact one-hour boundary alarm; the final hour uses the
 SystemUI minutes:seconds chronometer.
-The promoted card keeps the plain wordmark small icon because the chip already shows the time;
-the stacked wordmark/minute icon is used only by the ordinary fallback card. The notification validates `hasPromotableCharacteristics()` before choosing the native card and declares
+The promoted card keeps the full mark small icon because the chip already shows the time;
+the stacked mark/minute icon is used only by the ordinary fallback card. The notification validates `hasPromotableCharacteristics()` before choosing the native card and declares
 `POST_PROMOTED_NOTIFICATIONS`, requests `android.requestPromotedOngoing`, stays ongoing and
 contains no custom RemoteViews. Promotion also requires `canPostPromotedNotifications()`;
 Android and the manufacturer determine whether the eligible notification is actually promoted.
@@ -90,11 +101,11 @@ system expander. The earlier Samsung developer-test screenshots in `docs/modern-
 are historical design evidence, not proof of public Live Update support on that phone. The
 reverted Samsung experiment is described in `docs/dual-live-updates` as historical work.
 
-The `notification_icon` asset and native prayer reminders use only the supplied NurVaxt
-lettering. Asset generation masks out the crescent before fitting the wordmark, and Expo
-prebuild preserves that notification artwork. The ongoing countdown shows the wordmark
+The `notification_icon` asset and native prayer reminders use the supplied NurVaxt
+lettering and crescent. Asset generation fits the full monochrome mark without masking out
+the moon, and Expo prebuild preserves that notification artwork. The ongoing countdown shows the mark
 at one hour or more and stacks it above its remaining-minute/second count in the final hour.
-Startup and independent reminders use the same crescent-free wordmark. It sends the artwork as bitmap bytes
+Startup and independent reminders use the same full mark. It sends the artwork as bitmap bytes
 to SystemUI, so the small icon does not depend on resolving an app resource in another process.
 Launcher icons retain the app artwork.
 The notification panel uses `DecoratedCustomViewStyle`, preserving Android's header and expander.
@@ -115,9 +126,12 @@ The channel has no sound/vibration and updates alert only once. Default importan
 the timer visible among other notifications without heads-up banners. Android still controls icon
 order and available status-bar slots; user settings can hide status icons.
 
-The primary countdown timetable contains the selected city's verified five daily prayer starts
-and Sübh's sunrise deadline, independently of advance reminder offsets. Before Sübh it counts
-down to the prayer start. From the exact start until sunrise, both the app card and ongoing panel
+The primary countdown timetable contains the selected city's verified İmsak, five daily prayer
+starts and Sübh's sunrise deadline, independently of advance reminder offsets. After İşa, both
+the app card and ongoing panel count down to the next day's İmsak, then switch to Sübh at the
+exact İmsak time. Overnight progress keeps the previous day's İşa anchor across midnight and
+resets at İmsak for the interval until Sübh. Missing İmsak falls back to Sübh without inventing
+a time. From the exact Sübh start until sunrise, both the app card and ongoing panel
 show **Sübhün bitməsinə qalan vaxt**, with **Günçıxma** beside the deadline time. At sunrise they
 advance to Zöhr. This end event requires both endpoints in the same verified record; it creates
 no reminder and does not request Live Update promotion. Missing sunrise omits the end event.
@@ -159,7 +173,7 @@ does not reproduce every OEM/SystemUI resource-cache failure, so APK replacement
 verification on the affected phone.
 
 Native instrumentation tests under `modules/nurvaxt-alarm/android/src/androidTest` cover
-parcelled compact/expanded cards in light/dark mode, prayer-start/Sübh-end phases, urgency
+parcelled compact/expanded cards in light/dark mode, İmsak labels, prayer-start/Sübh-end phases, urgency
 thresholds, kərahət states, missing root/nested layouts and invalid actions. Run
 `./gradlew :nurvaxt-alarm:assembleDebugAndroidTest` from `android`, install its test APK on a
 disposable emulator and run `adb shell am instrument -w

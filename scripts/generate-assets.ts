@@ -47,23 +47,23 @@ async function main() {
     .joinChannel(silhouette, { raw: { width: 256, height: 256, channels: 1 } })
     .png()
     .toFile('assets/mark-mono.png');
-  // The themed launcher keeps the crescent.
-  const mark = await readFile('assets/brand.svg', 'utf8');
-  const mono = mark.replace('viewBox="0 0 100 100"', 'viewBox="-24 -24 148 148"');
-  await sharp(Buffer.from(mono)).png().toFile('assets/monochrome.png');
-  // Keep only the original lettering for notifications. The crescent is isolated above
-  // and to the right of the wordmark in the fixed 256 px silhouette; the stepped mask
-  // preserves the top of the "r" while excluding every crescent pixel.
-  const notificationMask = Buffer.from(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256">' +
-      '<path d="M0 0H154V110H163V122H256V256H0Z" fill="#fff"/></svg>',
-  );
-  const notificationWordmark = await sharp('assets/mark-mono.png')
-    .composite([{ input: notificationMask, blend: 'dest-in' }])
-    .png()
+  // Android can choose the adaptive monochrome icon for automatic notification groups.
+  // Keep the full NurVaxt lettering and crescent there too, inside the 66/108 safe circle.
+  const launcherSilhouette = await sharp('assets/adaptive-source.png')
+    .resize(600, 600)
+    .greyscale()
+    .linear(ramp, -195 * ramp)
+    .toColourspace('b-w')
+    .raw()
     .toBuffer();
-  // Android tints the wordmark from alpha. The last hour stacks it above the time.
-  const notificationMark = await sharp(notificationWordmark)
+  await sharp({ create: { width: 600, height: 600, channels: 3, background: '#FFFFFF' } })
+    .joinChannel(launcherSilhouette, { raw: { width: 600, height: 600, channels: 1 } })
+    .extend({ top: 212, bottom: 212, left: 212, right: 212, background: '#00000000' })
+    .png()
+    .toFile('assets/monochrome.png');
+  // Keep the full original mark, including the crescent above its lettering.
+  // Android tints it from alpha. The last hour stacks the mark above the time.
+  const notificationMark = await sharp('assets/mark-mono.png')
     .trim()
     .resize(80, 80, { fit: 'contain', background: '#00000000' })
     .extend({ top: 8, bottom: 8, left: 8, right: 8, background: '#00000000' })

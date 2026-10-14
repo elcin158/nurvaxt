@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { AppText } from '../../components/ui';
 import { LABELS, PRAYER_FIELDS, type PrayerField } from '../../constants/prayers';
@@ -12,11 +12,13 @@ export const PrayerList = memo(function PrayerList({
   upcoming,
   ending = false,
   showShare = true,
+  fit = false,
 }: {
   day: PrayerDay;
   upcoming?: PrayerField;
   ending?: boolean;
   showShare?: boolean;
+  fit?: boolean;
 }) {
   const fields = usePreferences((s) => s.visibleFields);
   const format = usePreferences((s) => s.timeFormat);
@@ -24,9 +26,18 @@ export const PrayerList = memo(function PrayerList({
   const { width, fontScale } = useWindowDimensions();
   const stacked = fontScale >= 1.5;
   const visible = PRAYER_FIELDS.filter((field) => fields.includes(field) && day[field]);
+  const [height, setHeight] = useState(0);
+  const rowHeight = fit && height > 0 ? (height - 2) / Math.max(1, visible.length) : 48;
+  const baseTimeSize = format === '12' && width < 360 ? 22 : 26;
+  const timeSize = fit
+    ? Math.min(baseTimeSize, Math.max(18, (rowHeight - 4) / fontScale - 6))
+    : baseTimeSize;
+  const timeLineHeight = fit ? Math.min(32, Math.max(22, (rowHeight - 4) / fontScale)) : 32;
   return (
     <View
+      onLayout={fit ? (event) => setHeight(event.nativeEvent.layout.height) : undefined}
       style={{
+        ...(fit ? { flex: 1, minHeight: 0 } : {}),
         backgroundColor: colors.surface,
         borderRadius: tokens.radius.md,
         borderWidth: 1,
@@ -43,13 +54,13 @@ export const PrayerList = memo(function PrayerList({
           key={field}
           accessible
           accessibilityRole="text"
-          accessibilityLabel={`${LABELS[field]}, ${day[field]}${upcoming === field ? (ending ? ', vaxtı davam edir' : ', növbəti namaz') : ''}`}
+          accessibilityLabel={`${LABELS[field]}, ${day[field]}${upcoming === field ? (ending ? ', vaxtı davam edir' : field === 'imsak' ? ', növbəti vaxt' : ', növbəti namaz') : ''}`}
           style={{
-            minHeight: 44,
+            ...(fit ? { flex: 1, minHeight: 0 } : { minHeight: 48 }),
             flexDirection: stacked ? 'column' : 'row',
             alignItems: stacked ? 'stretch' : 'center',
             gap: stacked ? 2 : 12,
-            paddingVertical: 8,
+            paddingVertical: fit ? 2 : 6,
             paddingHorizontal: 16,
             backgroundColor: upcoming === field ? colors.selected : colors.surface,
           }}
@@ -66,8 +77,8 @@ export const PrayerList = memo(function PrayerList({
           >
             <AppText
               style={{
-                fontSize: 15,
-                lineHeight: 24,
+                fontSize: fit && rowHeight < 32 ? 14 : 15,
+                lineHeight: fit && rowHeight < 32 ? 20 : 24,
                 color: upcoming === field ? colors.selectedText : colors.text,
                 // Manrope lacks U+018F; use one family for the entire prayer name.
                 fontFamily: Platform.select({
@@ -95,20 +106,20 @@ export const PrayerList = memo(function PrayerList({
                   fontFamily: tokens.font.medium,
                 }}
               >
-                {ending ? 'Vaxtı davam edir' : 'NÖVBƏTİ'}
+                {ending ? (fit ? 'Davam edir' : 'Vaxtı davam edir') : 'NÖVBƏTİ'}
               </AppText>
             )}
           </View>
           <AppText
             variant="number"
             style={{
-              fontSize: format === '12' && width < 360 ? 22 : 24,
-              lineHeight: 28,
-              fontFamily: tokens.font.semibold,
+              fontSize: timeSize,
+              lineHeight: timeLineHeight,
+              fontFamily: tokens.font.bold,
               flexShrink: 0,
               color: upcoming === field ? colors.selectedText : colors.text,
-              letterSpacing: -0.5,
-              ...(stacked ? { textAlign: 'right' } : {}),
+              letterSpacing: -0.3,
+              textAlign: 'right',
             }}
           >
             {formatTime(day[field]!, format)}

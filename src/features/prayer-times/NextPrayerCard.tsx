@@ -27,6 +27,7 @@ export function NextPrayerCard({
   const { data } = usePrayerDays(shiftDate(today, -1), shiftDate(today, 1));
   const event = nextPrayerCountdown(data ?? [], now);
   const ending = event?.phase === 'end';
+  const imsak = event?.field === 'imsak';
   const result = countdown(event, now);
   const format = usePreferences((s) => s.timeFormat);
   const { colors, dark } = useTheme();
@@ -88,19 +89,21 @@ export function NextPrayerCard({
               }}
             >
               <View style={{ flex: stacked ? undefined : 1, minWidth: 0, gap: 2 }}>
-                <AppText
-                  variant="caption"
-                  style={{
-                    color: colors.heroMuted,
-                    letterSpacing: 0.7,
-                    fontSize: dense ? 11 : 12,
-                    lineHeight: dense ? 16 : 18,
-                    fontFamily: labelFont,
-                    fontWeight: '400',
-                  }}
-                >
-                  {ending ? 'SÜBH NAMAZI' : 'NÖVBƏTİ NAMAZ'}
-                </AppText>
+                {(ending || imsak) && (
+                  <AppText
+                    variant="caption"
+                    style={{
+                      color: colors.heroMuted,
+                      letterSpacing: 0.7,
+                      fontSize: dense ? 11 : 12,
+                      lineHeight: dense ? 16 : 18,
+                      fontFamily: labelFont,
+                      fontWeight: '400',
+                    }}
+                  >
+                    {ending ? 'SÜBH NAMAZI' : 'İMSAK VAXTI'}
+                  </AppText>
+                )}
                 <View
                   style={{
                     alignItems: 'flex-start',
@@ -126,9 +129,9 @@ export function NextPrayerCard({
                     variant="number"
                     style={{
                       color: colors.heroText,
-                      fontSize: ending ? 14 : dense ? 18 : 21,
-                      lineHeight: ending ? 22 : dense ? 24 : 28,
-                      fontFamily: tokens.font.regular,
+                      fontSize: ending ? 16 : dense ? 20 : 22,
+                      lineHeight: ending ? 24 : dense ? 28 : 30,
+                      fontFamily: tokens.font.semibold,
                     }}
                   >
                     {ending ? 'Günçıxma · ' : ''}
@@ -142,12 +145,14 @@ export function NextPrayerCard({
                 accessibilityLabel={
                   ending
                     ? `Sübh namazının vaxtı günçıxmada, ${event.time} vaxtında bitir.`
-                    : `${LABELS[event.field]} namazı ${event.time} vaxtındadır.`
+                    : imsak
+                      ? `İmsak vaxtı ${event.time} vaxtındadır.`
+                      : `${LABELS[event.field]} namazı ${event.time} vaxtındadır.`
                 }
                 style={{
                   alignItems: stacked ? 'flex-start' : 'flex-end',
                   flexShrink: 0,
-                  maxWidth: stacked ? '100%' : '55%',
+                  maxWidth: stacked ? '100%' : '60%',
                   gap: 2,
                 }}
               >
@@ -158,10 +163,10 @@ export function NextPrayerCard({
                   minimumFontScale={0.85}
                   style={{
                     color: urgency === 'normal' ? colors.heroText : statusColor,
-                    fontSize: dense ? (width < 360 ? 30 : 32) : 36,
-                    lineHeight: dense ? 42 : 48,
-                    letterSpacing: -0.5,
-                    fontFamily: tokens.font.regular,
+                    fontSize: dense ? (width < 360 ? 34 : 38) : 44,
+                    lineHeight: dense ? 48 : 56,
+                    letterSpacing: -0.8,
+                    fontFamily: tokens.font.bold,
                   }}
                 >
                   {formatCountdown(result.remaining)}
@@ -178,9 +183,11 @@ export function NextPrayerCard({
                 >
                   {ending
                     ? 'Sübhün bitməsinə qalan vaxt'
-                    : event.date !== today
-                      ? 'Sabahkı namaza qalan vaxt'
-                      : 'Namaza qalan vaxt'}
+                    : imsak
+                      ? 'İmsaka qalan vaxt'
+                      : event.date !== today
+                        ? 'Sabahkı namaza qalan vaxt'
+                        : 'Namaza qalan vaxt'}
                 </AppText>
               </View>
             </View>
@@ -206,7 +213,11 @@ export function NextPrayerCard({
               accessible
               accessibilityRole="progressbar"
               accessibilityLabel={
-                ending ? 'Sübh vaxtının irəliləyişi' : 'Növbəti namaza doğru irəliləyiş'
+                ending
+                  ? 'Sübh vaxtının irəliləyişi'
+                  : imsak
+                    ? 'İmsaka doğru irəliləyiş'
+                    : 'Növbəti namaza doğru irəliləyiş'
               }
               accessibilityValue={{ min: 0, max: 100, now: Math.round(progress * 100) }}
               aria-valuemin={0}

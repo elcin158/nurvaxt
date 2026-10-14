@@ -1,0 +1,19 @@
+{
+  "originalComponents": 7,
+  "restoredComponents": 8,
+  "crescentBounds": {
+    "left": 60,
+    "top": 13,
+    "right": 87,
+    "bottom": 41,
+    "pixels": 243
+  },
+  "nativeMatchesExpo": true,
+  "densities": {
+    "mdpi": 24,
+    "hdpi": 36,
+    "xhdpi": 48,
+    "xxhdpi": 72,
+    "xxxhdpi": 96
+  }
+}

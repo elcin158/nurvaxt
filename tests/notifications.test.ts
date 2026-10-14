@@ -123,28 +123,40 @@ test('quiet hours and past-time filtering also apply to at-time notifications', 
     ),
   ).toBe(true);
 });
-test('ongoing countdown uses verified prayer starts and Sübh deadlines for the selected city', () => {
+test('ongoing countdown includes verified İmsak before Sübh for the selected city', () => {
   const events = planCountdown(days.slice(7, 9), 'qmi-1');
-  expect(events).toHaveLength(12);
+  expect(events).toHaveLength(14);
   expect(events[0]).toMatchObject({
-    name: 'Sübh',
+    name: 'İmsak',
     phase: 'start',
-    time: '05:25',
+    time: '05:20',
     previousTimestamp: null,
   });
   expect(events[1]).toMatchObject({
     name: 'Sübh',
+    phase: 'start',
+    time: '05:25',
+    previousTimestamp: events[0]?.timestamp,
+  });
+  expect(events[2]).toMatchObject({
+    name: 'Sübh',
     phase: 'end',
     time: '06:44',
-    previousTimestamp: events[0]?.timestamp,
+    previousTimestamp: events[1]?.timestamp,
     timestamp: atTime('2026-10-08', '06:44'),
   });
-  expect(events[6]).toMatchObject({
+  expect(events[7]).toMatchObject({
+    name: 'İmsak',
     date: '2026-10-09',
     phase: 'start',
-    previousTimestamp: events[5]?.timestamp,
+    previousTimestamp: events[6]?.timestamp,
   });
-  expect(planCountdown([{ ...days[7]!, sunrise: null }], 'qmi-1')).toHaveLength(5);
+  expect(events[8]).toMatchObject({
+    name: 'Sübh',
+    phase: 'start',
+    previousTimestamp: events[7]?.timestamp,
+  });
+  expect(planCountdown([{ ...days[7]!, sunrise: null }], 'qmi-1')).toHaveLength(6);
   expect(planCountdown(days, 'unpublished-city')).toEqual([]);
   expect(
     planCountdown(

@@ -88,7 +88,7 @@ test('home follows the next prayer day at İşa and keeps that timetable across 
     </ThemeProvider>,
   );
   expect(screen.getByText('Sabah · 9 oktyabr 2026')).toBeOnTheScreen();
-  expect(screen.getByLabelText('Sübh, 05:26, növbəti namaz')).toBeOnTheScreen();
+  expect(screen.getByLabelText('İmsak, 05:21, növbəti vaxt')).toBeOnTheScreen();
   expect(screen.getByLabelText('Günçıxma, 06:45')).toBeOnTheScreen();
   await pressShare();
   expect(shareSpy.mock.calls[0]?.[0].message).toContain('Bakı\n9 oktyabr 2026, cümə');
@@ -101,7 +101,7 @@ test('home follows the next prayer day at İşa and keeps that timetable across 
     </ThemeProvider>,
   );
   expect(screen.getByText('Bu gün · 9 oktyabr 2026')).toBeOnTheScreen();
-  expect(screen.getByLabelText('Sübh, 05:26, növbəti namaz')).toBeOnTheScreen();
+  expect(screen.getByLabelText('İmsak, 05:21, növbəti vaxt')).toBeOnTheScreen();
 });
 
 test('manual day navigation stays selected until returning to the next prayer day', async () => {
@@ -127,7 +127,7 @@ test('manual day navigation stays selected until returning to the next prayer da
   expect(screen.getByLabelText('Sübh, 05:25')).toBeOnTheScreen();
   await fireEvent.press(screen.getByRole('button', { name: /Növbəti namazın gününə qayıt$/ }));
   expect(screen.getByText('Bu gün · 9 oktyabr 2026')).toBeOnTheScreen();
-  expect(screen.getByLabelText('Sübh, 05:26, növbəti namaz')).toBeOnTheScreen();
+  expect(screen.getByLabelText('İmsak, 05:21, növbəti vaxt')).toBeOnTheScreen();
 });
 
 test('changing city follows its next prayer even when that changes the displayed day', async () => {
@@ -138,7 +138,7 @@ test('changing city follows its next prayer even when that changes the displayed
     </ThemeProvider>,
   );
   expect(screen.getByText('Sabah · 9 oktyabr 2026')).toBeOnTheScreen();
-  expect(screen.getByLabelText('Sübh, 05:26, növbəti namaz')).toBeOnTheScreen();
+  expect(screen.getByLabelText('İmsak, 05:21, növbəti vaxt')).toBeOnTheScreen();
   await act(async () => usePreferences.getState().setLocation('qmi-20'));
   expect(screen.getByText('Bu gün · 8 oktyabr 2026')).toBeOnTheScreen();
   expect(screen.getByLabelText('İşa, 19:39, növbəti namaz')).toBeOnTheScreen();
@@ -294,12 +294,12 @@ test('daytime hero keeps the next prayer without a separate sunrise countdown', 
       <NextPrayerCard onPrayerChange={jest.fn()} />
     </ThemeProvider>,
   );
-  expect(screen.getByText('NÖVBƏTİ NAMAZ')).toBeOnTheScreen();
+  expect(screen.queryByText('NÖVBƏTİ NAMAZ')).not.toBeOnTheScreen();
   expect(screen.getByText('Zöhr')).toBeOnTheScreen();
   expect(screen.queryByText('Günçıxma')).not.toBeOnTheScreen();
 });
 
-test('after İşa the hero keeps Sübh primary without a separate sunrise section', async () => {
+test('after İşa the hero counts down to İmsak with its own time labels', async () => {
   jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T17:00:00Z'));
   const onPrayerChange = jest.fn();
   await render(
@@ -307,13 +307,16 @@ test('after İşa the hero keeps Sübh primary without a separate sunrise sectio
       <NextPrayerCard onPrayerChange={onPrayerChange} />
     </ThemeProvider>,
   );
-  expect(screen.getByText('Sübh')).toBeOnTheScreen();
-  expect(onPrayerChange).toHaveBeenLastCalledWith('fajr', '2026-10-09', 'start');
+  expect(screen.getByText('İMSAK VAXTI')).toBeOnTheScreen();
+  expect(screen.getByText('İmsak')).toBeOnTheScreen();
+  expect(screen.getByText('İmsaka qalan vaxt')).toBeOnTheScreen();
+  expect(screen.getByLabelText('İmsak vaxtı 05:21 vaxtındadır.')).toBeOnTheScreen();
+  expect(onPrayerChange).toHaveBeenLastCalledWith('imsak', '2026-10-09', 'start');
   expect(screen.queryByText('Günçıxma')).not.toBeOnTheScreen();
   expect(screen.queryByText('Sabah · 06:45')).not.toBeOnTheScreen();
   expect(screen.queryByLabelText('İşadan günçıxmaya qədər keçən vaxt')).not.toBeOnTheScreen();
 });
-test('hero progress continues across midnight until Sübh and resets at its start', async () => {
+test('hero progress continues across midnight until İmsak, then resets for Sübh', async () => {
   jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T19:59:59Z'));
   const onPrayerChange = jest.fn();
   const card = () => (
@@ -336,7 +339,7 @@ test('hero progress continues across midnight until Sübh and resets at its star
     max: 100,
     now: 46,
   });
-  expect(screen.getByText('Sübh')).toBeOnTheScreen();
+  expect(screen.getByText('İmsak')).toBeOnTheScreen();
 
   jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T22:00:00Z'));
   await view.rerender(card());
@@ -344,6 +347,27 @@ test('hero progress continues across midnight until Sübh and resets at its star
     min: 0,
     max: 100,
     now: 66,
+  });
+
+  jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-09T01:21:00Z'));
+  await view.rerender(card());
+  expect(screen.getByText('Sübh')).toBeOnTheScreen();
+  expect(screen.getByText('00:05:00')).toBeOnTheScreen();
+  expect(screen.getByRole('progressbar')).toHaveProp('accessibilityValue', {
+    min: 0,
+    max: 100,
+    now: 0,
+  });
+  expect(screen.queryByText('İmsaka qalan vaxt')).not.toBeOnTheScreen();
+  expect(onPrayerChange).toHaveBeenLastCalledWith('fajr', '2026-10-09', 'start');
+
+  jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-09T01:23:30Z'));
+  await view.rerender(card());
+  expect(screen.getByText('00:02:30')).toBeOnTheScreen();
+  expect(screen.getByRole('progressbar')).toHaveProp('accessibilityValue', {
+    min: 0,
+    max: 100,
+    now: 50,
   });
 
   jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-09T01:26:00Z'));

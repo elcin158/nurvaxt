@@ -117,7 +117,7 @@ export type CountdownPrayer = {
   timestamp: number;
   previousTimestamp: number | null;
 };
-// Independent of reminder offsets: prayer starts and Sübh's sunrise deadline.
+// Independent of reminder offsets: İmsak, prayer starts and Sübh's sunrise deadline.
 export function planCountdown(days: PrayerDay[], locationId: string): CountdownPrayer[] {
   return prayerCountdownTimeline(days.filter((day) => day.locationId === locationId)).map(
     ({ field, ...event }) => ({ ...event, name: LABELS[field] }),

@@ -49,9 +49,19 @@ export default function Calendar() {
         <View style={{ flex: 1 }}>
           <AppText variant="title">Təqvim</AppText>
         </View>
-        <BrandIcon size={44} />
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            maxWidth: '65%',
+            flexShrink: 1,
+          }}
+        >
+          <CityButton compact />
+          <BrandIcon size={44} />
+        </View>
       </View>
-      <CityButton />
       <Card style={{ padding: 16 }}>
         <View
           style={{

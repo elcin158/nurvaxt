@@ -1,4 +1,4 @@
-import { DAILY_PRAYERS, type PrayerField } from '../../constants/prayers';
+import { REMINDER_EVENTS, type PrayerField } from '../../constants/prayers';
 import type { PrayerDay } from '../../types/data';
 import { atTime, shiftDate } from '../../utils/time';
 import { DateTime } from 'luxon';
@@ -16,12 +16,12 @@ export function prayerUrgency(remaining: number): 'normal' | 'soon' | 'imminent'
   if (remaining > 0 && remaining <= 30 * 60_000) return 'soon';
   return 'normal';
 }
-/** Prayer starts plus Sübh's verified sunrise deadline, shared by the app and native plan. */
+/** İmsak, prayer starts and Sübh's verified sunrise deadline, shared by the app and native plan. */
 export function prayerCountdownTimeline(days: PrayerDay[]): PrayerOccurrence[] {
   const occurrences = days
     .filter((day) => day.verified)
     .flatMap((day) => {
-      const starts = DAILY_PRAYERS.flatMap((field) =>
+      const starts = REMINDER_EVENTS.flatMap((field) =>
         day[field]
           ? [
               {
@@ -59,13 +59,13 @@ export function prayerCountdownTimeline(days: PrayerDay[]): PrayerOccurrence[] {
 function nextOccurrence(
   days: PrayerDay[],
   now: number,
-  includeEnd: boolean,
+  includeCountdownEvents: boolean,
 ): PrayerOccurrence | null {
   const today = DateTime.fromMillis(now, { zone: TIMEZONE }).toISODate()!;
-  // Yesterday supplies the İşa anchor for progress toward today's Sübh.
+  // Yesterday supplies the İşa anchor for progress toward today's İmsak.
   const allowed = new Set([shiftDate(today, -1), today, shiftDate(today, 1)]);
   const occurrences = prayerCountdownTimeline(days.filter((day) => allowed.has(day.date))).filter(
-    (event) => includeEnd || event.phase === 'start',
+    (event) => includeCountdownEvents || (event.phase === 'start' && event.field !== 'imsak'),
   );
   const index = occurrences.findIndex((event) => event.timestamp > now);
   if (index < 0) return null;

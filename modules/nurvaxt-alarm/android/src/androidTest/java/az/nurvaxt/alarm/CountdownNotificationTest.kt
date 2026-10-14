@@ -34,6 +34,12 @@ class CountdownNotificationTest {
     } finally { parcel.recycle() }
   }
 
+  private fun bounds(bitmap: Bitmap, top: Int, bottom: Int) = Rect().apply {
+    for (y in top until bottom) for (x in 0 until bitmap.width) {
+      if (bitmap.getPixel(x, y).ushr(24) > 128) union(x, y, x + 1, y + 1)
+    }
+  }
+
   private fun standard(notification: Notification) {
     val copy = roundTrip(notification)
     assertNull(copy.contentView)
@@ -81,6 +87,20 @@ class CountdownNotificationTest {
     assertNotNull(CountdownState.prefs(context).getString("notificationViewError", null))
   }
 
+  @Test fun imsakCountdownUsesTimeLabelsInTheSystemAndCustomNotification() {
+    val now = System.currentTimeMillis()
+    val imsak = CountdownPrayer("İmsak", "2026-10-09", "05:21", now + 3_600_000, now - 3_600_000)
+    val plan = CountdownPlan(true, "Bakı", "24", listOf(imsak))
+    val notification = roundTrip(CountdownNotification.build(context, plan, imsak, now))
+    assertEquals("İmsak · 05:21", notification.extras.getString(Notification.EXTRA_TITLE))
+    assertTrue(notification.extras.getString(Notification.EXTRA_TEXT)!!.contains("İmsaka qalan vaxt"))
+    for (views in listOf(notification.contentView, notification.bigContentView)) {
+      val timer = views.apply(context, null).findViewById<Chronometer>(R.id.countdown_timer)
+      assertTrue(timer.isCountDown)
+      assertTrue(timer.contentDescription.toString().startsWith("İmsak vaxtına "))
+    }
+  }
+
   @Test fun missingExpandedLayoutAlsoFallsBack() {
     standard(CountdownNotification.customOrStandard(context, base()) {
       RemoteViews(context.packageName, R.layout.nurvaxt_countdown_compact) to RemoteViews(context.packageName, 0x7fffffff)
@@ -108,10 +128,17 @@ class CountdownNotificationTest {
     val notification = roundTrip(CountdownNotification.startup(context))
     assertEquals(Icon.TYPE_BITMAP, notification.smallIcon.type)
     val mark = (notification.smallIcon.loadDrawable(context) as BitmapDrawable).bitmap
-    val expected = requireNotNull(BitmapFactory.decodeResource(context.resources, R.drawable.nurvaxt_countdown_app_mark))
+    val source = requireNotNull(BitmapFactory.decodeResource(context.resources, R.drawable.nurvaxt_countdown_app_mark))
     assertEquals(96, mark.width)
     assertEquals(96, mark.height)
-    assertTrue("Startup icon must match the application mark", mark.sameAs(expected))
+    val original = bounds(source, 0, source.height)
+    val enlarged = bounds(mark, 0, mark.height)
+    // Alpha bounds can round at both edges when the bitmap is filtered.
+    assertEquals("Standalone wordmark width", original.width() * 1.1, enlarged.width().toDouble(), 2.0)
+    assertEquals("Standalone wordmark height", original.height() * 1.1, enlarged.height().toDouble(), 2.0)
+    assertEquals(48f, enlarged.exactCenterX(), 1f)
+    assertTrue("Standalone wordmark is clipped", enlarged.left >= 4 && enlarged.right <= 92 &&
+      enlarged.top >= 4 && enlarged.bottom <= 92)
     assertNull(notification.contentView)
     assertNull(notification.bigContentView)
   }
@@ -121,11 +148,6 @@ class CountdownNotificationTest {
     fun icon(left: Long) = CountdownPrayer("Sübh", "2026-10-12", "06:45", now + left, null).let { prayer ->
       val notification = CountdownNotification.build(context, CountdownPlan(true, "Bakı", "24", listOf(prayer)), prayer, now)
       (notification.smallIcon.loadDrawable(context) as BitmapDrawable).bitmap
-    }
-    fun bounds(bitmap: Bitmap, top: Int, bottom: Int) = Rect().apply {
-      for (y in top until bottom) for (x in 0 until bitmap.width) {
-        if (bitmap.getPixel(x, y).ushr(24) > 128) union(x, y, x + 1, y + 1)
-      }
     }
     val stackedMark = icon(40 * 60_000L)
     val artwork = bounds(stackedMark, 0, 48)
@@ -154,7 +176,7 @@ class CountdownNotificationTest {
     assertTrue(icon(1_001).sameAs(icon(2_000)))
     assertTrue(icon(0).sameAs(icon(1_000)))
     assertFalse(icon(40 * 60_000L).sameAs(icon(39 * 60_000L)))
-    val mark = requireNotNull(BitmapFactory.decodeResource(context.resources, R.drawable.nurvaxt_countdown_app_mark))
+    val mark = (CountdownNotification.appIcon(context).toIcon(context).loadDrawable(context) as BitmapDrawable).bitmap
     for (left in listOf(3_600_000L, 3_600_001L, 99 * 60_000L, 180 * 60_000L, 24 * 3_600_000L)) {
       assertTrue("Expected only the app icon: $left", icon(left).sameAs(mark))
     }

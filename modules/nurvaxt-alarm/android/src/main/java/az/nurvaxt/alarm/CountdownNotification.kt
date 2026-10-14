@@ -23,6 +23,9 @@ import androidx.core.graphics.drawable.IconCompat
 
 object CountdownNotification {
   private const val ICON = 96
+  // generate-assets.ts gives the full source mark an 8 px transparent border.
+  private const val SOURCE_MARK_INSET = 8
+  private const val STANDALONE_MARK_INSET = 4
 
   /** Numeric countdowns appear only in the final hour. */
   private const val HOUR = 3_600_000L
@@ -42,9 +45,16 @@ object CountdownNotification {
     }
   }
 
-  internal fun appIcon(context: Context): IconCompat = IconCompat.createWithBitmap(
-    requireNotNull(BitmapFactory.decodeResource(context.resources, R.drawable.nurvaxt_countdown_app_mark)),
-  )
+  internal fun appIcon(context: Context): IconCompat {
+    val mark = requireNotNull(BitmapFactory.decodeResource(context.resources, R.drawable.nurvaxt_countdown_app_mark))
+    val bitmap = Bitmap.createBitmap(ICON, ICON, Bitmap.Config.ARGB_8888)
+    // Fit the standalone artwork into 88 px instead of 80 px, keeping the same system slot.
+    Canvas(bitmap).drawBitmap(mark,
+      Rect(SOURCE_MARK_INSET, SOURCE_MARK_INSET, mark.width - SOURCE_MARK_INSET, mark.height - SOURCE_MARK_INSET),
+      Rect(STANDALONE_MARK_INSET, STANDALONE_MARK_INSET, ICON - STANDALONE_MARK_INSET, ICON - STANDALONE_MARK_INSET),
+      Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG))
+    return IconCompat.createWithBitmap(bitmap)
+  }
 
   private fun icon(context: Context, remaining: Long): IconCompat {
     // Send artwork bytes rather than a resource ID that SystemUI could resolve against an old APK.
@@ -84,7 +94,12 @@ object CountdownNotification {
     setChronometerCountDown(R.id.countdown_timer, true)
     // The system renders seconds; the service continues to update only once per minute.
     setChronometer(R.id.countdown_timer, SystemClock.elapsedRealtime() + remaining, null, true)
-    setContentDescription(R.id.countdown_timer, "${if (prayer.phase == "end") "Sübhün bitməsinə" else "${prayer.name} namazına"} $duration qalıb")
+    val target = when {
+      prayer.phase == "end" -> "Sübhün bitməsinə"
+      prayer.name == "İmsak" -> "İmsak vaxtına"
+      else -> "${prayer.name} namazına"
+    }
+    setContentDescription(R.id.countdown_timer, "$target $duration qalıb")
     if (expanded) {
       setTextViewText(R.id.countdown_time, time)
       setTextViewText(R.id.countdown_stage, when {
@@ -175,6 +190,7 @@ object CountdownNotification {
       prayer.phase == "end" -> "Sübhün bitməsinə qalan vaxt"
       imminent -> "Son 15 dəqiqə"
       soon -> "Son 30 dəqiqə"
+      prayer.name == "İmsak" -> "İmsaka qalan vaxt"
       else -> "Namaza qalan vaxt"
     }
     val launch = context.packageManager.getLaunchIntentForPackage(context.packageName)

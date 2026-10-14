@@ -1,0 +1,25 @@
+{
+  "before": {
+    "width": 1024,
+    "height": 1024,
+    "components": 1,
+    "maxRadius": 307.10991517696067
+  },
+  "after": {
+    "width": 1024,
+    "height": 1024,
+    "components": 8,
+    "maxRadius": 240.9657652032753
+  },
+  "safeRadius": 312.8888888888889,
+  "entireMarkInsideSafeCircle": true,
+  "screenshotPhoneLiveStateVerified": false,
+  "packagedMonochromeDensities": {
+    "mdpi": "693e0cc40f454daa5bc040104538a8a7db05d74e846f852d4da458e2095e46e4",
+    "hdpi": "b1e8614e42cc34a014ad4a2db337d9fd780edc9cc67ab26b518a8f2eb8b3a5d4",
+    "xhdpi": "5409d668a4b89c837038805005d95bfc21af787a023b00c77cf10ec58f1daba3",
+    "xxhdpi": "3fd46ddae7f82b88a94228bbba1de1f3a9c28ec9ff277bc72b1bbd3dc779cd37",
+    "xxxhdpi": "4243531cd14a6ba3fb89694aef63bbdf65eadcf489cc0e9873c156dd6f9f3054"
+  },
+  "androidDebugResourcesBuildPassed": true
+}

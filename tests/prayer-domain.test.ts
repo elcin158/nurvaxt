@@ -40,9 +40,54 @@ describe('official next-prayer engine', () => {
   test('date labels remain Azerbaijani even without ICU Azerbaijani locale data', () => {
     expect(formatDate('2026-10-08')).toBe('8 oktyabr 2026, cümə axşamı');
   });
-  test('does not include İmsak or sunrise in daily prayer countdown', () => {
+  test('daily prayer selection excludes İmsak and sunrise', () => {
     expect(nextPrayer(days, stamp('2026-10-08T05:19:00'))?.field).toBe('fajr');
     expect(nextPrayer(days, stamp('2026-10-08T05:25:00'))?.field).toBe('dhuhr');
+  });
+  test('countdown advances from İşa to İmsak, then Sübh in every region', () => {
+    for (const location of locations) {
+      const region = allDays.filter((day) => day.locationId === location.id);
+      const previousDay = region.find((day) => day.date === '2026-10-08')!;
+      const day = region.find((day) => day.date === '2026-10-09')!;
+      const isha = atTime(previousDay.date, previousDay.isha!);
+      const imsak = atTime(day.date, day.imsak!);
+      const fajr = atTime(day.date, day.fajr!);
+      expect(nextPrayerCountdown(region, isha - 1)?.field).toBe('isha');
+      const afterIsha = nextPrayerCountdown(region, isha);
+      expect(afterIsha).toMatchObject({
+        field: 'imsak',
+        phase: 'start',
+        date: day.date,
+        time: day.imsak,
+        timestamp: imsak,
+        previousTimestamp: isha,
+      });
+      expect(countdown(afterIsha, isha)).toEqual({ remaining: imsak - isha, progress: 0 });
+      expect(nextPrayerCountdown(region, imsak - 1)).toEqual(afterIsha);
+      const afterImsak = nextPrayerCountdown(region, imsak);
+      expect(afterImsak).toMatchObject({
+        field: 'fajr',
+        phase: 'start',
+        timestamp: fajr,
+        previousTimestamp: imsak,
+      });
+      expect(countdown(afterImsak, imsak)).toEqual({ remaining: fajr - imsak, progress: 0 });
+      expect(nextPrayerCountdown(region, fajr - 1)).toEqual(afterImsak);
+    }
+  });
+  test('missing İmsak falls back to the verified Sübh time', () => {
+    const previousDay = days.find((day) => day.date === '2026-10-08')!;
+    const day = days.find((day) => day.date === '2026-10-09')!;
+    expect(
+      nextPrayerCountdown(
+        [previousDay, { ...day, imsak: null }],
+        atTime(previousDay.date, previousDay.isha!),
+      ),
+    ).toMatchObject({
+      field: 'fajr',
+      time: day.fajr,
+      previousTimestamp: atTime(previousDay.date, previousDay.isha!),
+    });
   });
   test('Sübh countdown switches from its start to its sunrise deadline in every region', () => {
     for (const location of locations) {
@@ -95,7 +140,7 @@ describe('official next-prayer engine', () => {
     expect(nextPrayer(days, stamp('2026-10-09T00:00:00'))?.timestamp).toBe(next?.timestamp);
   });
   test.each(['2026-10-09', '2026-11-01', '2026-12-01'])(
-    'İşa–Sübh progress stays continuous across midnight on %s in every region',
+    'overnight progress stays continuous across midnight on %s in every region',
     (date) => {
       const midnight = atTime(date, '00:00');
       for (const location of locations) {
@@ -103,12 +148,13 @@ describe('official next-prayer engine', () => {
         const previousDay = region.find((day) => day.date === shiftDate(date, -1))!;
         const day = region.find((day) => day.date === date)!;
         const start = atTime(previousDay.date, previousDay.isha!);
-        const end = atTime(day.date, day.fajr!);
         for (const select of [nextPrayer, nextPrayerCountdown]) {
+          const field = select === nextPrayer ? 'fajr' : 'imsak';
+          const end = atTime(day.date, day[field]!);
           const before = select(region, midnight - 1);
           const after = select(region, midnight);
           expect(before).toMatchObject({
-            field: 'fajr',
+            field,
             phase: 'start',
             timestamp: end,
             previousTimestamp: start,
@@ -137,7 +183,7 @@ describe('official next-prayer engine', () => {
       [{ ...previousDay, verified: false }, day],
     ]) {
       const event = nextPrayerCountdown(records, now);
-      expect(event).toMatchObject({ field: 'fajr', date: day.date, previousTimestamp: null });
+      expect(event).toMatchObject({ field: 'imsak', date: day.date, previousTimestamp: null });
       expect(countdown(event, now).progress).toBe(0);
     }
   });
