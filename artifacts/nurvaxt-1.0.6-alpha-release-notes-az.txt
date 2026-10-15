@@ -1,7 +1,0 @@
-<az-AZ>
-NurVaxtın qapalı test buraxılışı.
-• 74 şəhər və rayon üçün namaz vaxtları.
-• Gündəlik və aylıq təqvim, qiblə və xatırlatmalar.
-• Açıq və tünd görünüş.
-Təqvim məlumatları: 1 oktyabr–31 dekabr 2026.
-</az-AZ>
