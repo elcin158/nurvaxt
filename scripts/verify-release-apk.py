@@ -48,7 +48,7 @@ application = manifest.find('application')
 assert application is not None
 assert application.attrib.get(android + 'debuggable', 'false') == 'false'
 permissions = [node.attrib[android + 'name'] for node in manifest.findall('uses-permission')]
-blocked = ['SYSTEM_ALERT_WINDOW', 'CAMERA', 'RECORD_AUDIO', 'ACCESS_FINE_LOCATION',
+blocked = ['ACTIVITY_RECOGNITION', 'SYSTEM_ALERT_WINDOW', 'CAMERA', 'RECORD_AUDIO', 'ACCESS_FINE_LOCATION',
            'ACCESS_BACKGROUND_LOCATION', 'USE_EXACT_ALARM', 'READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']
 assert not any('android.permission.' + name in permissions for name in blocked), 'Unexpected release permission'
 countdown_resources = json.loads(subprocess.check_output([
