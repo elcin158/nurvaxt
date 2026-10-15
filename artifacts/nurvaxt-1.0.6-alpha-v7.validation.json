@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-10-14T12:49:11.049582+00:00",
+  "applicationId": "az.nurvaxt.app",
+  "version": "1.0.6",
+  "versionCode": 7,
+  "targetSdk": 36,
+  "debuggable": false,
+  "bundletoolValidation": true,
+  "signatureVerified": true,
+  "matchesLocalReleaseKey": true,
+  "verifiedEntries": 1642,
+  "certificateSha256": "01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e",
+  "embeddedJavaScriptBytes": 3735820,
+  "abis": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86",
+    "x86_64"
+  ],
+  "bytes": 76171805,
+  "sha256": "7da9ef633a57debd160379a52dbe9081f6140415ec5cddffe7e96bf85b3f7a36",
+  "typecheckPassed": true,
+  "lintPassed": true,
+  "jestTestsPassed": 55,
+  "testSuites": [
+    "notifications",
+    "prayer-domain",
+    "ui"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "version": "1.0.6",
+  "versionCode": 7,
+  "device": "Disposable Android 15 emulator",
+  "permission": "FOREGROUND_SERVICE_SPECIAL_USE",
+  "userEnabledFeatureVerified": true,
+  "foregroundServiceActiveVerified": true,
+  "foregroundServiceStoppedVerified": true,
+  "notificationShownAfterLeavingApp": true,
+  "notificationRemovedAfterDisabling": true,
+  "sameJavaScriptAsUploadedAab": true,
+  "videoDecodeVerified": true,
+  "fps": 30,
+  "bytes": 1272197,
+  "sha256": "19cb1ef145f624b38884cfe5d5c467ac0e16fc4763882c390ae7373842df807f"
+}

@@ -1,0 +1,143 @@
+{
+  "checkedAt": "2026-10-14T09:48:29.578Z",
+  "source": "Actual Android release build 1.0.6, captured on a disposable Android 15 emulator",
+  "profiles": {
+    "phone": {
+      "size": "1080x1920",
+      "density": 360,
+      "logicalWidthDp": 480
+    },
+    "tablet-7": {
+      "size": "1440x2560",
+      "density": 320,
+      "logicalWidthDp": 720
+    },
+    "tablet-10": {
+      "size": "1440x2560",
+      "density": 240,
+      "logicalWidthDp": 960
+    }
+  },
+  "images": [
+    {
+      "file": "phone/01-namaz-vaxtlari.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 125606,
+      "channels": 3,
+      "hasAlpha": false
+    },
+    {
+      "file": "phone/02-teqvim.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 104142,
+      "channels": 3,
+      "hasAlpha": false
+    },
+    {
+      "file": "phone/03-qible.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 192787,
+      "channels": 3,
+      "hasAlpha": false
+    },
+    {
+      "file": "phone/04-xatirlatmalar.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 107967,
+      "channels": 3,
+      "hasAlpha": false
+    },
+    {
+      "file": "phone/05-tund-gorunus.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 123482,
+      "channels": 3,
+      "hasAlpha": false
+    },
+    {
+      "file": "tablet-7/01-namaz-vaxtlari.png",
+      "width": 1440,
+      "height": 2560,
+      "bytes": 131220,
+      "channels": 3,
+      "hasAlpha": false
+    },
+    {
+      "file": "tablet-7/02-teqvim.png",
+      "width": 1440,
+      "height": 2560,
+      "bytes": 133314,
+      "channels": 3,
+      "hasAlpha": false
+    },
+    {
+      "file": "tablet-7/03-qible.png",
+      "width": 1440,
+      "height": 2560,
+      "bytes": 186068,
+      "channels": 3,
+      "hasAlpha": false
+    },
+    {
+      "file": "tablet-7/04-xatirlatmalar.png",
+      "width": 1440,
+      "height": 2560,
+      "bytes": 155264,
+      "channels": 3,
+      "hasAlpha": false
+    },
+    {
+      "file": "tablet-10/01-namaz-vaxtlari.png",
+      "width": 1440,
+      "height": 2560,
+      "bytes": 105670,
+      "channels": 3,
+      "hasAlpha": false
+    },
+    {
+      "file": "tablet-10/02-teqvim.png",
+      "width": 1440,
+      "height": 2560,
+      "bytes": 101016,
+      "channels": 3,
+      "hasAlpha": false
+    },
+    {
+      "file": "tablet-10/03-qible.png",
+      "width": 1440,
+      "height": 2560,
+      "bytes": 134792,
+      "channels": 3,
+      "hasAlpha": false
+    },
+    {
+      "file": "tablet-10/04-xatirlatmalar.png",
+      "width": 1440,
+      "height": 2560,
+      "bytes": 162822,
+      "channels": 3,
+      "hasAlpha": false
+    },
+    {
+      "file": "app-icon-512.png",
+      "width": 512,
+      "height": 512,
+      "bytes": 319958,
+      "channels": 4,
+      "hasAlpha": true
+    },
+    {
+      "file": "feature-graphic-1024x500.png",
+      "width": 1024,
+      "height": 500,
+      "bytes": 137744,
+      "channels": 3,
+      "hasAlpha": false
+    }
+  ]
+}

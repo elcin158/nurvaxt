@@ -14,7 +14,7 @@ const config: ExpoConfig = {
   },
   android: {
     package: 'az.nurvaxt.app',
-    versionCode: 7,
+    versionCode: 8,
     allowBackup: false,
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
@@ -22,6 +22,8 @@ const config: ExpoConfig = {
       monochromeImage: './assets/monochrome.png',
     },
     blockedPermissions: [
+      // expo-sensors includes the pedometer permission; Qibla only uses compass sensors.
+      'android.permission.ACTIVITY_RECOGNITION',
       'android.permission.RECORD_AUDIO',
       'android.permission.CAMERA',
       'android.permission.ACCESS_FINE_LOCATION',

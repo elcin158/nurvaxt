@@ -1,0 +1,23 @@
+NurVaxt — Foreground Service declaration draft
+
+Permission/type
+FOREGROUND_SERVICE_SPECIAL_USE / specialUse
+
+Feature description
+NurVaxt provides an optional, user-visible countdown to the next verified prayer-time event. When notifications and the ongoing countdown setting are enabled, an Android foreground service maintains a silent ongoing notification showing the next event and remaining time while the app is in the background. The user can stop the feature from the app settings or Android's foreground-service controls. Prayer-time data is bundled offline; this service does not request location, record audio, or transmit data.
+
+Impact if delayed or interrupted
+Delaying the service would delay the user-requested ongoing countdown. Interrupting it would stop countdown updates or remove the persistent countdown notification, so the user could no longer rely on the displayed remaining time while outside the app. Scheduled prayer reminders are handled separately; this declaration concerns the ongoing countdown display.
+
+Duration and stop controls
+The service runs while the user has enabled notifications and the ongoing countdown and a verified upcoming event is available. It stops and removes its notification when the countdown is disabled, notifications are disabled or unavailable, or no verified event is available. Android force-stop and system foreground-service controls can also stop it. It performs local time calculations without a wake lock; updates are aligned to minutes, with final-minute seconds only while the screen is interactive.
+
+Demo recording sequence
+1. Open NurVaxt and go to Ayarlar.
+2. Enable notifications and grant the Android notification permission if requested.
+3. Show the Daimi vaxt göstəricisi setting being enabled.
+4. Leave the app, open the Android notification panel, and show the next event and changing remaining time.
+5. Return to Ayarlar, disable Daimi vaxt göstəricisi, and show that the countdown notification disappears.
+6. Upload the actual Android recording to a location accessible to the reviewer and paste its video link into the declaration form.
+
+This is declaration text for the implemented feature, not confirmation of Google approval.
