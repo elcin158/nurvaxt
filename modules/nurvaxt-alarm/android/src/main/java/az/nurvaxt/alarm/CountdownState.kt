@@ -38,6 +38,11 @@ data class CountdownPlan(
 object CountdownState {
   const val CHANNEL = "nurvaxt-countdown-v2"
   const val NOTIFICATION_ID = 7401
+  // Android force-groups an app's ungrouped panel entries under a summary of its own and re-posts
+  // that summary whenever the group's children change, which replays the reminder sound when one
+  // entry is swiped away. An app-defined group keeps NurVaxt out of that aggregate entirely.
+  const val GROUP = "nurvaxt"
+  const val SUMMARY_ID = 7402
   fun prefs(context: Context) = context.getSharedPreferences("nurvaxt-countdown", Context.MODE_PRIVATE)
 
   private fun decode(json: JSONObject): CountdownPlan {
@@ -56,7 +61,7 @@ object CountdownState {
       json.optJSONArray("kerahat")?.let { values ->
         (0 until values.length()).map { index ->
           val event = values.getJSONObject(index)
-          CountdownKerahat(event.getString("name"), event.getString("date"), event.getLong("start"), event.getLong("end"), event.getLong("warningStart"))
+          CountdownKerahat(event.getString("name"), event.getString("date"), event.getLong("start"), event.getLong("end"))
         }.sortedBy { it.start }
       } ?: emptyList(),
     )
@@ -69,7 +74,7 @@ object CountdownState {
     val plan = decode(json)
     require(plan.timeFormat in listOf("12", "24"))
     require(plan.events.all { it.timestamp > 0 && it.name.isNotBlank() && it.phase in listOf("start", "end") })
-    require(plan.kerahat.all { it.name.isNotBlank() && it.start > 0 && it.end > it.start && it.warningStart <= it.start && it.start - it.warningStart <= 7_200_000 })
+    require(plan.kerahat.all { it.name.isNotBlank() && it.start > 0 && it.end > it.start && it.end - it.start <= 7_200_000 })
     check(prefs(context).edit().putString("plan", json.toString()).commit())
     sync(context)
   }

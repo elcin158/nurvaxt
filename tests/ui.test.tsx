@@ -2,12 +2,13 @@ import { render, screen, fireEvent, act, waitFor } from '@testing-library/react-
 import { Alert, Share } from 'react-native';
 import { ThemeProvider } from '../src/theme';
 import { usePreferences, defaultPreferences } from '../src/store/preferences';
+import { PRAYER_FIELDS } from '../src/constants/prayers';
 import { PrayerList } from '../src/features/prayer-times/PrayerList';
 import { KerahatTimesCard } from '../src/features/prayer-times/KerahatTimesCard';
 import { NextPrayerCard } from '../src/features/prayer-times/NextPrayerCard';
 import { useActiveClock } from '../src/hooks/useActiveClock';
 import { useToday } from '../src/hooks/useToday';
-import { KerahatWarningSettings } from '../src/features/settings/KerahatWarningSettings';
+import { KerahatDurationSettings } from '../src/features/settings/KerahatDurationSettings';
 import Calendar from '../app/(tabs)/calendar';
 import Home from '../app/(tabs)/index';
 import { datasetSchema } from '../src/types/data';
@@ -51,7 +52,7 @@ beforeEach(() => {
   jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T02:50:00Z'));
 });
 test('home time rows are read-only and day navigation still updates the times', async () => {
-  usePreferences.setState({ showKerahat: true });
+  usePreferences.setState({ showKerahat: true, visibleFields: [...PRAYER_FIELDS] });
   await render(
     <ThemeProvider>
       <Home />
@@ -72,6 +73,7 @@ test('home time rows are read-only and day navigation still updates the times', 
 });
 
 test('home follows the next prayer day at İşa and keeps that timetable across midnight', async () => {
+  usePreferences.setState({ visibleFields: [...PRAYER_FIELDS] });
   jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T15:24:00Z'));
   const view = await render(
     <ThemeProvider>
@@ -244,6 +246,7 @@ test('switching from Bakı to Gəncə replaces the calendar with that city’s s
   expect(shareSpy.mock.calls[0]?.[0].message).toContain('Əsr: 16:40');
 });
 test('prayer rows use all distinct source fields and an accessible next label', async () => {
+  usePreferences.setState({ visibleFields: [...PRAYER_FIELDS] });
   const day = datasetSchema.parse(dataset).records[7]!;
   await render(
     <ThemeProvider>
@@ -255,6 +258,24 @@ test('prayer rows use all distinct source fields and an accessible next label', 
   expect(screen.getByText('18:11')).toBeOnTheScreen();
   expect(screen.getByText('18:25')).toBeOnTheScreen();
   expect(screen.getByLabelText('Əsr, 16:27, növbəti namaz')).toBeOnTheScreen();
+});
+test('sunrise, sunset and midnight are hidden until they are turned on', async () => {
+  const day = datasetSchema.parse(dataset).records[7]!;
+  const view = await render(
+    <ThemeProvider>
+      <PrayerList day={day} upcoming="asr" />
+    </ThemeProvider>,
+  );
+  for (const label of ['Günçıxma', 'Günbatımı', 'Gecəyarısı'])
+    expect(screen.queryByLabelText(new RegExp(`^${label}, `))).not.toBeOnTheScreen();
+  expect(screen.getByLabelText('Sübh, 05:25')).toBeOnTheScreen();
+  await act(async () => usePreferences.getState().toggleField('sunrise'));
+  await view.rerender(
+    <ThemeProvider>
+      <PrayerList day={day} upcoming="asr" />
+    </ThemeProvider>,
+  );
+  expect(screen.getByLabelText('Günçıxma, 06:44')).toBeOnTheScreen();
 });
 test('calendar navigation covers November and December then shows missing January', async () => {
   await render(
@@ -425,56 +446,79 @@ test('kerahat source details stay available behind the information button', asyn
   expect(screen.getByText('Mənbə: Diyanət · kərahət vaxtları')).toBeOnTheScreen();
 });
 
-test('kerahat uses the selected warning threshold and omits the redundant subtitle', async () => {
+test('kerahat reports only a running interval and follows the selected period length', async () => {
   usePreferences.setState({ showKerahat: true });
+  // 11:45 in Bakı: inside Zəval only while that period is longer than the 43 minutes to Zöhr.
   jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-10-08T07:45:00Z'));
   await render(
     <ThemeProvider>
       <KerahatTimesCard />
     </ThemeProvider>,
   );
-  expect(screen.getByText('Kərahət yaxınlaşır')).toBeOnTheScreen();
+  expect(screen.queryByText('Kərahət vaxtıdır')).not.toBeOnTheScreen();
   expect(screen.queryByText('Bu gün · Hənəfi · təxmini')).not.toBeOnTheScreen();
   await act(async () =>
-    usePreferences.getState().set({ kerahatWarnings: { morning: 45, noon: 15, evening: 45 } }),
+    usePreferences.getState().set({ kerahatDurations: { morning: 45, noon: 45, evening: 45 } }),
   );
-  expect(screen.queryByText('Kərahət yaxınlaşır')).not.toBeOnTheScreen();
+  expect(screen.getByText('Kərahət vaxtıdır')).toBeOnTheScreen();
+  expect(screen.getByText('Bitməsinə qalan vaxt')).toBeOnTheScreen();
   await act(async () =>
-    usePreferences.getState().set({ kerahatWarnings: { morning: 45, noon: 40, evening: 45 } }),
+    usePreferences.getState().set({ kerahatDurations: { morning: 45, noon: 0, evening: 45 } }),
   );
-  expect(screen.getByText('Kərahət yaxınlaşır')).toBeOnTheScreen();
+  expect(screen.queryByText('Kərahət vaxtıdır')).not.toBeOnTheScreen();
+  expect(screen.queryByText('Zəval')).not.toBeOnTheScreen();
 });
 
-test('warning controls support exact input and adjust only the selected period', async () => {
+test('period controls support exact input and adjust only the selected period', async () => {
   await render(
     <ThemeProvider>
-      <KerahatWarningSettings />
+      <KerahatDurationSettings />
     </ThemeProvider>,
   );
-  expect(screen.getByLabelText('Günçıxma xəbərdarlığı, dəqiqə')).toHaveProp('value', '45');
-  const noon = screen.getByLabelText('Zəval xəbərdarlığı, dəqiqə');
+  expect(screen.getByLabelText('Günçıxma kərahəti, dəqiqə')).toHaveProp('value', '45');
+  const noon = screen.getByLabelText('Zəval kərahəti, dəqiqə');
   await fireEvent.changeText(noon, '37');
   await fireEvent(noon, 'blur');
-  expect(usePreferences.getState().kerahatWarnings).toEqual({ morning: 45, noon: 37, evening: 45 });
-  await fireEvent.press(screen.getByLabelText('Günbatımı xəbərdarlığını 5 dəqiqə artır'));
-  expect(usePreferences.getState().kerahatWarnings).toEqual({ morning: 45, noon: 37, evening: 50 });
+  expect(usePreferences.getState().kerahatDurations).toEqual({
+    morning: 45,
+    noon: 37,
+    evening: 45,
+  });
+  await fireEvent.press(screen.getByLabelText('Günbatımı kərahətini 5 dəqiqə artır'));
+  expect(usePreferences.getState().kerahatDurations).toEqual({
+    morning: 45,
+    noon: 37,
+    evening: 50,
+  });
 });
 
-test('warning controls reject invalid values and stop at zero and 120 minutes', async () => {
-  await render(
+test('period minutes typed without a blur still reach the stored settings', async () => {
+  const view = await render(
     <ThemeProvider>
-      <KerahatWarningSettings />
+      <KerahatDurationSettings />
     </ThemeProvider>,
   );
-  const input = screen.getByLabelText('Günçıxma xəbərdarlığı, dəqiqə');
+  await fireEvent.changeText(screen.getByLabelText('Günçıxma kərahəti, dəqiqə'), '20');
+  // Switching tabs takes the tap without blurring the field and unmounts the screen.
+  await view.unmount();
+  expect(usePreferences.getState().kerahatDurations.morning).toBe(20);
+});
+
+test('period controls reject invalid values and stop at zero and 120 minutes', async () => {
+  await render(
+    <ThemeProvider>
+      <KerahatDurationSettings />
+    </ThemeProvider>,
+  );
+  const input = screen.getByLabelText('Günçıxma kərahəti, dəqiqə');
   await fireEvent.changeText(input, '121');
   await fireEvent(input, 'blur');
   expect(screen.getByText('0–120 dəqiqə daxil edin.')).toBeOnTheScreen();
-  expect(usePreferences.getState().kerahatWarnings.morning).toBe(45);
+  expect(usePreferences.getState().kerahatDurations.morning).toBe(45);
   await fireEvent.changeText(input, '0');
   await fireEvent(input, 'blur');
-  expect(screen.getByLabelText('Günçıxma xəbərdarlığını 5 dəqiqə azalt')).toBeDisabled();
+  expect(screen.getByLabelText('Günçıxma kərahətini 5 dəqiqə azalt')).toBeDisabled();
   await fireEvent.changeText(input, '120');
   await fireEvent(input, 'blur');
-  expect(screen.getByLabelText('Günçıxma xəbərdarlığını 5 dəqiqə artır')).toBeDisabled();
+  expect(screen.getByLabelText('Günçıxma kərahətini 5 dəqiqə artır')).toBeDisabled();
 });

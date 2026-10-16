@@ -3,7 +3,7 @@ import { Pressable, TextInput, useWindowDimensions, View } from 'react-native';
 import { AppText, Icon } from '../../components/ui';
 import { usePreferences } from '../../store/preferences';
 import { tokens, useTheme } from '../../theme';
-import { MAX_KERAHAT_WARNING_MINUTES, type KerahatWindow } from '../prayer-times/solar';
+import { MAX_KERAHAT_MINUTES, type KerahatWindow } from '../prayer-times/solar';
 
 const periods = [
   { id: 'morning', title: 'Günçıxma' },
@@ -11,8 +11,8 @@ const periods = [
   { id: 'evening', title: 'Günbatımı' },
 ] as const;
 
-function WarningMinutes({ id, title }: { id: KerahatWindow['id']; title: string }) {
-  const minutes = usePreferences((state) => state.kerahatWarnings[id]);
+function PeriodMinutes({ id, title }: { id: KerahatWindow['id']; title: string }) {
+  const minutes = usePreferences((state) => state.kerahatDurations[id]);
   const { colors } = useTheme();
   const { fontScale } = useWindowDimensions();
   const [draft, setDraft] = useState(String(minutes));
@@ -22,31 +22,42 @@ function WarningMinutes({ id, title }: { id: KerahatWindow['id']; title: string 
     setDraft(String(minutes));
     setInvalid(false);
   }, [minutes]);
-  const update = (value: number) => {
+  const accepted = (value: string) =>
+    /^\d{1,3}$/.test(value) && Number(value) <= MAX_KERAHAT_MINUTES;
+  const store = (value: number) => {
     const state = usePreferences.getState();
-    state.set({ kerahatWarnings: { ...state.kerahatWarnings, [id]: value } });
+    state.set({ kerahatDurations: { ...state.kerahatDurations, [id]: value } });
+  };
+  const update = (value: number) => {
+    store(value);
     setDraft(String(value));
     setInvalid(false);
   };
+  // The panel scrolls with keyboardShouldPersistTaps="handled", so a tab or button takes the tap
+  // without blurring the field. Keep every usable edit, not only the ones that blur.
+  const edit = (value: string) => {
+    setDraft(value);
+    setInvalid(value.length > 0 && !accepted(value));
+    if (accepted(value)) store(Number(value));
+  };
   const commit = () => {
-    const value = Number(draft);
-    if (!/^\d{1,3}$/.test(draft) || value > MAX_KERAHAT_WARNING_MINUTES) {
+    if (!accepted(draft)) {
       setInvalid(true);
       return;
     }
-    update(value);
+    update(Number(draft));
   };
   const adjustmentButton = (direction: -1 | 1) => {
-    const disabled = direction < 0 ? minutes === 0 : minutes === MAX_KERAHAT_WARNING_MINUTES;
+    const disabled = direction < 0 ? minutes === 0 : minutes === MAX_KERAHAT_MINUTES;
     return (
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`${title} xəbərdarlığını 5 dəqiqə ${direction < 0 ? 'azalt' : 'artır'}`}
+        accessibilityLabel={`${title} kərahətini 5 dəqiqə ${direction < 0 ? 'azalt' : 'artır'}`}
         accessibilityState={{ disabled }}
         disabled={disabled}
         onPress={() => {
-          const current = usePreferences.getState().kerahatWarnings[id];
-          update(Math.min(MAX_KERAHAT_WARNING_MINUTES, Math.max(0, current + direction * 5)));
+          const current = usePreferences.getState().kerahatDurations[id];
+          update(Math.min(MAX_KERAHAT_MINUTES, Math.max(0, current + direction * 5)));
         }}
         style={({ pressed }) => ({
           width: 44,
@@ -80,12 +91,9 @@ function WarningMinutes({ id, title }: { id: KerahatWindow['id']; title: string 
         >
           {adjustmentButton(-1)}
           <TextInput
-            accessibilityLabel={`${title} xəbərdarlığı, dəqiqə`}
+            accessibilityLabel={`${title} kərahəti, dəqiqə`}
             value={draft}
-            onChangeText={(value) => {
-              setDraft(value);
-              setInvalid(false);
-            }}
+            onChangeText={edit}
             onFocus={() => setFocused(true)}
             onBlur={() => {
               setFocused(false);
@@ -118,28 +126,28 @@ function WarningMinutes({ id, title }: { id: KerahatWindow['id']; title: string 
       </View>
       {invalid && (
         <AppText variant="caption" accessibilityLiveRegion="polite" style={{ color: colors.error }}>
-          0–{MAX_KERAHAT_WARNING_MINUTES} dəqiqə daxil edin.
+          0–{MAX_KERAHAT_MINUTES} dəqiqə daxil edin.
         </AppText>
       )}
     </View>
   );
 }
 
-export function KerahatWarningSettings() {
+export function KerahatDurationSettings() {
   const { colors } = useTheme();
   return (
     <View style={{ gap: 10, paddingVertical: 12 }}>
       <View style={{ gap: 3 }}>
-        <AppText style={{ fontFamily: tokens.font.semibold }}>Əvvəlcədən xəbərdarlıq</AppText>
+        <AppText style={{ fontFamily: tokens.font.semibold }}>Kərahət müddətləri</AppText>
         <AppText variant="caption" style={{ color: colors.muted }}>
-          Kərahət başlamazdan əvvəl göstərilsin.
+          Günçıxmadan sonra, Zöhrdən və günbatımından əvvəl sayılan dəqiqələr.
         </AppText>
       </View>
       {periods.map((period) => (
-        <WarningMinutes key={period.id} {...period} />
+        <PeriodMinutes key={period.id} {...period} />
       ))}
       <AppText variant="caption" style={{ color: colors.muted }}>
-        0 dəq. seçdikdə yalnız kərahət başlayanda göstərilir.
+        0 dəq. seçdikdə həmin kərahət göstərilmir.
       </AppText>
     </View>
   );

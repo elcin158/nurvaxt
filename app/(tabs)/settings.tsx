@@ -6,7 +6,7 @@ import { Screen } from '../../src/components/layout/Screen';
 import { BrandIcon } from '../../src/components/brand/Brand';
 import { AppText, Button, Card, Chip, ChoiceGroup } from '../../src/components/ui';
 import { SettingsRow, Toggle } from '../../src/features/settings/SettingsRow';
-import { KerahatWarningSettings } from '../../src/features/settings/KerahatWarningSettings';
+import { KerahatDurationSettings } from '../../src/features/settings/KerahatDurationSettings';
 import { TimeVisibilitySettings } from '../../src/features/settings/TimeVisibilitySettings';
 import { LiveNotificationEntry } from '../../src/features/settings/LiveNotificationEntry';
 import { locationName } from '../../src/features/locations/locations';
@@ -110,7 +110,7 @@ export default function Settings() {
               onChange={(showKerahat) => prefs.set({ showKerahat })}
             />
           </SettingsRow>
-          {prefs.showKerahat && <KerahatWarningSettings />}
+          {prefs.showKerahat && <KerahatDurationSettings />}
           <SettingsRow
             title="Hicri tarixi göstər"
             subtitle="Mülki islam təqvimi · hesablanmış tarix"

@@ -61,8 +61,8 @@ class CountdownNotificationTest {
         for (phase in listOf("start", "end")) {
           val prayer = CountdownPrayer("Sübh", "2026-10-12", "06:45", now + left, now - 3_600_000, phase)
           for (kerahat in listOf(emptyList(), listOf(CountdownKerahat("Günçıxma", "2026-10-12",
-              now + 60_000, now + 300_000, now - 600_000)), listOf(CountdownKerahat("Günçıxma", "2026-10-12",
-              now - 60_000, now + 300_000, now - 600_000)))) {
+              now + 60_000, now + 300_000)), listOf(CountdownKerahat("Günçıxma", "2026-10-12",
+              now - 60_000, now + 300_000)))) {
             val plan = CountdownPlan(true, "Bakı", if (phase == "end") "12" else "24", listOf(prayer), kerahat)
             val notification = roundTrip(CountdownNotification.build(configured, plan, prayer, now))
             assertNotNull(notification.contentView)
@@ -133,12 +133,17 @@ class CountdownNotificationTest {
     assertEquals(96, mark.height)
     val original = bounds(source, 0, source.height)
     val enlarged = bounds(mark, 0, mark.height)
-    // Alpha bounds can round at both edges when the bitmap is filtered.
-    assertEquals("Standalone wordmark width", original.width() * 1.1, enlarged.width().toDouble(), 2.0)
-    assertEquals("Standalone wordmark height", original.height() * 1.1, enlarged.height().toDouble(), 2.0)
+    // The mark is scaled until its longer axis touches the bitmap's edges; alpha bounds can round
+    // at both edges when the bitmap is filtered.
+    val scale = 96.0 / maxOf(original.width(), original.height())
+    assertEquals("Standalone wordmark width", original.width() * scale, enlarged.width().toDouble(), 2.0)
+    assertEquals("Standalone wordmark height", original.height() * scale, enlarged.height().toDouble(), 2.0)
+    assertTrue("Standalone wordmark leaves the slot unused",
+      enlarged.width() >= 95 || enlarged.height() >= 95)
     assertEquals(48f, enlarged.exactCenterX(), 1f)
-    assertTrue("Standalone wordmark is clipped", enlarged.left >= 4 && enlarged.right <= 92 &&
-      enlarged.top >= 4 && enlarged.bottom <= 92)
+    assertEquals(48f, enlarged.exactCenterY(), 1f)
+    assertTrue("Standalone wordmark is clipped", enlarged.left >= 0 && enlarged.right <= 96 &&
+      enlarged.top >= 0 && enlarged.bottom <= 96)
     assertNull(notification.contentView)
     assertNull(notification.bigContentView)
   }
@@ -153,6 +158,7 @@ class CountdownNotificationTest {
     val artwork = bounds(stackedMark, 0, 48)
     assertFalse("Wordmark is missing above the time", artwork.isEmpty)
     assertTrue("Wordmark overlaps the time", artwork.bottom <= 48)
+    assertTrue("Wordmark leaves its row unused", artwork.height() >= 42)
     assertEquals(48f, artwork.exactCenterX(), 2f)
     for (left in listOf(1_000L, 30_000L, 59_000L, 59_999L, 60_000L, 120_000L,
         40 * 60_000L, 59 * 60_000L, 3_599_999L)) {

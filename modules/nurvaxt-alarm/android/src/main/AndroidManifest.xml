@@ -21,6 +21,7 @@
     <receiver android:name=".CountdownReceiver" android:exported="false" />
     <receiver android:name=".CountdownDismissReceiver" android:exported="false" />
     <receiver android:name=".AlarmReceiver" android:exported="false" />
+    <receiver android:name=".ReminderDismissReceiver" android:exported="false" />
     <receiver android:name=".RestoreReceiver" android:exported="false">
       <intent-filter>
         <action android:name="android.intent.action.BOOT_COMPLETED" />

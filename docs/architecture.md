@@ -35,13 +35,21 @@ is display-only and never affects alarms.
 The hero keeps the next daily prayer as its main event. From verified İşa until the following
 verified sunrise, it also shows a smaller sunrise countdown and progress. That progress spans
 the whole night, including midnight and Sübh. Missing either endpoint hides the extra display.
+`visibleFields` chooses the timetable rows and defaults to İmsak and the five daily prayers:
+günçıxma, günbatımı and gecəyarısı mark the prayers' boundaries rather than prayers of their
+own, so they stay off until GÖSTƏRİLƏN VAXTLAR turns them on. Stored preferences keep whatever
+they already selected, and the last remaining row cannot be unchecked.
 The optional `showKerahat` preference defaults off and persists across launches. Its Hanafi
-solar intervals are display-only estimates: sunrise +45 minutes, Zöhr -10 minutes, and actual
-sunset -45 minutes. They use distinct source fields, never Məğrib as a sunset substitute. An
-active interval shows time to its end. `kerahatWarnings` stores three independent advance-warning
-thresholds, defaulting to 45 minutes each. Settings support exact whole minutes from 0 to 120;
-zero disables that period's advance warning while keeping its active display. These thresholds
-control the app and Android ongoing-panel warning and do not change the solar interval endpoints.
+solar intervals are display-only estimates anchored to distinct source fields, never Məğrib as a
+sunset substitute: they run from sunrise, and up to Zöhr and actual sunset. `kerahatDurations`
+stores the length of each period, defaulting to 45, 10 and 45 minutes. Settings support exact
+whole minutes from 0 to 120 or five-minute steps; zero leaves that period out entirely, in the
+app and in the native plan alike. Nothing announces kərahət in advance: an interval is reported
+only while it runs, and it shows the time to its end.
+Settings screens scroll with `keyboardShouldPersistTaps="handled"`, so a tab, button or header
+close takes the tap without blurring the focused field. The period minutes and the quiet-hours
+times are therefore stored as soon as the typed text is usable, instead of waiting for a blur that
+never arrives when the user simply leaves the screen.
 The native plan receives separate verified sunrise and kərahət endpoints. Its existing visual
 boundary alarm also advances those displays while JS is absent; prayer reminder events stay separate.
 

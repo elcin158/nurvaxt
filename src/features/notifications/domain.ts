@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { LABELS, REMINDER_EVENTS, TIMEZONE, type ReminderEvent } from '../../constants/prayers';
 import type { PrayerDay } from '../../types/data';
 import { atTime } from '../../utils/time';
-import { kerahatWindows, type KerahatWarningMinutes } from '../prayer-times/solar';
+import { kerahatWindows, type KerahatDurationMinutes } from '../prayer-times/solar';
 import { prayerCountdownTimeline, type PrayerOccurrence } from '../prayer-times/domain';
 import type { ReminderSound } from './sounds';
 export type ReminderPreferences = {
@@ -128,18 +128,17 @@ export function planSolarCountdown(
   days: PrayerDay[],
   locationId: string,
   showKerahat: boolean,
-  warnings: KerahatWarningMinutes,
+  durations: KerahatDurationMinutes,
 ) {
   const verified = days.filter((day) => day.verified && day.locationId === locationId);
   const kerahat = showKerahat
     ? verified
         .flatMap((day) =>
-          kerahatWindows(day).map((window) => ({
+          kerahatWindows(day, durations).map((window) => ({
             name: window.title,
             date: day.date,
             start: window.start,
             end: window.end,
-            warningStart: window.start - warnings[window.id] * 60_000,
           })),
         )
         .sort((a, b) => a.start - b.start)

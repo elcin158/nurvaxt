@@ -20,12 +20,12 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.IconCompat
+import kotlin.math.roundToInt
 
 object CountdownNotification {
   private const val ICON = 96
-  // generate-assets.ts gives the full source mark an 8 px transparent border.
-  private const val SOURCE_MARK_INSET = 8
-  private const val STANDALONE_MARK_INSET = 4
+  /** The stacked variant's mark row; the rest of the slot carries the count below it. */
+  private const val STACKED_MARK = 44
 
   /** Numeric countdowns appear only in the final hour. */
   private const val HOUR = 3_600_000L
@@ -45,13 +45,53 @@ object CountdownNotification {
     }
   }
 
+  private fun mark(context: Context): Bitmap =
+    requireNotNull(BitmapFactory.decodeResource(context.resources, R.drawable.nurvaxt_countdown_app_mark))
+
+  /**
+   * The opaque box inside the source mark. generate-assets.ts pads it with a transparent border,
+   * and fitting a wider-than-tall mark into a square leaves more padding above and below. Android
+   * scales the bitmap as a whole into the status-bar slot, so that padding is slot area the
+   * artwork never gets to use.
+   */
+  private fun artwork(mark: Bitmap): Rect {
+    val pixels = IntArray(mark.width * mark.height)
+    mark.getPixels(pixels, 0, mark.width, 0, 0, mark.width, mark.height)
+    var left = mark.width
+    var top = mark.height
+    var right = -1
+    var bottom = -1
+    for (y in 0 until mark.height) for (x in 0 until mark.width) {
+      if (pixels[y * mark.width + x] ushr 24 == 0) continue
+      if (x < left) left = x
+      if (x > right) right = x
+      if (y < top) top = y
+      if (y > bottom) bottom = y
+    }
+    if (right < 0) return Rect(0, 0, mark.width, mark.height)
+    return Rect(left, top, right + 1, bottom + 1)
+  }
+
+  /** The largest centred rect inside [box] that keeps [artwork]'s aspect ratio. */
+  private fun fill(artwork: Rect, box: Rect): Rect {
+    val scale = minOf(
+      box.width().toFloat() / artwork.width(),
+      box.height().toFloat() / artwork.height(),
+    )
+    val width = (artwork.width() * scale).roundToInt()
+    val height = (artwork.height() * scale).roundToInt()
+    val left = box.left + (box.width() - width) / 2
+    val top = box.top + (box.height() - height) / 2
+    return Rect(left, top, left + width, top + height)
+  }
+
   internal fun appIcon(context: Context): IconCompat {
-    val mark = requireNotNull(BitmapFactory.decodeResource(context.resources, R.drawable.nurvaxt_countdown_app_mark))
+    val mark = mark(context)
     val bitmap = Bitmap.createBitmap(ICON, ICON, Bitmap.Config.ARGB_8888)
-    // Fit the standalone artwork into 88 px instead of 80 px, keeping the same system slot.
-    Canvas(bitmap).drawBitmap(mark,
-      Rect(SOURCE_MARK_INSET, SOURCE_MARK_INSET, mark.width - SOURCE_MARK_INSET, mark.height - SOURCE_MARK_INSET),
-      Rect(STANDALONE_MARK_INSET, STANDALONE_MARK_INSET, ICON - STANDALONE_MARK_INSET, ICON - STANDALONE_MARK_INSET),
+    // The artwork touches the bitmap's edges, which is as large as the fixed system slot can draw
+    // it without distorting the mark: its height is then bounded by its own aspect ratio.
+    val source = artwork(mark)
+    Canvas(bitmap).drawBitmap(mark, source, fill(source, Rect(0, 0, ICON, ICON)),
       Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG))
     return IconCompat.createWithBitmap(bitmap)
   }
@@ -61,8 +101,10 @@ object CountdownNotification {
     if (remaining >= HOUR) return appIcon(context)
     val bitmap = Bitmap.createBitmap(ICON, ICON, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
-    val mark = requireNotNull(BitmapFactory.decodeResource(context.resources, R.drawable.nurvaxt_countdown_app_mark))
-    canvas.drawBitmap(mark, null, Rect(ICON / 4, 0, ICON * 3 / 4, ICON / 2),
+    val mark = mark(context)
+    // The mark fills its row too, keeping only the gap the count below it needs.
+    val source = artwork(mark)
+    canvas.drawBitmap(mark, source, fill(source, Rect(0, 0, ICON, STACKED_MARK)),
       Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG))
     val (seconds, minutes) = units(remaining)
     val text = if (remaining >= 60_000) minutes.toString() else seconds.coerceAtLeast(1).toString()
@@ -127,13 +169,11 @@ object CountdownNotification {
       val kerahat = CountdownSolar.kerahat(plan.kerahat, now)
       setViewVisibility(R.id.countdown_kerahat, if (kerahat == null) View.GONE else View.VISIBLE)
       if (kerahat != null) {
-        val active = now >= kerahat.start
-        val until = if (active) kerahat.end else kerahat.start
         setTextViewText(R.id.countdown_kerahat_label, "Kərahət · ${kerahat.name}")
-        setTextViewText(R.id.countdown_kerahat_stage, if (active) "Bitməsinə qalan vaxt" else "Başlamasına qalan vaxt")
+        setTextViewText(R.id.countdown_kerahat_stage, "Bitməsinə qalan vaxt")
         setChronometerCountDown(R.id.countdown_kerahat_timer, true)
-        setChronometer(R.id.countdown_kerahat_timer, SystemClock.elapsedRealtime() + until - now, null, true)
-        setContentDescription(R.id.countdown_kerahat_timer, "${kerahat.name} kərahətinin ${if (active) "bitməsinə" else "başlamasına"} ${remainingDescription(until - now)} qalıb, təxmini interval.")
+        setChronometer(R.id.countdown_kerahat_timer, SystemClock.elapsedRealtime() + kerahat.end - now, null, true)
+        setContentDescription(R.id.countdown_kerahat_timer, "${kerahat.name} kərahətinin bitməsinə ${remainingDescription(kerahat.end - now)} qalıb, təxmini interval.")
       }
     }
   }
@@ -161,6 +201,29 @@ object CountdownNotification {
     }
   }
 
+  /** Silent owner of the NurVaxt group, so no system summary is built on the reminder channel. */
+  fun groupSummary(context: Context): Notification {
+    createChannel(context)
+    return NotificationCompat.Builder(context, CountdownState.CHANNEL)
+      .setSmallIcon(appIcon(context))
+      .setContentTitle("NurVaxt")
+      .setGroup(CountdownState.GROUP).setGroupSummary(true)
+      .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+      .setOnlyAlertOnce(true).setSilent(true)
+      .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+      .build()
+  }
+
+  /** The summary only exists to own reminders; drop it once the panel holds none. */
+  fun pruneGroupSummary(context: Context) {
+    val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val active = runCatching { manager.activeNotifications }.getOrNull() ?: return
+    val reminders = active.any {
+      it.id != CountdownState.NOTIFICATION_ID && it.id != CountdownState.SUMMARY_ID
+    }
+    if (!reminders) manager.cancel(CountdownState.SUMMARY_ID)
+  }
+
   /** A fast foreground notification with a small local app bitmap, no plan parsing or custom layouts. */
   fun startup(context: Context): Notification {
     createChannel(context)
@@ -172,6 +235,7 @@ object CountdownNotification {
       .setContentTitle("Namaza qalan vaxt")
       .setContentText("Vaxt göstəricisi hazırlanır…")
       .setShowWhen(false).setOngoing(true).setOnlyAlertOnce(true).setSound(null).setVibrate(null)
+      .setGroup(CountdownState.GROUP)
       .setCategory(Notification.CATEGORY_SERVICE)
       .setPriority(Notification.PRIORITY_DEFAULT)
       .setVisibility(Notification.VISIBILITY_PUBLIC)
@@ -198,9 +262,7 @@ object CountdownNotification {
       PendingIntent.getActivity(context, 7401, it, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     }
     val kerahat = CountdownSolar.kerahat(plan.kerahat, now)
-    val solarSummary = kerahat
-      ?.let { "${if (now >= it.start) "Kərahət vaxtıdır" else "Kərahət yaxınlaşır"} · ${it.name}" }
-      .orEmpty()
+    val solarSummary = kerahat?.let { "Kərahət vaxtıdır · ${it.name}" }.orEmpty()
     val body = "$duration · $stage" + if (solarSummary.isEmpty()) "" else " · $solarSummary"
     val title = "${prayer.name} · $time"
     val progress = prayer.previousTimestamp?.takeIf { it < prayer.timestamp }?.let {
@@ -213,6 +275,7 @@ object CountdownNotification {
       .setSubText(plan.location)
       .setWhen(prayer.timestamp).setShowWhen(false)
       .setOngoing(true).setOnlyAlertOnce(true).setSilent(true)
+      .setGroup(CountdownState.GROUP)
       .setCategory(NotificationCompat.CATEGORY_SERVICE)
       .setPriority(NotificationCompat.PRIORITY_DEFAULT)
       .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

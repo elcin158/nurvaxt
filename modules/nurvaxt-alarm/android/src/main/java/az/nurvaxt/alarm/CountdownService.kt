@@ -77,6 +77,7 @@ class CountdownService : Service() {
       } else {
         NotificationManagerCompat.from(this).notify(CountdownState.NOTIFICATION_ID, notification)
       }
+      CountdownNotification.pruneGroupSummary(this)
       if (armedPrayer != prayer.timestamp) {
         CountdownState.armBoundary(this, currentPlan, prayer, now)
         armedPrayer = prayer.timestamp

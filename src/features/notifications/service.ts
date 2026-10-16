@@ -121,7 +121,7 @@ async function run() {
           location: locationName(location),
           timeFormat: prefs.timeFormat,
           events: planCountdown(days, location),
-          ...planSolarCountdown(days, location, prefs.showKerahat, prefs.kerahatWarnings),
+          ...planSolarCountdown(days, location, prefs.showKerahat, prefs.kerahatDurations),
         }),
       );
       const state = Alarm.diagnostics();

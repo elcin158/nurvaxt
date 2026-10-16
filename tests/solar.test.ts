@@ -52,29 +52,22 @@ test('missing solar fields never fall back to another prayer or an unverified re
   ]);
 });
 
-test('each default warning begins exactly 45 minutes before its interval', () => {
-  for (const window of kerahatWindows(day)) {
-    expect(kerahatStatus([window], window.start - 45 * 60_000 - 1).approaching).toBe(false);
-    expect(kerahatStatus([window], window.start - 45 * 60_000).approaching).toBe(true);
-    expect(kerahatStatus([window], window.start).approaching).toBe(false);
-  }
+test('each period keeps its own configured length around the same solar endpoint', () => {
+  const windows = kerahatWindows(day, { morning: 20, noon: 30, evening: 60 });
+  expect(
+    windows.map((window) => [window.id, solarClock(window.start), solarClock(window.end)]),
+  ).toEqual([
+    ['morning', '06:50', '07:10'],
+    ['noon', '11:55', '12:25'],
+    ['evening', '17:10', '18:10'],
+  ]);
 });
 
-test('warning minutes are independent and zero disables only the advance warning', () => {
-  const warnings = { morning: 0, noon: 20, evening: 60 };
-  const windows = kerahatWindows(day);
-  expect(kerahatStatus([windows[0]!], windows[0]!.start - 1, warnings).approaching).toBe(false);
-  expect(kerahatStatus([windows[1]!], windows[1]!.start - 30 * 60_000, warnings).approaching).toBe(
-    false,
-  );
-  expect(kerahatStatus([windows[1]!], windows[1]!.start - 20 * 60_000, warnings).approaching).toBe(
-    true,
-  );
-  expect(kerahatStatus([windows[2]!], windows[2]!.start - 60 * 60_000, warnings).approaching).toBe(
-    true,
-  );
-  expect(kerahatStatus(windows, windows[0]!.start, warnings).active?.id).toBe('morning');
-  expect(kerahatStatus(windows, windows[0]!.start, warnings).approaching).toBe(false);
+test('a period of zero minutes is left out instead of becoming an empty interval', () => {
+  const windows = kerahatWindows(day, { morning: 0, noon: 10, evening: 0 });
+  expect(windows.map((window) => window.id)).toEqual(['noon']);
+  expect(kerahatStatus(windows, at('06:55')).active).toBeUndefined();
+  expect(kerahatStatus(windows, at('12:20')).active?.id).toBe('noon');
 });
 
 test('solar timestamps stay in Asia/Baku independently of the device timezone', () => {

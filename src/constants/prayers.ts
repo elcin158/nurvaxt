@@ -12,6 +12,10 @@ export const PRAYER_FIELDS = [
 ] as const;
 export type PrayerField = (typeof PRAYER_FIELDS)[number];
 export const DAILY_PRAYERS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
+/** Günçıxma, günbatımı and gecəyarısı mark the prayers' boundaries rather than prayers of their own. */
+export const DEFAULT_VISIBLE_FIELDS = PRAYER_FIELDS.filter(
+  (field) => field !== 'sunrise' && field !== 'sunset' && field !== 'midnight',
+);
 export const REMINDER_EVENTS = ['imsak', ...DAILY_PRAYERS] as const;
 export type ReminderEvent = (typeof REMINDER_EVENTS)[number];
 export const LABELS: Record<PrayerField, string> = {
