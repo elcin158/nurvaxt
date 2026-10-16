@@ -1,11 +1,11 @@
 {
-  "checkedAt": "2026-10-11T20:53:47.159264+00:00",
+  "checkedAt": "2026-10-15T05:35:44.375723+00:00",
   "apk": "artifacts/nurvaxt-1.0.6-release.apk",
   "version": "1.0.6",
-  "versionCode": 7,
+  "versionCode": 8,
   "applicationId": "az.nurvaxt.app",
-  "bytes": 82102516,
-  "sha256": "3e78bc369155fddc23825557426eac653a5caa392afc4044fd0864f3e2eb7164",
+  "bytes": 82644767,
+  "sha256": "9cca7cc066770f04908c684c44e0bc46ab199452c3ba3f153d26e9a4095cc6a1",
   "certificateSha256": "01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e",
   "signatureVerified": true,
   "matchesLocalReleaseKey": true,
@@ -15,7 +15,7 @@
     "armeabi-v7a",
     "x86_64"
   ],
-  "embeddedBundleBytes": 3704460,
+  "embeddedBundleBytes": 3735820,
   "reminderToneBundled": true,
   "permissions": [
     "android.permission.ACCESS_COARSE_LOCATION",
@@ -28,7 +28,7 @@
     "android.permission.POST_PROMOTED_NOTIFICATIONS",
     "android.permission.FOREGROUND_SERVICE",
     "android.permission.FOREGROUND_SERVICE_SPECIAL_USE",
-    "android.permission.ACTIVITY_RECOGNITION",
+    "android.permission.MODIFY_AUDIO_SETTINGS",
     "android.permission.WAKE_LOCK",
     "com.google.android.c2dm.permission.RECEIVE",
     "az.nurvaxt.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
@@ -50,6 +50,34 @@
     "me.everything.badger.permission.BADGE_COUNT_READ",
     "me.everything.badger.permission.BADGE_COUNT_WRITE"
   ],
+  "countdownResourcesVerified": true,
+  "countdownLayouts": {
+    "nurvaxt_countdown_compact": {
+      "id": "0x7f0d0088",
+      "packagedXml": "res/k2.xml",
+      "viewIdsVerified": [
+        "countdown_prayer",
+        "countdown_stage",
+        "countdown_timer"
+      ]
+    },
+    "nurvaxt_countdown_expanded": {
+      "id": "0x7f0d0089",
+      "packagedXml": "res/Nr.xml",
+      "viewIdsVerified": [
+        "countdown_prayer",
+        "countdown_time",
+        "countdown_stage",
+        "countdown_timer",
+        "countdown_symbol",
+        "countdown_progress",
+        "countdown_kerahat",
+        "countdown_kerahat_label",
+        "countdown_kerahat_stage",
+        "countdown_kerahat_timer"
+      ]
+    }
+  },
   "datasetVersions": {
     "2026": "2026.10-12-all-regions.3"
   },
