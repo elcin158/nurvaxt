@@ -1,63 +1,94 @@
 {
-  "checkedAt": "2026-10-14T09:48:29.578Z",
-  "source": "Actual Android release build 1.0.6, captured on a disposable Android 15 emulator",
-  "profiles": {
-    "phone": {
-      "size": "1080x1920",
-      "density": 360,
-      "logicalWidthDp": 480
+  "checkedAt": "2026-10-16T13:11:30.272Z",
+  "source": "Phone campaign: real Android 15 release screenshots with existing five-prayer visibility setting; AI-generated background, vector typography and framing.",
+  "capture": {
+    "apkSha256": "9cca7cc066770f04908c684c44e0bc46ab199452c3ba3f153d26e9a4095cc6a1",
+    "source": "NurVaxt 1.0.6 release APK on a disposable Android 15 emulator",
+    "rawSize": [
+      1080,
+      2160
+    ],
+    "density": {
+      "default": 360,
+      "calendar": 340
     },
-    "tablet-7": {
-      "size": "1440x2560",
-      "density": 320,
-      "logicalWidthDp": 720
-    },
-    "tablet-10": {
-      "size": "1440x2560",
-      "density": 240,
-      "logicalWidthDp": 960
-    }
+    "location": "Bakı",
+    "date": "2026-10-16",
+    "visibleFields": [
+      "fajr",
+      "dhuhr",
+      "asr",
+      "maghrib",
+      "isha"
+    ],
+    "reminders": "Actual reminder screen scrolled to the daily prayer controls"
   },
+  "composition": {
+    "outputSize": [
+      1080,
+      1920
+    ],
+    "appCrop": {
+      "left": 0,
+      "top": 108,
+      "width": 1080,
+      "height": 1980
+    },
+    "appPixelsRetouched": false,
+    "marketingCopyOutsideApp": true,
+    "appScreenshotAspectRatioPreserved": true
+  },
+  "unchangedAssets": [
+    "app-icon-512.png",
+    "tablet-7/",
+    "tablet-10/",
+    "nurvaxt-preview-30s.mp4"
+  ],
   "images": [
     {
       "file": "phone/01-namaz-vaxtlari.png",
       "width": 1080,
       "height": 1920,
-      "bytes": 125606,
+      "bytes": 950798,
       "channels": 3,
-      "hasAlpha": false
+      "hasAlpha": false,
+      "sha256": "3e246e42b04294240d8016c1a0deb8f5e90f561c2efe9c5984e5221377c618e3"
     },
     {
       "file": "phone/02-teqvim.png",
       "width": 1080,
       "height": 1920,
-      "bytes": 104142,
+      "bytes": 353001,
       "channels": 3,
-      "hasAlpha": false
+      "hasAlpha": false,
+      "sha256": "ba2133d944a74ac36741c5ccf0bb81c2c0da460ca55859605428a5857606fce1"
     },
     {
       "file": "phone/03-qible.png",
       "width": 1080,
       "height": 1920,
-      "bytes": 192787,
+      "bytes": 1008424,
       "channels": 3,
-      "hasAlpha": false
+      "hasAlpha": false,
+      "sha256": "5fd4b31612ba5183b0871368688c9e6a5584b7d45953ebf9ec42178498015ffe"
     },
     {
       "file": "phone/04-xatirlatmalar.png",
       "width": 1080,
       "height": 1920,
-      "bytes": 107967,
+      "bytes": 363996,
       "channels": 3,
-      "hasAlpha": false
+      "hasAlpha": false,
+      "sha256": "d41d6e0e6de609872366161b65bf7e87211fd22a9b9a76c175d14b09122c0dc7"
     },
     {
       "file": "phone/05-tund-gorunus.png",
       "width": 1080,
       "height": 1920,
-      "bytes": 123482,
+      "bytes": 651505,
       "channels": 3,
-      "hasAlpha": false
+      "hasAlpha": false,
+      "sha256": "eed9fa0e1ea84b23afc7ea968bffbf68bc15d00db2a849b525a0307ab8126e1b"
     },
     {
       "file": "tablet-7/01-namaz-vaxtlari.png",
@@ -65,7 +96,8 @@
       "height": 2560,
       "bytes": 131220,
       "channels": 3,
-      "hasAlpha": false
+      "hasAlpha": false,
+      "sha256": "bf99a8be1e4da3eb8cd306ee55e77651122742f6dc4fac8302818096b3ec72aa"
     },
     {
       "file": "tablet-7/02-teqvim.png",
@@ -73,7 +105,8 @@
       "height": 2560,
       "bytes": 133314,
       "channels": 3,
-      "hasAlpha": false
+      "hasAlpha": false,
+      "sha256": "668794706d323f6af04727285767e55afeb05bf9e98bdb2dd68bcf68851db798"
     },
     {
       "file": "tablet-7/03-qible.png",
@@ -81,7 +114,8 @@
       "height": 2560,
       "bytes": 186068,
       "channels": 3,
-      "hasAlpha": false
+      "hasAlpha": false,
+      "sha256": "1c57571d61dceac980036ce7e376dccca7eeed303b60a4532de907ed72df6d47"
     },
     {
       "file": "tablet-7/04-xatirlatmalar.png",
@@ -89,7 +123,8 @@
       "height": 2560,
       "bytes": 155264,
       "channels": 3,
-      "hasAlpha": false
+      "hasAlpha": false,
+      "sha256": "16bb16fedda8429d8de38e8338d4dec107c21e8eaf59b68c027603fb3d6c1dc7"
     },
     {
       "file": "tablet-10/01-namaz-vaxtlari.png",
@@ -97,7 +132,8 @@
       "height": 2560,
       "bytes": 105670,
       "channels": 3,
-      "hasAlpha": false
+      "hasAlpha": false,
+      "sha256": "c35fd14fb5acd3b8e6ed8f499315519ed9772790b5e2690b43d4cdf51256801b"
     },
     {
       "file": "tablet-10/02-teqvim.png",
@@ -105,7 +141,8 @@
       "height": 2560,
       "bytes": 101016,
       "channels": 3,
-      "hasAlpha": false
+      "hasAlpha": false,
+      "sha256": "5be6c741bf3a2abfbb391cef6e28b641f66c564b19c0cd4e13b48345a2523e33"
     },
     {
       "file": "tablet-10/03-qible.png",
@@ -113,7 +150,8 @@
       "height": 2560,
       "bytes": 134792,
       "channels": 3,
-      "hasAlpha": false
+      "hasAlpha": false,
+      "sha256": "993f21dd807338a6b16b5ddf1a558bc0ddf03c7569f187699ae50ea169f17472"
     },
     {
       "file": "tablet-10/04-xatirlatmalar.png",
@@ -121,7 +159,8 @@
       "height": 2560,
       "bytes": 162822,
       "channels": 3,
-      "hasAlpha": false
+      "hasAlpha": false,
+      "sha256": "097e1de0a9ea4c022e638d34b9da5f3da7a0bee41b1f8255cbaaf33b33177a0d"
     },
     {
       "file": "app-icon-512.png",
@@ -129,15 +168,17 @@
       "height": 512,
       "bytes": 319958,
       "channels": 4,
-      "hasAlpha": true
+      "hasAlpha": true,
+      "sha256": "872be23f453db7a5d5aab5fbcb07ce10fe88523891051dae9b57272118631c1d"
     },
     {
       "file": "feature-graphic-1024x500.png",
       "width": 1024,
       "height": 500,
-      "bytes": 137744,
+      "bytes": 390717,
       "channels": 3,
-      "hasAlpha": false
+      "hasAlpha": false,
+      "sha256": "668d46499cfe498ccda9b4f77168a3529f2a917b9f52d1c83085249b92c38255"
     }
   ]
 }

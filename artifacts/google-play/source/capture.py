@@ -1,4 +1,8 @@
-"""Capture the real release UI on the disposable store-assets emulator only."""
+"""Legacy raw capture utility. For the new phone campaign use capture-campaign.py.
+
+Legacy group captures go under source/captures/legacy, so they cannot overwrite
+the finished marketing PNGs in phone/ or the shipped tablet screenshots.
+"""
 import argparse
 import json
 import re
@@ -98,7 +102,7 @@ elif args.action == "group":
     for screen, name in [("", "01-namaz-vaxtlari"), ("calendar", "02-teqvim"),
                          ("qibla", "03-qible"), ("reminders", "04-xatirlatmalar")]:
         route(screen)
-        screenshot(f"{group}/{name}.png")
+        screenshot(f"source/captures/legacy/{group}/{name}.png")
 elif args.action == "video":
     route("")
     device_path = "/sdcard/nurvaxt-store-walkthrough.mp4"

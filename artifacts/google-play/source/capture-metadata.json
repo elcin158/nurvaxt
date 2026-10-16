@@ -1,0 +1,22 @@
+{
+  "apkSha256": "9cca7cc066770f04908c684c44e0bc46ab199452c3ba3f153d26e9a4095cc6a1",
+  "source": "NurVaxt 1.0.6 release APK on a disposable Android 15 emulator",
+  "rawSize": [
+    1080,
+    2160
+  ],
+  "density": {
+    "default": 360,
+    "calendar": 340
+  },
+  "location": "Bakı",
+  "date": "2026-10-16",
+  "visibleFields": [
+    "fajr",
+    "dhuhr",
+    "asr",
+    "maghrib",
+    "isha"
+  ],
+  "reminders": "Actual reminder screen scrolled to the daily prayer controls"
+}
