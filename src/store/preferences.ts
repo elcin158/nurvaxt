@@ -2,15 +2,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { z } from 'zod';
-import { PRAYER_FIELDS, type PrayerField, type ReminderEvent } from '../constants/prayers';
+import {
+  DEFAULT_VISIBLE_FIELDS,
+  PRAYER_FIELDS,
+  type PrayerField,
+  type ReminderEvent,
+} from '../constants/prayers';
 import { defaultReminders, type ReminderPreferences } from '../features/notifications/domain';
 import { REMINDER_SOUND_IDS } from '../features/notifications/sounds';
-import {
-  defaultKerahatWarnings,
-  MAX_KERAHAT_WARNING_MINUTES,
-} from '../features/prayer-times/solar';
+import { defaultKerahatDurations, MAX_KERAHAT_MINUTES } from '../features/prayer-times/solar';
 const offsetSchema = z.array(z.number().int().min(0).max(120)).max(25);
-const kerahatWarningSchema = z.number().int().min(0).max(MAX_KERAHAT_WARNING_MINUTES).default(45);
+// Zero hides that period, so the stored minutes keep their own per-period default.
+const kerahatMinutes = (fallback: number) =>
+  z.number().int().min(0).max(MAX_KERAHAT_MINUTES).default(fallback);
 const preferencesSchema = z.object({
   locationId: z.string().regex(/^qmi-\d+$/),
   recentLocations: z.array(z.string()).max(5),
@@ -18,13 +22,13 @@ const preferencesSchema = z.object({
   timeFormat: z.enum(['24', '12']),
   showHijri: z.boolean(),
   showKerahat: z.boolean().default(false),
-  kerahatWarnings: z
+  kerahatDurations: z
     .object({
-      morning: kerahatWarningSchema,
-      noon: kerahatWarningSchema,
-      evening: kerahatWarningSchema,
+      morning: kerahatMinutes(defaultKerahatDurations.morning),
+      noon: kerahatMinutes(defaultKerahatDurations.noon),
+      evening: kerahatMinutes(defaultKerahatDurations.evening),
     })
-    .default(defaultKerahatWarnings),
+    .default(defaultKerahatDurations),
   hijriAdjustment: z.number().int().min(-2).max(2),
   visibleFields: z.array(z.enum(PRAYER_FIELDS)).min(1),
   // Defaulted so a stored preference file written before the Qibla screen still parses.
@@ -59,9 +63,9 @@ export const defaultPreferences: Preferences = {
   timeFormat: '24',
   showHijri: false,
   showKerahat: false,
-  kerahatWarnings: defaultKerahatWarnings,
+  kerahatDurations: defaultKerahatDurations,
   hijriAdjustment: 0,
-  visibleFields: [...PRAYER_FIELDS],
+  visibleFields: [...DEFAULT_VISIBLE_FIELDS],
   qiblaSource: 'city',
   onboardingComplete: false,
   reminders: defaultReminders,

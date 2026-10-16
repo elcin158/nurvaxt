@@ -14,24 +14,24 @@ behavior remains in place.
 
 Kərahət is enabled through **Ayarlar → Kərahət vaxtları** and is off by default. The preference
 is persisted and older preferences hydrate without losing the user's city or appearance.
-The card displays the current day's three approximate Hanafi solar intervals. It distinguishes
-the upcoming, active and completed intervals, with a countdown when active or approaching.
-Each period has its own persisted advance-warning setting, defaulting to 45 minutes. In settings,
-users can enter exact whole minutes from 0 to 120 or adjust by five-minute steps. Zero shows
-only the active interval. Warning preferences affect the on-screen announcement, independently
-of the interval calculation. The same values control the Android ongoing panel. The information
-button exposes the calculation and its source.
+The card displays the current day's approximate Hanafi solar intervals. It distinguishes the
+upcoming, active and completed intervals, and counts down only while one is running — kərahət is
+never announced in advance. Each period has its own persisted length, defaulting to 45, 10 and 45
+minutes. In settings, users can enter exact whole minutes from 0 to 120 or adjust by five-minute
+steps. Zero drops that period from the card, the list and the Android ongoing panel alike. The
+information button exposes the calculation, the current lengths and the source.
 The card omits the redundant date and Hanafi subtitle.
 
 [Diyanet's official explanation](https://fetva.diyanet.gov.tr/tr/fetva/mekruh-vakitler-hangileridir-hangi-vakitlerde-kaza-ve-hangi-vakitlerde-nafile-namaz-kilinmaz/0193c42d-52b7-7186-d5b4-f1d3c950ad73)
 describes roughly 40–50 minutes after sunrise and before sunset, and roughly 10 minutes
-before noon. The display uses 45, 45 and 10 minutes and explicitly calls them estimates.
+before noon. The defaults are 45, 10 and 45 minutes, adjustable per period, and are explicitly
+called estimates.
 The sunset endpoint comes from `sunset`, not the later `maghrib` source field. Missing fields
 are omitted; unverified records are never used. The Android ongoing notification shows these
 states silently; no separate audible kərahət reminders are added.
 
-The expanded ongoing panel retains the prayer countdown and shows approaching/active kərahət with
-its own countdown. The compact panel uses a short kərahət status line when one
+The expanded ongoing panel retains the prayer countdown and shows a running kərahət with its own
+countdown to its end. The compact panel uses a short kərahət status line when one
 applies. Native timers and the existing boundary alarm keep it current
 without JS.
 Disabling kərahət omits its entire native plan. Older native plans without solar fields still load.

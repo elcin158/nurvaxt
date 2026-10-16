@@ -24,7 +24,15 @@ function QuietTime({ field }: { field: 'start' | 'end' }) {
             : 'Səssiz saatların sonu, saat və dəqiqə'
         }
         value={value}
-        onChangeText={setValue}
+        // The header close button takes the tap without blurring the field, so a complete time is
+        // stored while it is typed instead of waiting for a blur that may never arrive.
+        onChangeText={(next) => {
+          setValue(next);
+          if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(next)) return;
+          setError(false);
+          const r = usePreferences.getState().reminders;
+          prefs.set({ reminders: { ...r, quietHours: { ...r.quietHours, [field]: next } } });
+        }}
         placeholder="23:00"
         placeholderTextColor={colors.muted}
         maxLength={5}

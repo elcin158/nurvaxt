@@ -39,6 +39,7 @@ object AlarmQueue {
     cancel(context)
     check(prefs(context).edit().putString("plan", events.toString()).putString("registered", "[]").commit())
     refill(context)
+    CountdownNotification.pruneGroupSummary(context)
   }
   @Synchronized fun scheduleTest(context: Context) {
     val time = System.currentTimeMillis() + 5_000
@@ -110,11 +111,21 @@ object AlarmQueue {
       val notification = NotificationCompat.Builder(context, channelId)
         .setSmallIcon(CountdownNotification.appIcon(context)).setContentTitle("NurVaxt").setContentText(body)
         .setStyle(NotificationCompat.BigTextStyle().bigText(body)).setAutoCancel(true)
+        // The app's own group keeps this reminder out of the panel's aggregate, whose system
+        // summary alerts again when a swipe changes the group; onlyAlertOnce covers any re-post
+        // of this same reminder.
+        .setGroup(CountdownState.GROUP).setOnlyAlertOnce(true)
+        .setDeleteIntent(PendingIntent.getBroadcast(context, CountdownState.SUMMARY_ID,
+          Intent(context, ReminderDismissReceiver::class.java),
+          PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
         .setContentIntent(tap).setPriority(NotificationCompat.PRIORITY_HIGH)
       if (Build.VERSION.SDK_INT < 26) {
         notification.setSound(ReminderSounds.uri(context, sound))
         if (vibrate) notification.setVibrate(longArrayOf(0, 200))
       }
+      // Owning the group summary keeps the panel from building its own: that system summary sits
+      // on the reminder channel and alerts again every time a swipe changes the group.
+      notifications.notify(CountdownState.SUMMARY_ID, CountdownNotification.groupSummary(context))
       notifications.notify(timestamp.toString().hashCode(), notification.build())
     }
     storage.edit().putString("plan", rest.toString()).commit()

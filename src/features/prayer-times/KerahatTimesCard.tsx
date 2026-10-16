@@ -16,15 +16,15 @@ export function KerahatTimesCard({ compact = false, date }: { compact?: boolean;
   const { data, isPending } = usePrayerDays(selectedDate);
   const format = usePreferences((state) => state.timeFormat);
   const showKerahat = usePreferences((state) => state.showKerahat);
-  const warnings = usePreferences((state) => state.kerahatWarnings);
+  const durations = usePreferences((state) => state.kerahatDurations);
   const { colors } = useTheme();
   const { width, fontScale } = useWindowDimensions();
   const columns = compact && width >= 320 && format === '24' && fontScale < 1.2;
   const [showInfo, setShowInfo] = useState(false);
   const day = data?.find((record) => record.date === selectedDate && record.verified);
-  const windows = showKerahat ? kerahatWindows(day) : [];
-  const status = kerahatStatus(windows, now, warnings);
-  const highlighted = status.active ?? (status.approaching ? status.next : undefined);
+  const windows = showKerahat ? kerahatWindows(day, durations) : [];
+  const status = kerahatStatus(windows, now);
+  const highlighted = status.active;
   const timeRange = (start: number, end: number) =>
     `${formatTime(solarClock(start), format)}${columns ? '–' : ' – '}${formatTime(solarClock(end), format)}`;
   if (!showKerahat) return null;
@@ -79,7 +79,7 @@ export function KerahatTimesCard({ compact = false, date }: { compact?: boolean;
           <View
             accessible
             accessibilityLiveRegion="polite"
-            accessibilityLabel={`${status.active ? 'Kərahət vaxtı davam edir' : 'Kərahət vaxtı yaxınlaşır'}: ${highlighted.title}, ${timeRange(highlighted.start, highlighted.end)}.`}
+            accessibilityLabel={`Kərahət vaxtı davam edir: ${highlighted.title}, ${timeRange(highlighted.start, highlighted.end)}.`}
             style={{
               padding: compact ? 10 : 12,
               gap: 8,
@@ -101,10 +101,10 @@ export function KerahatTimesCard({ compact = false, date }: { compact?: boolean;
                   ...(compact ? { fontSize: 13, lineHeight: 20 } : {}),
                 }}
               >
-                {status.active ? 'Kərahət vaxtıdır' : 'Kərahət yaxınlaşır'}
+                Kərahət vaxtıdır
               </AppText>
               <AppText variant="caption" style={{ color: colors.warningText }}>
-                {status.active ? 'Bitməsinə qalan vaxt' : 'Başlamasına qalan vaxt'}
+                Bitməsinə qalan vaxt
               </AppText>
             </View>
             <AppText
@@ -207,8 +207,9 @@ export function KerahatTimesCard({ compact = false, date }: { compact?: boolean;
         {showInfo && (
           <View style={{ paddingTop: 4, gap: 8 }}>
             <AppText variant="caption" style={{ color: colors.muted }}>
-              Günçıxmadan sonrakı 45 dəqiqə, Zöhrdən əvvəlki 10 dəqiqə və günbatımından əvvəlki 45
-              dəqiqə göstərilir. Bunlar günəşin mövqeyinə bağlı təxmini intervallardır.
+              Günçıxmadan sonrakı {durations.morning} dəqiqə, Zöhrdən əvvəlki {durations.noon}{' '}
+              dəqiqə və günbatımından əvvəlki {durations.evening} dəqiqə göstərilir. Müddətləri
+              Ayarlardan dəyişə bilərsiniz; bunlar günəşin mövqeyinə bağlı təxmini intervallardır.
             </AppText>
             <AppText variant="caption" style={{ color: colors.muted }}>
               Mənbə: Diyanət · kərahət vaxtları

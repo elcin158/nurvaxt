@@ -36,6 +36,31 @@ With exact access, use `setExactAndAllowWhileIdle`; without it use `setAndAllowW
 and show that delivery may be delayed. POST_NOTIFICATIONS is requested contextually on
 Android 13+. Prayer reminder delivery remains independent of the countdown foreground service.
 
+Reminders are posted into the app's own notification group, together with a silent group summary
+the app owns, and with `setOnlyAlertOnce`. Without that group Android force-groups the app's panel
+entries under an aggregate summary of its own — `g:Aggregate_NormalNotificationSection`, visible in
+`live-updates/s21-fe-investigation/active-notifications.txt` — and the ongoing countdown card keeps
+that aggregate populated at every prayer time. `GroupHelper` recomputes the aggregate summary's
+icon, colour, visibility and channel from the remaining children when one is removed and re-posts
+it; that summary sits on the reminder channel, and on One UI the re-post alerts, which is why the
+reminder sound played a second time when an entry was swiped out of the panel. Measured on the
+connected SM-G990E (Android 16), swiping one reminder away:
+
+```
+16:22:45.490 notification_canceled [reminder, reason=2]
+16:22:45.498 notification_enqueue  [g:Aggregate_… GROUP_SUMMARY|AUTOGROUP_SUMMARY]
+16:22:45.703 notification_alert    [summary, beep=1, mute_reason=0]
+```
+
+`setOnlyAlertOnce` alone does not stop it: the flag belongs to the app's reminder, while the
+record that alerts is the system's summary. Owning the group prevents the aggregate from being
+built at all — `GroupHelper.onNotificationPosted` leaves `isAppGroup()` notifications alone, and
+sparse-group forcing only starts at six such groups. The app's summary sits on the silent countdown
+channel, carries `GROUP_ALERT_CHILDREN` and is never re-posted on dismissal, so the same swipe now
+logs only `notification_canceled`. The reminder's delete intent drops the summary once no reminder
+is left; plan replacement and the countdown tick prune it as a backstop. Delivery itself is not
+duplicated: `AlarmQueue.deliver` consumes the due events before presenting them.
+
 ### Persistent countdown
 
 `Daimi vaxt göstəricisi` defaults on once notifications are enabled, and switching it off posts
@@ -47,10 +72,14 @@ count, switching to a second count below one minute.
 The cutoffs use the actual remaining time; numeric counts retain their upward rounding.
 Text is fitted to the slot width. The brief startup notification uses the same application mark,
 decoded locally and sent as bitmap bytes while the plan loads.
-The native standalone mark reduces the source bitmap's transparent border from 8 px
-to 4 px in the same 96 px bitmap, making the artwork 10% larger. The stacked countdown
-keeps the original mark size. Startup, native reminders and Live Updates use the
-enlarged standalone mark too.
+The native marks are measured from the source bitmap's opaque box — generate-assets.ts pads the
+artwork with a transparent border, and fitting a wider-than-tall mark into a square adds more
+padding above and below — and are then scaled until they touch their target edges. The standalone
+mark fills the whole 96 px bitmap, which is the largest the fixed slot can draw it without
+distorting the artwork: its height then follows the mark's own aspect ratio. The stacked countdown
+fills a 44 px row, leaving the rest of the slot to its count. On the connected Samsung that renders
+the standalone mark 38×34 px instead of the previous 34×31 px.
+Startup, native reminders and Live Updates use the standalone mark too.
 Android controls the square slot
 dimensions; increasing bitmap resolution cannot enlarge it.
 When Android automatically groups notifications with different small icons, it can select the
@@ -139,11 +168,11 @@ Older native events without `phase` still decode as prayer starts; reconciliatio
 updated plan. The countdown considers today/tomorrow in Asia/Baku and stops when no verified
 event exists. It never bridges a missing date to a distant future record.
 The separate İşa-to-sunrise row and night meter remain removed. The durable solar plan supplies
-the verified kərahət intervals. Kərahət is off by default. When enabled, the panel
-shows the approaching or active approximate interval, with a chronometer to its start or end.
-Each of the three advance-warning thresholds is configurable from 0 to 120 minutes and defaults
-to 45. Zero disables only the advance warning. Disabling kərahət removes all kərahət entries
-from the native plan. The compact panel uses a brief kərahət status line when one applies; the next prayer remains
+the verified kərahət intervals. Kərahət is off by default. When enabled, the panel shows the
+approximate interval only while it runs, with a chronometer to its end; nothing announces it in
+advance. Each of the three period lengths is configurable from 0 to 120 minutes and defaults to
+45, 10 and 45. Zero leaves that period out of the plan. Disabling kərahət removes all kərahət
+entries from the native plan. The compact panel uses a brief kərahət status line when one applies; the next prayer remains
 the main countdown in both layouts. These displays are silent and add no prayer-reminder events.
 Disabling the countdown removes its service/notification/boundary alarm without canceling prayer
 reminders. Global disable, denied notification permission and a blocked countdown channel stop it.

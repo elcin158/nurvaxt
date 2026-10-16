@@ -169,31 +169,34 @@ test('ongoing countdown includes verified İmsak before Sübh for the selected c
 test('persistent solar plan omits kerahat entirely when the feature is off', () => {
   const records = days.slice(7, 9);
   expect(
-    planSolarCountdown(records, 'qmi-1', false, { morning: 45, noon: 45, evening: 45 }),
+    planSolarCountdown(records, 'qmi-1', false, { morning: 45, noon: 10, evening: 45 }),
   ).toEqual({ kerahat: [] });
 });
 
-test('persistent kerahat plan uses each selected warning and actual sunset', () => {
+test('persistent kerahat plan uses each selected duration and actual sunset', () => {
   const record = days[7]!;
-  const plan = planSolarCountdown([record], 'qmi-1', true, { morning: 0, noon: 20, evening: 60 });
+  const plan = planSolarCountdown([record], 'qmi-1', true, { morning: 20, noon: 10, evening: 60 });
   expect(plan.kerahat).toHaveLength(3);
-  expect(plan.kerahat.map((window) => (window.start - window.warningStart) / 60_000)).toEqual([
-    0, 20, 60,
-  ]);
+  expect(plan.kerahat.map((window) => (window.end - window.start) / 60_000)).toEqual([20, 10, 60]);
+  expect(
+    planSolarCountdown([record], 'qmi-1', true, { morning: 0, noon: 10, evening: 0 }).kerahat.map(
+      (window) => window.name,
+    ),
+  ).toEqual(['Zəval']);
   expect(plan.kerahat[2]!.end).toBe(atTime(record.date, record.sunset!));
   expect(plan.kerahat[2]!.end).not.toBe(atTime(record.date, record.maghrib!));
 });
 
 test('solar panel never uses another city or an unverified endpoint', () => {
   const records = days.slice(7, 9);
-  const warnings = { morning: 45, noon: 45, evening: 45 };
-  expect(planSolarCountdown(records, 'qmi-20', true, warnings)).toEqual({ kerahat: [] });
+  const durations = { morning: 45, noon: 10, evening: 45 };
+  expect(planSolarCountdown(records, 'qmi-20', true, durations)).toEqual({ kerahat: [] });
   expect(
     planSolarCountdown(
       records.map((day) => ({ ...day, verified: false })),
       'qmi-1',
       true,
-      warnings,
+      durations,
     ),
   ).toEqual({ kerahat: [] });
 });
