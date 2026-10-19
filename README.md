@@ -145,9 +145,10 @@ npm run android:bundle
 python3 scripts/verify-release-bundle.py --bundletool /absolute/path/to/bundletool-all-1.18.1.jar
 ```
 
-The signed, validated upload file is `artifacts/nurvaxt-1.0.7-v9.aab`.
-See `artifacts/nurvaxt-1.0.7-v9.validation.json` for its signature, checksum,
-packaged permissions and 16 KB alignment checks. Azerbaijani release notes are in
+The signed upload file is written to `artifacts/nurvaxt-1.0.7-v9.aab`. Release
+binaries are not tracked in git; rebuild it with the commands above and compare
+the recorded checksum. See `artifacts/nurvaxt-1.0.7-v9.validation.json` for its
+signature, checksum, packaged permissions and 16 KB alignment checks. Azerbaijani release notes are in
 `artifacts/google-play/release-notes-1.0.7-az.txt`; handover details are in
 `artifacts/nurvaxt-1.0.7-README-az.md`. No Play Console submission was performed.
 

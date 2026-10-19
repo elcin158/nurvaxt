@@ -5,6 +5,8 @@
 ## Yüklənəcək fayllar
 
 - **Play Console → yeni buraxılış → App bundles:** `nurvaxt-1.0.7-v9.aab` (73.39 MiB).
+  Bu fayl git-də saxlanılmır; yerli build artefaktıdır və aşağıdakı «Təkrar yığma»
+  addımları ilə eyni SHA-256 ilə bərpa olunur.
 - **Release notes:** `google-play/release-notes-1.0.7-az.txt` faylındakı `<az-AZ>` bloku.
 - **Yerli sınaq üçün APK:** `nurvaxt-1.0.7-release.apk`; yoxlanmış AAB-dən bundletool ilə çıxarılıb.
 - **Texniki yoxlama:** `nurvaxt-1.0.7-v9.validation.json`.

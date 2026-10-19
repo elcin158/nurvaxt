@@ -24,6 +24,7 @@ __pycache__/
 
 .signing/
 artifacts/*.apk
+artifacts/*.aab
 
 data/sources/.qmi-last-request
 data/sources/.qmi-acquisition.lock
