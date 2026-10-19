@@ -2,16 +2,12 @@ package az.nurvaxt.alarm
 
 import android.Manifest
 import android.app.AlarmManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import org.json.JSONArray
 import org.json.JSONObject
@@ -73,6 +69,7 @@ object AlarmQueue {
         else manager(context).setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timestamp, operation)
       }
       storage.edit().putString("lastOperation", java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", java.util.Locale.ROOT).apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }.format(java.util.Date())).remove("lastError").commit()
+      ReminderNotification.migrate(context)
     } catch (error: Exception) {
       storage.edit().putString("lastError", error.message ?: error.javaClass.simpleName).commit()
       throw error
@@ -94,39 +91,7 @@ object AlarmQueue {
     // Consume before presentation to avoid duplicate delivery from simultaneous broadcasts.
     storage.edit().putString("plan", rest.toString()).commit()
     if (due.isNotEmpty() && (Build.VERSION.SDK_INT < 33 || ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED)) {
-      val event = due.first()
-      val sound = event.getString("sound"); val vibrate = event.getBoolean("vibration")
-      val channelId = "nurvaxt-$sound-$vibrate-v1"
-      val notifications = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-      if (Build.VERSION.SDK_INT >= 26) {
-        val channel = NotificationChannel(channelId, "Namaz xatırlatmaları", NotificationManager.IMPORTANCE_HIGH)
-        channel.enableVibration(vibrate)
-        val uri = ReminderSounds.uri(context, sound)
-        channel.setSound(uri, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION).build())
-        notifications.createNotificationChannel(channel)
-      }
-      val launch = context.packageManager.getLaunchIntentForPackage(context.packageName)
-      val tap = launch?.let { PendingIntent.getActivity(context, 0, it, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE) }
-      val body = due.joinToString("\n") { it.getString("body") }
-      val notification = NotificationCompat.Builder(context, channelId)
-        .setSmallIcon(CountdownNotification.appIcon(context)).setContentTitle("NurVaxt").setContentText(body)
-        .setStyle(NotificationCompat.BigTextStyle().bigText(body)).setAutoCancel(true)
-        // The app's own group keeps this reminder out of the panel's aggregate, whose system
-        // summary alerts again when a swipe changes the group; onlyAlertOnce covers any re-post
-        // of this same reminder.
-        .setGroup(CountdownState.GROUP).setOnlyAlertOnce(true)
-        .setDeleteIntent(PendingIntent.getBroadcast(context, CountdownState.SUMMARY_ID,
-          Intent(context, ReminderDismissReceiver::class.java),
-          PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
-        .setContentIntent(tap).setPriority(NotificationCompat.PRIORITY_HIGH)
-      if (Build.VERSION.SDK_INT < 26) {
-        notification.setSound(ReminderSounds.uri(context, sound))
-        if (vibrate) notification.setVibrate(longArrayOf(0, 200))
-      }
-      // Owning the group summary keeps the panel from building its own: that system summary sits
-      // on the reminder channel and alerts again every time a swipe changes the group.
-      notifications.notify(CountdownState.SUMMARY_ID, CountdownNotification.groupSummary(context))
-      notifications.notify(timestamp.toString().hashCode(), notification.build())
+      ReminderNotification.post(context, due)
     }
     storage.edit().putString("plan", rest.toString()).commit()
     refill(context)

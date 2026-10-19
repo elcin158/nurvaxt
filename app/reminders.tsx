@@ -6,6 +6,7 @@ import { ScreenHeader } from '../src/components/layout/ScreenHeader';
 import { AppText, Card, Chip } from '../src/components/ui';
 import { SettingsRow, Toggle } from '../src/features/settings/SettingsRow';
 import { ReminderSoundSettings } from '../src/features/settings/ReminderSoundSettings';
+import { KerahatReminderSettings } from '../src/features/settings/KerahatReminderSettings';
 import { usePreferences } from '../src/store/preferences';
 import { LABELS, REMINDER_EVENTS } from '../src/constants/prayers';
 import { tokens, useTheme } from '../src/theme';
@@ -70,8 +71,8 @@ export default function Reminders() {
       header={<ScreenHeader title="Xatırlatmalar" action="close" onBack={() => router.back()} />}
     >
       <AppText style={{ color: colors.muted }}>
-        Namaz vaxtı çatanda bildiriş alın. Hər namaz üçün bir neçə vaxtı birlikdə seçə bilərsiniz.
-        Seçdiyiniz hər vaxtda ayrıca xatırlatma gələcək.
+        Namaz və kərahət vaxtları üçün bildiriş alın. Bir neçə xatırlatma vaxtını birlikdə seçə
+        bilərsiniz. Seçdiyiniz hər vaxtda ayrıca xatırlatma gələcək.
       </AppText>
       <Card>
         <SettingsRow
@@ -133,6 +134,7 @@ export default function Reminders() {
           </AppText>
         </Card>
       ))}
+      <KerahatReminderSettings />
       <Card>
         <ReminderSoundSettings />
         <SettingsRow title="Vibrasiya">

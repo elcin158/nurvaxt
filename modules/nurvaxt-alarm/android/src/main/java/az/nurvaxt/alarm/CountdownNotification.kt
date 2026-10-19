@@ -201,13 +201,13 @@ object CountdownNotification {
     }
   }
 
-  /** Silent owner of the NurVaxt group, so no system summary is built on the reminder channel. */
+  /** Silent owner of the reminder group; the ongoing countdown remains a separate card. */
   fun groupSummary(context: Context): Notification {
     createChannel(context)
     return NotificationCompat.Builder(context, CountdownState.CHANNEL)
       .setSmallIcon(appIcon(context))
       .setContentTitle("NurVaxt")
-      .setGroup(CountdownState.GROUP).setGroupSummary(true)
+      .setGroup(ReminderNotification.GROUP).setGroupSummary(true)
       .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
       .setOnlyAlertOnce(true).setSilent(true)
       .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -218,9 +218,7 @@ object CountdownNotification {
   fun pruneGroupSummary(context: Context) {
     val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     val active = runCatching { manager.activeNotifications }.getOrNull() ?: return
-    val reminders = active.any {
-      it.id != CountdownState.NOTIFICATION_ID && it.id != CountdownState.SUMMARY_ID
-    }
+    val reminders = active.any { it.id == ReminderNotification.NOTIFICATION_ID }
     if (!reminders) manager.cancel(CountdownState.SUMMARY_ID)
   }
 
@@ -235,6 +233,7 @@ object CountdownNotification {
       .setContentTitle("Namaza qalan vaxt")
       .setContentText("Vaxt göstəricisi hazırlanır…")
       .setShowWhen(false).setOngoing(true).setOnlyAlertOnce(true).setSound(null).setVibrate(null)
+      .setAutoCancel(false).setDeleteIntent(CountdownDismissReceiver.restoreIntent(context))
       .setGroup(CountdownState.GROUP)
       .setCategory(Notification.CATEGORY_SERVICE)
       .setPriority(Notification.PRIORITY_DEFAULT)
@@ -275,6 +274,7 @@ object CountdownNotification {
       .setSubText(plan.location)
       .setWhen(prayer.timestamp).setShowWhen(false)
       .setOngoing(true).setOnlyAlertOnce(true).setSilent(true)
+      .setAutoCancel(false).setDeleteIntent(CountdownDismissReceiver.restoreIntent(context))
       .setGroup(CountdownState.GROUP)
       .setCategory(NotificationCompat.CATEGORY_SERVICE)
       .setPriority(NotificationCompat.PRIORITY_DEFAULT)

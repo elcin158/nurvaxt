@@ -18,6 +18,7 @@ import {
   requestReconciliation,
 } from '../src/features/notifications/service';
 import { AppText, Button } from '../src/components/ui';
+import { useAppUpdateLifecycle } from '../src/features/app-updates/useAppUpdateLifecycle';
 void SplashScreen.preventAutoHideAsync();
 const client = new QueryClient({ defaultOptions: { queries: { retry: 1 } } });
 function Shell() {
@@ -31,6 +32,8 @@ function Shell() {
   const [ready, setReady] = useState(false);
   const [error, setError] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const onboarded = usePreferences((s) => s.onboardingComplete);
+  useAppUpdateLifecycle(ready && hydrated && onboarded);
   useEffect(() => {
     let alive = true;
     getDatabase()

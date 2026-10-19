@@ -16,6 +16,8 @@ import { usePreferences } from '../../src/store/preferences';
 import { tokens, useTheme } from '../../src/theme';
 import type { PrayerField } from '../../src/constants/prayers';
 import type { PrayerOccurrence } from '../../src/features/prayer-times/domain';
+import { UpdateBanner } from '../../src/features/app-updates/UpdateBanner';
+import { useAppUpdates } from '../../src/features/app-updates/service';
 
 export default function Home() {
   const today = useToday();
@@ -41,8 +43,9 @@ export default function Home() {
   const showHijri = usePreferences((s) => s.showHijri);
   const showKerahat = usePreferences((s) => s.showKerahat);
   const adjustment = usePreferences((s) => s.hijriAdjustment);
+  const updateVisible = useAppUpdates((s) => s.visible);
   const availableHeight = height - insets.top - tabBarHeight;
-  const fitOnScreen = fontScale <= 1.1 && !showKerahat && availableHeight >= 540;
+  const fitOnScreen = fontScale <= 1.1 && !showKerahat && !updateVisible && availableHeight >= 540;
   const navigate = (offset: number) => {
     setSelectedDate(shiftDate(date, offset));
   };
@@ -80,6 +83,7 @@ export default function Home() {
           {day && <PrayerTimesShareButton day={day} compact />}
         </View>
       </View>
+      <UpdateBanner />
       <NextPrayerCard compact={compact} onPrayerChange={onChange} />
       <View
         style={{

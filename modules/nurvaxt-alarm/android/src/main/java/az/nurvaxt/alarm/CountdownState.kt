@@ -38,10 +38,8 @@ data class CountdownPlan(
 object CountdownState {
   const val CHANNEL = "nurvaxt-countdown-v2"
   const val NOTIFICATION_ID = 7401
-  // Android force-groups an app's ungrouped panel entries under a summary of its own and re-posts
-  // that summary whenever the group's children change, which replays the reminder sound when one
-  // entry is swiped away. An app-defined group keeps NurVaxt out of that aggregate entirely.
-  const val GROUP = "nurvaxt"
+  // Keep the countdown outside the combined reminder card and any system aggregate summary.
+  const val GROUP = "nurvaxt-countdown"
   const val SUMMARY_ID = 7402
   fun prefs(context: Context) = context.getSharedPreferences("nurvaxt-countdown", Context.MODE_PRIVATE)
 
@@ -140,6 +138,24 @@ object CountdownState {
     } catch (error: Exception) {
       // Countdown start restrictions must never prevent the independent prayer alarm plan.
       Log.e("NurvaxtCountdown", "Countdown service could not be started", error)
+      prefs(context).edit().putString("lastError", error.message ?: error.javaClass.simpleName).apply()
+    }
+  }
+
+  /** Some OEM Clear all actions remove even an ongoing foreground-service notification. */
+  @Synchronized fun restoreDismissedNotification(context: Context) {
+    try {
+      // The user's enabled countdown must already be running. Never revive a disabled service,
+      // a blocked channel, or any dismissed prayer-reminder history.
+      if (!prefs(context).getBoolean("active", false)) return
+      val plan = read(context)?.takeIf { it.enabled && allowed(context) } ?: return
+      val now = System.currentTimeMillis()
+      val prayer = next(plan, now) ?: return
+      NotificationManagerCompat.from(context).notify(
+        NOTIFICATION_ID, CountdownNotification.build(context, plan, prayer, now),
+      )
+    } catch (error: Exception) {
+      Log.e("NurvaxtCountdown", "Dismissed countdown could not be restored", error)
       prefs(context).edit().putString("lastError", error.message ?: error.javaClass.simpleName).apply()
     }
   }

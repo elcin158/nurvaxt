@@ -40,13 +40,6 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="calendar"
-        options={{
-          title: 'Təqvim',
-          tabBarIcon: ({ color }) => <Icon name="calendar-outline" color={color} size={19} />,
-        }}
-      />
-      <Tabs.Screen
         name="qibla"
         options={{
           title: 'Qiblə',

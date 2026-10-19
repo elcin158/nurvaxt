@@ -20,7 +20,7 @@ export const defaultKerahatDurations: KerahatDurationMinutes = {
   evening: 45,
 };
 
-/** Display-only Hanafi estimates, not additional official QMİ prayer records or alarms. */
+/** Hanafi estimates used by the displays and optional reminders, not official QMİ prayer records. */
 export function kerahatWindows(
   day: PrayerDay | undefined,
   durations: KerahatDurationMinutes = defaultKerahatDurations,

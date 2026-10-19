@@ -123,6 +123,143 @@ test('quiet hours and past-time filtering also apply to at-time notifications', 
     ),
   ).toBe(true);
 });
+
+const kerahatPrefs: ReminderPreferences = {
+  ...defaultReminders,
+  enabled: true,
+  atPrayerTime: false,
+  ongoingCountdown: false,
+  offsets: { imsak: [], fajr: [], dhuhr: [], asr: [], maghrib: [], isha: [] },
+  kerahatOffsets: [5, 15, 5],
+  sound: 'soft',
+  vibration: false,
+};
+
+test('one kerahat minute selection applies to all interval starts with the saved durations', () => {
+  const day = days[7]!;
+  const events = planNotifications([day, day], 'qmi-1', kerahatPrefs, now, 60, {
+    morning: 20,
+    noon: 30,
+    evening: 60,
+  });
+  expect(events.map(({ prayer, offset, timestamp }) => [prayer, offset, timestamp])).toEqual([
+    ['kerahat-morning', 15, atTime(day.date, day.sunrise!) - 15 * 60_000],
+    ['kerahat-morning', 5, atTime(day.date, day.sunrise!) - 5 * 60_000],
+    ['kerahat-noon', 15, atTime(day.date, day.dhuhr!) - 45 * 60_000],
+    ['kerahat-noon', 5, atTime(day.date, day.dhuhr!) - 35 * 60_000],
+    ['kerahat-evening', 15, atTime(day.date, day.sunset!) - 75 * 60_000],
+    ['kerahat-evening', 5, atTime(day.date, day.sunset!) - 65 * 60_000],
+  ]);
+  expect(events[0]).toMatchObject({
+    id: `nurvaxt:qmi-1:${day.date}:kerahat-morning:15`,
+    body: 'Günçıxma kərahətinin başlamasına təxminən 15 dəqiqə qalıb.',
+    sound: 'soft',
+    vibration: false,
+  });
+  expect(new Set(events.map((event) => event.id)).size).toBe(6);
+});
+
+test('kerahat reminders are opt-in and omit disabled periods, missing endpoints and unverified cities', () => {
+  const day = days[7]!;
+  expect(planNotifications([day], 'qmi-1', { ...kerahatPrefs, enabled: false }, now)).toEqual([]);
+  expect(planNotifications([day], 'qmi-20', kerahatPrefs, now)).toEqual([]);
+  expect(planNotifications([{ ...day, verified: false }], 'qmi-1', kerahatPrefs, now)).toEqual([]);
+  expect(
+    planNotifications(
+      [{ ...day, sunrise: null, dhuhr: null, sunset: null }],
+      'qmi-1',
+      kerahatPrefs,
+      now,
+    ),
+  ).toEqual([]);
+  expect(
+    planNotifications([day], 'qmi-1', kerahatPrefs, now, 60, {
+      morning: 0,
+      noon: 10,
+      evening: 0,
+    }).map((event) => event.prayer),
+  ).toEqual(['kerahat-noon', 'kerahat-noon']);
+  expect(
+    planNotifications(
+      [day],
+      'qmi-1',
+      { ...kerahatPrefs, kerahatOffsets: defaultReminders.kerahatOffsets },
+      now,
+    ),
+  ).toEqual([]);
+  expect(
+    planNotifications(
+      [day],
+      'qmi-1',
+      {
+        ...kerahatPrefs,
+        kerahatOffsets: [-1, 0, 121, 1.5],
+      },
+      now,
+    ),
+  ).toEqual([]);
+});
+
+test('kerahat reminders share quiet hours, future filtering and the platform queue limit with prayers', () => {
+  const day = days[7]!;
+  const events = planNotifications(
+    [day],
+    'qmi-1',
+    {
+      ...kerahatPrefs,
+      atPrayerTime: true,
+      quietHours: { enabled: true, start: '06:00', end: '07:00' },
+    },
+    now,
+  );
+  expect(events.some((event) => event.prayer === 'kerahat-morning')).toBe(false);
+  expect(events.some((event) => event.prayer === 'kerahat-noon')).toBe(true);
+  const all = planNotifications([day], 'qmi-1', { ...kerahatPrefs, atPrayerTime: true }, now);
+  expect(
+    planNotifications([day], 'qmi-1', { ...kerahatPrefs, atPrayerTime: true }, now, 3),
+  ).toEqual(all.slice(0, 3));
+  const morningTime = atTime(day.date, day.sunrise!) - 5 * 60_000;
+  expect(
+    planNotifications([day], 'qmi-1', kerahatPrefs, morningTime).every(
+      (event) => event.timestamp > morningTime,
+    ),
+  ).toBe(true);
+  const midnightDay = { ...day, sunrise: '00:05' };
+  const beforeMidnight = Date.parse('2026-10-07T19:00:00Z');
+  expect(planNotifications([midnightDay], 'qmi-1', kerahatPrefs, beforeMidnight)[0]).toMatchObject({
+    prayer: 'kerahat-morning',
+    timestamp: Date.parse('2026-10-07T19:50:00Z'),
+  });
+});
+
+test('reconciliation cancels removed kerahat choices and replaces alerts when durations change', () => {
+  const day = days[7]!;
+  const previous = planNotifications([day], 'qmi-1', kerahatPrefs, now);
+  const pending = previous.map((event) => ({
+    id: event.id,
+    fingerprint: notificationFingerprint(event),
+  }));
+  const desired = planNotifications(
+    [day],
+    'qmi-1',
+    {
+      ...kerahatPrefs,
+      kerahatOffsets: [5],
+    },
+    now,
+    60,
+    { morning: 45, noon: 30, evening: 45 },
+  );
+  const diff = reconciliationDiff(pending, desired);
+  expect(diff.cancel).toEqual(
+    previous
+      .filter((event) => event.offset === 15 || event.prayer === 'kerahat-noon')
+      .map((event) => event.id),
+  );
+  expect(diff.schedule.map((event) => event.prayer)).toEqual(['kerahat-noon']);
+  expect(reconciliationDiff(pending, []).cancel).toHaveLength(previous.length);
+});
+
 test('ongoing countdown includes verified İmsak before Sübh for the selected city', () => {
   const events = planCountdown(days.slice(7, 9), 'qmi-1');
   expect(events).toHaveLength(14);

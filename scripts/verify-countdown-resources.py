@@ -32,6 +32,7 @@ layout_views = {
                                   'countdown_timer', 'countdown_symbol', 'countdown_progress',
                                   'countdown_kerahat', 'countdown_kerahat_label',
                                   'countdown_kerahat_stage', 'countdown_kerahat_timer'],
+    'nurvaxt_reminder_message': ['reminder_title', 'reminder_message'],
 }
 report = {'apk': str(apk), 'layouts': {}, 'drawables': {}}
 with zipfile.ZipFile(apk) as archive:

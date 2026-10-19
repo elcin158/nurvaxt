@@ -85,14 +85,16 @@ test('selecting a tone previews it and preserves the other reminder choices', as
 
 test('hover and listen preview without changing the saved notification sound', async () => {
   await showSettings();
+  expect(screen.getByLabelText('Melodiya')).toBeChecked();
+  expect(player.play).not.toHaveBeenCalled();
   await hover('Zəng', 'hoverIn');
   expect(player.replace).toHaveBeenLastCalledWith(previewSources.bell);
-  expect(usePreferences.getState().reminders.sound).toBe('default');
+  expect(usePreferences.getState().reminders.sound).toBe('melody');
   await hover('Zəng', 'hoverOut');
   expect(screen.getByLabelText('Zəng: dinlə')).toBeOnTheScreen();
   await press('Melodiya: dinlə');
   expect(player.replace).toHaveBeenLastCalledWith(previewSources.melody);
-  expect(usePreferences.getState().reminders.sound).toBe('default');
+  expect(usePreferences.getState().reminders.sound).toBe('melody');
 });
 
 test('newer previews cancel pending audio setup and silent stops playback', async () => {
@@ -156,7 +158,7 @@ test('Android previews the system notification sound through the native ringtone
   expect(player.play).not.toHaveBeenCalled();
   expect(setAudioModeAsync).not.toHaveBeenCalled();
   expect(screen.getByLabelText('Standart: səsi dayandır')).toBeOnTheScreen();
-  expect(usePreferences.getState().reminders.sound).toBe('default');
+  expect(usePreferences.getState().reminders.sound).toBe('melody');
   const stops = jest.mocked(Alarm!.stopSoundPreview).mock.calls.length;
   await press('Standart: səsi dayandır');
   expect(Alarm!.stopSoundPreview).toHaveBeenCalledTimes(stops + 1);
@@ -175,7 +177,7 @@ test.each([
     await press('Standart: dinlə');
     expect(screen.getByText(message)).toBeOnTheScreen();
     expect(screen.queryByText('Səslənir…')).not.toBeOnTheScreen();
-    expect(usePreferences.getState().reminders.sound).toBe('default');
+    expect(usePreferences.getState().reminders.sound).toBe('melody');
     jest.mocked(Alarm!.previewDefaultSound).mockReturnValue('playing');
     await press('Standart: dinlə');
     expect(screen.queryByText(message)).not.toBeOnTheScreen();

@@ -110,6 +110,7 @@ async function run() {
       { ...prefs.reminders, enabled: prefs.reminders.enabled && allowed },
       Date.now(),
       Platform.OS === 'android' ? 12000 : 60,
+      prefs.kerahatDurations,
     );
     if (Platform.OS === 'android') {
       if (!Alarm)

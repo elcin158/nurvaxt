@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { FlatList, Pressable, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -11,9 +11,13 @@ import { tokens, useTheme } from '../src/theme';
 export default function Cities() {
   const [query, setQuery] = useState('');
   const { colors } = useTheme();
-  const city = usePreferences((s) => s.locationId);
+  // The native list must stay in place while the store updates and the modal dismisses.
+  const [{ city, recent }] = useState(() => {
+    const prefs = usePreferences.getState();
+    return { city: prefs.locationId, recent: prefs.recentLocations };
+  });
   const setCity = usePreferences((s) => s.setLocation);
-  const recent = usePreferences((s) => s.recentLocations);
+  const dismissing = useRef(false);
   const results = searchLocations(query);
   const matches = query.trim()
     ? results
@@ -21,16 +25,21 @@ export default function Cities() {
         ...results.filter((item) => item.id === city),
         ...results.filter((item) => item.id !== city),
       ];
-  const select = (id: string) => {
-    setCity(id);
-    void Haptics.selectionAsync().catch(() => {});
+  const dismiss = (id?: string) => {
+    // A second press can arrive before native navigation has removed this screen.
+    if (dismissing.current) return;
+    dismissing.current = true;
+    if (id) {
+      setCity(id);
+      void Haptics.selectionAsync().catch(() => {});
+    }
     router.back();
   };
   return (
     <Screen
       scroll={false}
       bottomSafeArea
-      header={<ScreenHeader title="Şəhər seçimi" action="close" onBack={() => router.back()} />}
+      header={<ScreenHeader title="Şəhər seçimi" action="close" onBack={() => dismiss()} />}
     >
       <View
         style={{
@@ -84,7 +93,7 @@ export default function Cities() {
               <Pressable
                 accessibilityRole="button"
                 key={id}
-                onPress={() => select(id)}
+                onPress={() => dismiss(id)}
                 style={{
                   minHeight: 48,
                   padding: 12,
@@ -123,7 +132,7 @@ export default function Cities() {
             accessibilityLabel={item.name}
             accessibilityState={{ checked: city === item.id, selected: city === item.id }}
             aria-checked={city === item.id}
-            onPress={() => select(item.id)}
+            onPress={() => dismiss(item.id)}
             style={({ pressed }) => ({
               flexDirection: 'row',
               gap: 12,

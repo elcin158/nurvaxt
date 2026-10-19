@@ -1,0 +1,4 @@
+{
+  "platforms": ["android"],
+  "android": { "modules": ["az.nurvaxt.updates.NurvaxtUpdatesModule"] }
+}

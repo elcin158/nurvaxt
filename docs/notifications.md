@@ -22,8 +22,19 @@ even when no advance offset is selected. The `Namaz vaxtı bildirişi` switch co
 Existing stored preferences gain the new switches without losing city, sound or offset choices.
 The onboarding 5/10/15-minute choices are independent toggles and can all be selected
 together. They apply to all five daily prayers while preserving İmsak and other saved
-offsets. Each selected offset produces a distinct reminder, alongside the at-time alert.
+offsets. Each selected offset schedules a distinct reminder time, alongside the at-time alert.
 The reminders screen retains independent multiple selections for each prayer.
+
+The shared **Kərahətdən əvvəl** setting adds optional 5/10/15/30-minute warnings before
+all three estimated kərahət starts. Multiple offsets can be selected together; no offsets are
+selected by default, including on existing installations. Sunrise starts at the published
+sunrise time; noon starts the saved noon duration before Zöhr, and evening starts the saved
+evening duration before actual sunset, independently of Məğrib. A zero-duration period creates
+no warning. These reminders use the shared sound, vibration, quiet hours, notification permission,
+global enable switch and platform queue limits. Their selection is independent of the display
+toggle and persistent countdown. Android receives them through the existing durable alarm queue;
+iOS receives them through the same Expo date-trigger reconciliation as prayer reminders.
+Changing offsets, city or durations replaces/cancels the corresponding requests.
 
 Local module `modules/nurvaxt-alarm` uses PendingIntent-based AlarmManager requests.
 `SCHEDULE_EXACT_ALARM` is declared for user-selected precisely timed religious reminders.
@@ -36,8 +47,18 @@ With exact access, use `setExactAndAllowWhileIdle`; without it use `setAndAllowW
 and show that delivery may be delayed. POST_NOTIFICATIONS is requested contextually on
 Android 13+. Prayer reminder delivery remains independent of the countdown foreground service.
 
-Reminders are posted into the app's own notification group, together with a silent group summary
-the app owns, and with `setOnlyAlertOnce`. Without that group Android force-groups the app's panel
+Reminders update a single dismissible card (ID `7404`) in the `nurvaxt-reminders` group.
+The ongoing countdown (ID `7401`, group `nurvaxt-countdown`) stays separate. Each new delivery
+adds its messages to the reminder card; the compact view shows the latest message and the
+expanded view lists messages newest first with Asia/Baku times. Up to 50 recent messages are
+retained to bound the notification payload. History lives in the active notification's extras,
+so it survives an app process restart, while swiping the card away or opening it clears that
+history. The next delivery starts a fresh card. Simultaneous due events are combined too.
+Existing timestamp-ID cards from older APKs are consolidated silently when the plan refills.
+
+Only actual new deliveries can alert: reusing the reminder ID intentionally does not set
+`setOnlyAlertOnce`; migration and the app-owned group summary remain silent. Without an owned
+group Android force-groups the app's panel
 entries under an aggregate summary of its own — `g:Aggregate_NormalNotificationSection`, visible in
 `live-updates/s21-fe-investigation/active-notifications.txt` — and the ongoing countdown card keeps
 that aggregate populated at every prayer time. `GroupHelper` recomputes the aggregate summary's
@@ -52,7 +73,7 @@ connected SM-G990E (Android 16), swiping one reminder away:
 16:22:45.703 notification_alert    [summary, beep=1, mute_reason=0]
 ```
 
-`setOnlyAlertOnce` alone does not stop it: the flag belongs to the app's reminder, while the
+`setOnlyAlertOnce` alone did not stop it: the flag belonged to the app's reminder, while the
 record that alerts is the system's summary. Owning the group prevents the aggregate from being
 built at all — `GroupHelper.onNotificationPosted` leaves `isAppGroup()` notifications alone, and
 sparse-group forcing only starts at six such groups. The app's summary sits on the silent countdown
@@ -66,6 +87,19 @@ duplicated: `AlarmQueue.deliver` consumes the due events before presenting them.
 `Daimi vaxt göstəricisi` defaults on once notifications are enabled, and switching it off posts
 nothing at all — no panel entry and no status-bar slot. While on, a native
 `CountdownService` shows a silent, default-importance ongoing notification and a status icon.
+It retains `setOngoing(true)` and foreground-service ownership. These flags do not guarantee
+that every phone's Clear all action will retain it: the connected Samsung Android 16 removed
+notification `7401` with cancellation reason `3` (Clear all), even with `ONGOING_EVENT`,
+`NO_CLEAR` and `FOREGROUND_SERVICE` present. Both the ordinary card and startup acknowledgement
+now have a delete intent that immediately restores only the enabled, already-running countdown,
+silently and with the same ID. It does not restore a stopped/disabled countdown, blocked channel,
+expired timetable or dismissed reminder history. Live Update dismissal keeps its existing
+demotion behavior. The system may briefly remove the ordinary card before its restoration;
+an ordinary third-party countdown cannot promise to prohibit every system dismissal.
+The updated build was checked with the user's actual Samsung Clear action: the countdown
+was canceled with reason `3` and re-enqueued 45 ms later with no sound alert. See
+`countdown-clear-recovery/` for device events and test results.
+See [Android's ongoing-notification dismissal change](https://developer.android.com/about/versions/14/behavior-changes-all#non-dismissable-notifications).
 At one hour or more, the countdown status icon shows the full NurVaxt mark, including the
 crescent above its lettering. Below one hour it stacks that same mark above the remaining-minute
 count, switching to a second count below one minute.
@@ -169,11 +203,13 @@ updated plan. The countdown considers today/tomorrow in Asia/Baku and stops when
 event exists. It never bridges a missing date to a distant future record.
 The separate İşa-to-sunrise row and night meter remain removed. The durable solar plan supplies
 the verified kərahət intervals. Kərahət is off by default. When enabled, the panel shows the
-approximate interval only while it runs, with a chronometer to its end; nothing announces it in
-advance. Each of the three period lengths is configurable from 0 to 120 minutes and defaults to
+approximate interval only while it runs, with a chronometer to its end. Optional advance
+reminders are configured separately in **Kərahətdən əvvəl**. Each of the three period lengths
+is configurable from 0 to 120 minutes and defaults to
 45, 10 and 45. Zero leaves that period out of the plan. Disabling kərahət removes all kərahət
 entries from the native plan. The compact panel uses a brief kərahət status line when one applies; the next prayer remains
-the main countdown in both layouts. These displays are silent and add no prayer-reminder events.
+the main countdown in both layouts. These displays are silent; optional kərahət alerts use the
+separate reminder plan.
 Disabling the countdown removes its service/notification/boundary alarm without canceling prayer
 reminders. Global disable, denied notification permission and a blocked countdown channel stop it.
 

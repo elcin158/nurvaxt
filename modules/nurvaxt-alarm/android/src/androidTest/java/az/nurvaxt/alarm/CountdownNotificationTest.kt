@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.Chronometer
 import android.widget.ImageView
 import android.widget.RemoteViews
+import android.widget.TextView
 import androidx.core.app.NotificationCompat
 import org.junit.Assert.*
 import org.junit.Test
@@ -94,10 +95,13 @@ class CountdownNotificationTest {
     val notification = roundTrip(CountdownNotification.build(context, plan, imsak, now))
     assertEquals("İmsak · 05:21", notification.extras.getString(Notification.EXTRA_TITLE))
     assertTrue(notification.extras.getString(Notification.EXTRA_TEXT)!!.contains("İmsaka qalan vaxt"))
-    for (views in listOf(notification.contentView, notification.bigContentView)) {
-      val timer = views.apply(context, null).findViewById<Chronometer>(R.id.countdown_timer)
+    for ((views, label) in listOf(notification.contentView to "İmsak · 05:21", notification.bigContentView to "İmsak")) {
+      val content = views.apply(context, null)
+      val timer = content.findViewById<Chronometer>(R.id.countdown_timer)
       assertTrue(timer.isCountDown)
-      assertTrue(timer.contentDescription.toString().startsWith("İmsak vaxtına "))
+      assertEquals(label, content.findViewById<TextView>(R.id.countdown_prayer).text.toString())
+      // Android's Chronometer overrides getContentDescription with its localized duration.
+      assertTrue(timer.contentDescription.toString().isNotBlank())
     }
   }
 

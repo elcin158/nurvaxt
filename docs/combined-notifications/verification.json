@@ -1,0 +1,63 @@
+{
+  "checkedAt": "2026-10-19T11:44:10.545798+04:00",
+  "version": "1.0.6",
+  "versionCode": 8,
+  "applicationId": "az.nurvaxt.app",
+  "builtFromCurrentWorkingTree": true,
+  "releaseBuildPassed": true,
+  "debugBuildPassed": true,
+  "releaseSignatureVerified": true,
+  "releaseCertificateSha256": "01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e",
+  "deviceCertificateMatchesPreviousInstall": true,
+  "deviceCertificateSha256": "fac61745dc0903786fb9ede62a962b399f7348f0bb6f899b8332667591033b9c",
+  "artifacts": {
+    "release": {
+      "path": "artifacts/nurvaxt-combined-notifications.apk",
+      "bytes": 106853603,
+      "sha256": "1857d7afd938233bc53046e0c4f2cc33e842af07f6ff634962d8e5b8bf78ad08"
+    },
+    "device": {
+      "path": "artifacts/nurvaxt-combined-notifications-device.apk",
+      "bytes": 106969142,
+      "sha256": "9553a9bba4194f555a10f7249f8b268f59f65917a6d8771849835a4941d34428"
+    }
+  },
+  "nativeUnitTestsPassed": 15,
+  "reminderInstrumentationTestsPassed": 5,
+  "countdownInstrumentationTestsPassed": 8,
+  "emulatorAndroidSdk": 35,
+  "packagedNotificationResourcesVerified": true,
+  "physicalDevice": {
+    "model": "SM-G990E",
+    "android": "16",
+    "threeDeliveriesCombined": {
+      "delivered": 3,
+      "finalMessages": 3,
+      "oneReminderCard": true,
+      "separateCountdown": true
+    },
+    "dismissal": {
+      "combinedCardDismissed": true,
+      "summaryRemoved": true,
+      "countdownRemains": true,
+      "countdownOngoingAndNoClear": true,
+      "alertCountBeforeSwipe": 3,
+      "alertCountAfterSwipe": 3,
+      "swipeReplayedSound": false
+    },
+    "freshSession": {
+      "newDeliveryAfterDismissal": true,
+      "messageCount": 1,
+      "oldMessagesResurrected": false,
+      "countdownStillPresent": true
+    },
+    "cleanup": {
+      "installedApkMatchesArtifact": true,
+      "installedSha256": "9553a9bba4194f555a10f7249f8b268f59f65917a6d8771849835a4941d34428",
+      "syntheticRemindersRemoved": true,
+      "countdownRemains": true
+    }
+  },
+  "limitation": "Samsung Android 16 Clear all was later observed removing the ongoing countdown despite NO_CLEAR. Initial checks covered reminder swipe dismissal, not Clear all; see docs/countdown-clear-recovery.",
+  "clearAllProtectionVerifiedOnPhone": false
+}

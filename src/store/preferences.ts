@@ -12,6 +12,7 @@ import { defaultReminders, type ReminderPreferences } from '../features/notifica
 import { REMINDER_SOUND_IDS } from '../features/notifications/sounds';
 import { defaultKerahatDurations, MAX_KERAHAT_MINUTES } from '../features/prayer-times/solar';
 const offsetSchema = z.array(z.number().int().min(0).max(120)).max(25);
+const kerahatOffsetSchema = z.array(z.number().int().min(1).max(120)).max(25).default([]);
 // Zero hides that period, so the stored minutes keep their own per-period default.
 const kerahatMinutes = (fallback: number) =>
   z.number().int().min(0).max(MAX_KERAHAT_MINUTES).default(fallback);
@@ -46,6 +47,7 @@ const preferencesSchema = z.object({
       maghrib: offsetSchema,
       isha: offsetSchema,
     }),
+    kerahatOffsets: kerahatOffsetSchema,
     sound: z.enum(REMINDER_SOUND_IDS),
     vibration: z.boolean(),
     quietHours: z.object({
@@ -76,6 +78,7 @@ type State = Preferences & {
   set: (value: Partial<Preferences>) => void;
   setLocation: (id: string) => void;
   toggleOffset: (event: ReminderEvent, offset: number) => void;
+  toggleKerahatOffset: (offset: number) => void;
   toggleField: (field: PrayerField) => void;
 };
 export function restorePreferences(value: unknown): Preferences {
@@ -108,6 +111,18 @@ export const usePreferences = create<State>()(
         };
         set({ reminders: updated });
       },
+      toggleKerahatOffset: (offset) => {
+        const reminders = get().reminders;
+        const current = reminders.kerahatOffsets;
+        set({
+          reminders: {
+            ...reminders,
+            kerahatOffsets: current.includes(offset)
+              ? current.filter((value) => value !== offset)
+              : [...current, offset].sort((a, b) => a - b),
+          },
+        });
+      },
       toggleField: (field) => {
         const fields = get().visibleFields;
         if (fields.length === 1 && fields.includes(field)) return;
@@ -129,6 +144,7 @@ export const usePreferences = create<State>()(
           set: _s,
           setLocation: _l,
           toggleOffset: _o,
+          toggleKerahatOffset: _k,
           toggleField: _f,
           ...prefs
         } = state;

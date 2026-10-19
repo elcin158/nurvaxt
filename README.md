@@ -122,7 +122,7 @@ for adding 2027 when QMİ publishes it; the app does not download new years auto
 - Today/day navigation, distinct nine source fields, isolated live next-prayer countdown.
 - Read-only time rows and one daily share action for all nine times, including hidden rows,
   with the selected city, date, time format and source attribution.
-- Monthly calendar and optional month list, missing-data states, source attribution.
+- Missing-data states outside the bundled coverage, with source attribution.
 - System/light/dark themes, bundled Manrope fonts, font scaling, screen reader labels.
 - Independent multi-reminders for five prayers and İmsak; quiet hours, vibration and tone.
 - Default at-time notifications for all five prayers, alongside optional advance reminders.

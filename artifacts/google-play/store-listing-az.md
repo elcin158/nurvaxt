@@ -24,7 +24,7 @@ Hazırkı təqvim Azərbaycan üzrə 74 bölgə üçün 1 oktyabr – 31 dekabr 
 Əsas funksiyalar:
 • Şəhər və bölgə seçimi, son seçimlərə rahat keçid.
 • Sübh, zöhr, əsr, məğrib və işa vaxtları, həmçinin imsak, günçıxma və digər təqvim vaxtları.
-• Gündəlik və aylıq namaz təqvimi.
+• Gündəlik namaz vaxtları və gün-gün keçid.
 • Növbəti namaza qalan vaxtın geri sayımı.
 • Namaz vaxtında və əvvəlcədən fərdi xatırlatmalar.
 • Səssiz saatlar, bildiriş səsi və vibrasiya ayarları.

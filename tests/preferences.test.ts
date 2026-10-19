@@ -10,6 +10,7 @@ test('existing installations gain at-time alerts and countdown without losing sa
   const {
     atPrayerTime: _atTime,
     ongoingCountdown: _countdown,
+    kerahatOffsets: _kerahatOffsets,
     ...legacyReminders
   } = defaultPreferences.reminders;
   const legacy = {
@@ -27,6 +28,7 @@ test('existing installations gain at-time alerts and countdown without losing sa
   expect(restored.reminders.offsets.fajr).toEqual([15]);
   expect(restored.reminders.atPrayerTime).toBe(true);
   expect(restored.reminders.ongoingCountdown).toBe(true);
+  expect(restored.reminders.kerahatOffsets).toEqual([]);
 });
 test('city search supports Azerbaijani case and plain-character searches', () => {
   expect(searchLocations('BAKI').some((l) => l.name === 'Bakı')).toBe(true);

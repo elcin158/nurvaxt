@@ -9,7 +9,6 @@ import { NextPrayerCard } from '../src/features/prayer-times/NextPrayerCard';
 import { useActiveClock } from '../src/hooks/useActiveClock';
 import { useToday } from '../src/hooks/useToday';
 import { KerahatDurationSettings } from '../src/features/settings/KerahatDurationSettings';
-import Calendar from '../app/(tabs)/calendar';
 import Home from '../app/(tabs)/index';
 import { datasetSchema } from '../src/types/data';
 import dataset from '../data/verified/2026.json';
@@ -231,10 +230,10 @@ test('sharing omits missing source times without inventing values', async () => 
   expect(shareSpy.mock.calls[0]?.[0].message).not.toContain('Günbatımı:');
   expect(shareSpy.mock.calls[0]?.[0].message).toContain('Məğrib: 18:25');
 });
-test('switching from Bakı to Gəncə replaces the calendar with that city’s source times', async () => {
+test('switching from Bakı to Gəncə replaces the times with that city’s source times', async () => {
   await render(
     <ThemeProvider>
-      <Calendar />
+      <Home />
     </ThemeProvider>,
   );
   expect(screen.getByText('16:27')).toBeOnTheScreen();
@@ -277,22 +276,25 @@ test('sunrise, sunset and midnight are hidden until they are turned on', async (
   );
   expect(screen.getByLabelText('Günçıxma, 06:44')).toBeOnTheScreen();
 });
-test('calendar navigation covers November and December then shows missing January', async () => {
-  await render(
+test('day navigation reaches December then shows the missing-data state past coverage', async () => {
+  jest.mocked(useToday).mockReturnValue('2026-12-31');
+  jest.mocked(useActiveClock).mockReturnValue(Date.parse('2026-12-31T02:50:00Z'));
+  const view = await render(
     <ThemeProvider>
-      <Calendar />
+      <Home />
     </ThemeProvider>,
   );
-  expect(screen.getByText('16:27')).toBeOnTheScreen();
-  await fireEvent.press(screen.getByLabelText('Növbəti ay'));
-  expect(screen.getByText('15:56')).toBeOnTheScreen();
-  await fireEvent.press(screen.getByLabelText('Növbəti ay'));
-  expect(screen.getByText('15:34')).toBeOnTheScreen();
-  await fireEvent.press(screen.getByLabelText('Növbəti ay'));
+  expect(screen.getByText('15:43')).toBeOnTheScreen();
+  await fireEvent.press(screen.getByLabelText('Növbəti gün'));
   expect(screen.getByText('Bu tarix üçün təqvim yoxdur')).toBeOnTheScreen();
   expect(screen.queryByRole('button', { name: 'Vaxtları paylaş' })).not.toBeOnTheScreen();
-  await fireEvent.press(screen.getByLabelText('Əvvəlki ay'));
-  expect(screen.getByText('15:34')).toBeOnTheScreen();
+  await fireEvent.press(screen.getByLabelText('Əvvəlki gün'));
+  await view.rerender(
+    <ThemeProvider>
+      <Home />
+    </ThemeProvider>,
+  );
+  expect(screen.getByText('15:43')).toBeOnTheScreen();
 });
 test('kerahat card appears only when enabled and is hidden again when disabled', async () => {
   await render(

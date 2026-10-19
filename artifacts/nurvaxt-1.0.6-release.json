@@ -1,11 +1,11 @@
 {
-  "checkedAt": "2026-10-15T05:35:44.375723+00:00",
+  "checkedAt": "2026-10-19T05:47:52.086364+00:00",
   "apk": "artifacts/nurvaxt-1.0.6-release.apk",
   "version": "1.0.6",
   "versionCode": 8,
   "applicationId": "az.nurvaxt.app",
-  "bytes": 82644767,
-  "sha256": "9cca7cc066770f04908c684c44e0bc46ab199452c3ba3f153d26e9a4095cc6a1",
+  "bytes": 83376643,
+  "sha256": "802435817acf369cf9abfb6130a56630e83b4116791e1f26a63392a9fbe19a2a",
   "certificateSha256": "01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e",
   "signatureVerified": true,
   "matchesLocalReleaseKey": true,
@@ -15,7 +15,7 @@
     "armeabi-v7a",
     "x86_64"
   ],
-  "embeddedBundleBytes": 3735820,
+  "embeddedBundleBytes": 3732360,
   "reminderToneBundled": true,
   "permissions": [
     "android.permission.ACCESS_COARSE_LOCATION",
@@ -75,6 +75,14 @@
         "countdown_kerahat_label",
         "countdown_kerahat_stage",
         "countdown_kerahat_timer"
+      ]
+    },
+    "nurvaxt_reminder_message": {
+      "id": "0x7f0d008a",
+      "packagedXml": "res/qD.xml",
+      "viewIdsVerified": [
+        "reminder_title",
+        "reminder_message"
       ]
     }
   },

@@ -149,11 +149,13 @@ export function ChoiceGroup({ children }: PropsWithChildren) {
 }
 export function Chip({
   title,
+  accessibilityLabel = title,
   selected,
   onPress,
   segment = false,
 }: {
   title: string;
+  accessibilityLabel?: string;
   selected: boolean;
   onPress: () => void;
   segment?: boolean;
@@ -162,7 +164,7 @@ export function Chip({
   return (
     <Pressable
       accessibilityRole="checkbox"
-      accessibilityLabel={title}
+      accessibilityLabel={accessibilityLabel}
       accessibilityState={{ checked: selected }}
       aria-checked={selected}
       onPress={onPress}

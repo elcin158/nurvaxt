@@ -93,15 +93,17 @@ for _ in range(20):
  time.sleep(1)
 else:raise RuntimeError('Native test alarm notification was not presented')
 p=plan();assert not any(e['id'].startswith('nurvaxt:test:') for e in json.loads(p['plan'])),p
-# The panel's own aggregate summary alerts again whenever a swipe changes the group, so every
-# entry stays in the app's group behind the app's own summary. See docs/notifications.md.
+# Reminders reuse one dismissible card in their own group, outside the ongoing countdown.
+# The silent owner still prevents an OEM aggregate from replaying sound on dismissal.
 records=[l.strip() for l in dump.splitlines() if 'NotificationRecord' in l and 'az.nurvaxt.app' in l]
 reminders=[l for l in records if 'AUTO_CANCEL' in l]
-assert reminders and all('ONLY_ALERT_ONCE' in l and 'groupKey=nurvaxt' in l for l in reminders),reminders
-assert any('GROUP_SUMMARY' in l and 'nurvaxt-countdown' in l for l in records),records
+assert len(reminders)==1 and 'id=7404' in reminders[0] and 'groupKey=nurvaxt-reminders' in reminders[0],reminders
+assert 'ONLY_ALERT_ONCE' not in reminders[0],reminders
+assert any('GROUP_SUMMARY' in l and 'groupKey=nurvaxt-reminders' in l for l in records),records
+assert all('groupKey=nurvaxt-countdown' in l for l in records if 'id=7401' in l),records
 assert not any('AUTOGROUP_SUMMARY' in l for l in records),records
 prefix='android-release' if args.release else 'android'
 (ROOT/f'docs/screenshots/{prefix}-notification.png').write_bytes(adb('exec-out','screencap','-p',binary=True))
-report={'platform':'Android 15 / API 35 emulator','variant':'release' if args.release else 'debug','serial':SERIAL,'prayerPlanEvents':len(events),'registeredTimestamps':len(registered),'exactAccessGrantedByAdb':True,'notificationPermissionGrantedByAdb':True,'nativeAlarmNotificationDelivered':True,'reminderOnlyAlertOnce':True,'appOwnedGroupSummary':True,'consumedTestNotDuplicated':True,'physicalDeviceTested':False,'backgroundProcessDeathVerified':False,'rebootVerified':False}
+report={'platform':'Android 15 / API 35 emulator','variant':'release' if args.release else 'debug','serial':SERIAL,'prayerPlanEvents':len(events),'registeredTimestamps':len(registered),'exactAccessGrantedByAdb':True,'notificationPermissionGrantedByAdb':True,'nativeAlarmNotificationDelivered':True,'singleReminderCard':True,'newDeliveriesCanAlert':True,'separateCountdownGroup':True,'appOwnedGroupSummary':True,'consumedTestNotDuplicated':True,'physicalDeviceTested':False,'backgroundProcessDeathVerified':False,'rebootVerified':False}
 (ROOT/f'docs/{prefix}-notification-result.json').write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps(report,indent=2),flush=True)

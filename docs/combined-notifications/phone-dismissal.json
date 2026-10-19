@@ -1,0 +1,9 @@
+{
+  "combinedCardDismissed": true,
+  "summaryRemoved": true,
+  "countdownRemains": true,
+  "countdownOngoingAndNoClear": true,
+  "alertCountBeforeSwipe": 3,
+  "alertCountAfterSwipe": 3,
+  "swipeReplayedSound": false
+}

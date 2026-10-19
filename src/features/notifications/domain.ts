@@ -2,7 +2,12 @@ import { DateTime } from 'luxon';
 import { LABELS, REMINDER_EVENTS, TIMEZONE, type ReminderEvent } from '../../constants/prayers';
 import type { PrayerDay } from '../../types/data';
 import { atTime } from '../../utils/time';
-import { kerahatWindows, type KerahatDurationMinutes } from '../prayer-times/solar';
+import {
+  defaultKerahatDurations,
+  kerahatWindows,
+  type KerahatDurationMinutes,
+  type KerahatWindow,
+} from '../prayer-times/solar';
 import { prayerCountdownTimeline, type PrayerOccurrence } from '../prayer-times/domain';
 import type { ReminderSound } from './sounds';
 export type ReminderPreferences = {
@@ -10,17 +15,19 @@ export type ReminderPreferences = {
   atPrayerTime: boolean;
   ongoingCountdown: boolean;
   offsets: Record<ReminderEvent, number[]>;
+  kerahatOffsets: number[];
   sound: ReminderSound;
   vibration: boolean;
   quietHours: { enabled: boolean; start: string; end: string };
 };
+type NotificationEvent = ReminderEvent | `kerahat-${KerahatWindow['id']}`;
 export type PlannedNotification = {
   id: string;
   timestamp: number;
   title: string;
   body: string;
   locationId: string;
-  prayer: ReminderEvent;
+  prayer: NotificationEvent;
   date: string;
   offset: number;
   sound: ReminderPreferences['sound'];
@@ -31,14 +38,15 @@ export const defaultReminders: ReminderPreferences = {
   atPrayerTime: true,
   ongoingCountdown: true,
   offsets: { imsak: [], fajr: [10], dhuhr: [10], asr: [10], maghrib: [10], isha: [10] },
-  sound: 'default',
+  kerahatOffsets: [],
+  sound: 'melody',
   vibration: true,
   quietHours: { enabled: false, start: '23:00', end: '05:00' },
 };
 export function notificationId(
   locationId: string,
   date: string,
-  prayer: ReminderEvent,
+  prayer: NotificationEvent,
   offset: number,
 ) {
   return `nurvaxt:${locationId}:${date}:${prayer}:${offset}`;
@@ -57,6 +65,7 @@ export function planNotifications(
   prefs: ReminderPreferences,
   now: number,
   limit = 60,
+  kerahatDurations: KerahatDurationMinutes = defaultKerahatDurations,
 ): PlannedNotification[] {
   if (!prefs.enabled) return [];
   const events = new Map<string, PlannedNotification>();
@@ -95,6 +104,27 @@ export function planNotifications(
           timestamp,
           title: 'NurVaxt',
           body,
+          locationId,
+          prayer,
+          date: day.date,
+          offset,
+          sound: prefs.sound,
+          vibration: prefs.vibration,
+        });
+      }
+    }
+    for (const window of kerahatWindows(day, kerahatDurations)) {
+      for (const offset of new Set(prefs.kerahatOffsets)) {
+        if (!Number.isInteger(offset) || offset < 1 || offset > 120) continue;
+        const timestamp = window.start - offset * 60_000;
+        if (timestamp <= now || isQuiet(timestamp, prefs.quietHours)) continue;
+        const prayer: NotificationEvent = `kerahat-${window.id}`;
+        const id = notificationId(locationId, day.date, prayer, offset);
+        events.set(id, {
+          id,
+          timestamp,
+          title: 'NurVaxt',
+          body: `${window.title} kərahətinin başlamasına təxminən ${offset} dəqiqə qalıb.`,
           locationId,
           prayer,
           date: day.date,

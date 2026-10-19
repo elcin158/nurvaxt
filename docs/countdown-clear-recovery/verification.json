@@ -1,0 +1,35 @@
+{
+  "checkedAt": "2026-10-19T12:12:53.537105+04:00",
+  "version": "1.0.6",
+  "versionCode": 8,
+  "artifacts": {
+    "release": "artifacts/nurvaxt-countdown-clear-recovery.apk",
+    "device": "artifacts/nurvaxt-countdown-clear-recovery-device.apk",
+    "releaseSha256": "711bfcd8e22a4562cac3386b742c9be013c9bd062f16a74a828a9f21c09970ae",
+    "deviceSha256": "de3891311146e9fa97ab1e3ec0b194d3767d20eac71a637537b49bc963ba8004",
+    "releaseCertificateSha256": "01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e",
+    "deviceCertificateSha256": "fac61745dc0903786fb9ede62a962b399f7348f0bb6f899b8332667591033b9c",
+    "signatureVerified": true,
+    "deviceSignatureMatchesPreviousInstall": true
+  },
+  "releaseBuildPassed": true,
+  "packagedNotificationResourcesVerified": true,
+  "installedApkHashVerified": true,
+  "nativeUnitTestsPassed": 15,
+  "recoveryInstrumentationTestsPassed": 5,
+  "reminderInstrumentationTestsPassed": 5,
+  "countdownInstrumentationTestsPassed": 8,
+  "emulatorAndroidSdk": 35,
+  "phoneModel": "SM-G990E",
+  "phoneAndroidVersion": "16",
+  "actualClearAll": {
+    "clearAllCancellationObserved": true,
+    "recoveryMs": 45,
+    "countdownPresent": true,
+    "countdownAlertCountAfterClear": 0,
+    "recoveredWithinThreeSeconds": true
+  },
+  "userConfirmedImmediateRecovery": true,
+  "behavior": "Enabled running countdown is restored silently after dismissal; user-disabled countdowns and dismissed reminder history are not restored.",
+  "limitation": "System dismissal may occur before automatic restoration; this is not an unconditional non-dismissable notification."
+}

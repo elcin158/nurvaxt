@@ -1,0 +1,8 @@
+{
+  "ordinaryCardSwipeAttempted": true,
+  "swipeCancellationObserved": false,
+  "recoveryMs": null,
+  "countdownPresent": true,
+  "recoverySoundAlerts": 0,
+  "clearAllTested": false
+}

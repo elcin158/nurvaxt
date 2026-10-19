@@ -1,0 +1,74 @@
+{
+  "checkedAt": "2026-10-19T07:13:29.084103+00:00",
+  "serial": "emulator-5556",
+  "androidVersion": "15",
+  "apkSha256": "6dfc418ecf4bea9a467a19e638259ffb3a17369d805d79bf60ae571461e69f1c",
+  "cases": [
+    {
+      "location": "Abşeron",
+      "entry": "list",
+      "doubleTap": false,
+      "selectionVerifiedAfterReopen": true,
+      "sameProcess": true
+    },
+    {
+      "location": "Ağsu",
+      "entry": "list",
+      "doubleTap": true,
+      "selectionVerifiedAfterReopen": true,
+      "sameProcess": true
+    },
+    {
+      "location": "Abşeron",
+      "entry": "recent",
+      "doubleTap": false,
+      "selectionVerifiedAfterReopen": true,
+      "sameProcess": true
+    },
+    {
+      "location": "Xankəndi",
+      "entry": "search",
+      "doubleTap": true,
+      "selectionVerifiedAfterReopen": true,
+      "sameProcess": true
+    },
+    {
+      "location": "Abşeron",
+      "entry": "recent",
+      "doubleTap": false,
+      "selectionVerifiedAfterReopen": true,
+      "sameProcess": true
+    },
+    {
+      "location": "Xankəndi",
+      "entry": "scroll",
+      "doubleTap": false,
+      "selectionVerifiedAfterReopen": true,
+      "sameProcess": true
+    },
+    {
+      "location": "Abşeron",
+      "entry": "recent",
+      "doubleTap": false,
+      "selectionVerifiedAfterReopen": true,
+      "sameProcess": true
+    },
+    {
+      "location": "Ağsu",
+      "entry": "search",
+      "doubleTap": false,
+      "selectionVerifiedAfterReopen": true,
+      "sameProcess": true
+    }
+  ],
+  "newNativeCrashes": false,
+  "physicalDeviceTested": false,
+  "reportedDevice": "S26 FE (user supplied; Android and app version not provided)",
+  "reportedCrashReproducedBeforeFix": false,
+  "limitations": "This validates the emulator and dismissal safeguards; it does not confirm the cause of the reported Samsung crash.",
+  "screenshotsVisuallyVerified": true,
+  "screenshots": [
+    "docs/location-selection-fix/agsu.png",
+    "docs/location-selection-fix/xankendi.png"
+  ]
+}

@@ -21,6 +21,7 @@ import { useTheme } from '../../src/theme';
 import { currentDataset as dataset } from '../../src/database/bundled';
 import { availableCoverage } from '../../src/database/coverage';
 import { formatDate } from '../../src/utils/time';
+import { UpdateSettings } from '../../src/features/app-updates/UpdateSettings';
 export default function Settings() {
   const prefs = usePreferences();
   const { colors } = useTheme();
@@ -103,7 +104,7 @@ export default function Settings() {
               />
             ))}
           </ChoiceGroup>
-          <SettingsRow title="Kərahət vaxtları" subtitle="Hənəfi qaydası · təxmini intervallar">
+          <SettingsRow title="Kərahət vaxtları" subtitle="Təxmini intervallar">
             <Toggle
               label="Kərahət vaxtlarını göstər"
               value={prefs.showKerahat}
@@ -163,7 +164,7 @@ export default function Settings() {
           </SettingsRow>
           <SettingsRow
             title="Namaz üzrə xatırlatmalar"
-            subtitle="Vaxtında bildiriş və hər namaz üçün əlavə xatırlatma"
+            subtitle="Namaz vaxtında və əvvəl, kərahətdən əvvəl xatırlatmalar"
             onPress={() => router.push('/reminders')}
           />
           {Platform.OS === 'android' && (
@@ -243,6 +244,7 @@ export default function Settings() {
           onPress={() => router.push('/about')}
         />
         <SettingsRow title="Tətbiq versiyası" subtitle={Constants.expoConfig?.version ?? '1.0.0'} />
+        <UpdateSettings />
         <SettingsRow
           title="Məxfilik siyasəti"
           onPress={() => router.push({ pathname: '/legal', params: { type: 'privacy' } })}

@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
   <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+  <!-- Do not let package-replacement restoration race notification tests after installation. -->
+  <application>
+    <receiver android:name="az.nurvaxt.alarm.RestoreReceiver" android:enabled="false" />
+  </application>
 </manifest>

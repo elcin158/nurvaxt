@@ -147,7 +147,7 @@ export function KerahatDurationSettings() {
         <PeriodMinutes key={period.id} {...period} />
       ))}
       <AppText variant="caption" style={{ color: colors.muted }}>
-        0 dəq. seçdikdə həmin kərahət göstərilmir.
+        0 dəq. seçdikdə həmin kərahət göstərilmir və xatırlatması göndərilmir.
       </AppText>
     </View>
   );

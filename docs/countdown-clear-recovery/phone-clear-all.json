@@ -1,0 +1,7 @@
+{
+  "clearAllCancellationObserved": true,
+  "recoveryMs": 45,
+  "countdownPresent": true,
+  "countdownAlertCountAfterClear": 0,
+  "recoveredWithinThreeSeconds": true
+}
