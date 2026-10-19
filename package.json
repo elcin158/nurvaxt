@@ -1,6 +1,6 @@
 {
   "name": "nurvaxt-mobile",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
@@ -24,6 +24,7 @@
     "android:countdown-smoke": "python3 scripts/android-countdown-smoke.py",
     "android:release-key": "python3 scripts/create-release-keystore.py",
     "android:release": "cd android && ./gradlew :app:assembleRelease --no-daemon --max-workers=2 -Pkotlin.compiler.execution.strategy=in-process",
+    "android:bundle": "cd android && ./gradlew :app:bundleRelease --no-daemon --max-workers=2 -Pkotlin.compiler.execution.strategy=in-process",
     "prayer:candidates": "node --import tsx scripts/prayer-data-import/candidate.ts",
     "prayer:review": "node --import tsx scripts/prayer-data-import/review-candidate.ts",
     "android:regions-smoke": "python3 scripts/android-regions-smoke.py"

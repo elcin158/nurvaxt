@@ -138,7 +138,20 @@ mode and azan recordings are deliberately deferred. No guessed dates or sunset/M
 
 ## Builds and checks
 
-Local signed release APK (version 1.0.6, Android versionCode 7):
+Google Play bundle (version 1.0.7, Android versionCode 9):
+
+```bash
+npm run android:bundle
+python3 scripts/verify-release-bundle.py --bundletool /absolute/path/to/bundletool-all-1.18.1.jar
+```
+
+The signed, validated upload file is `artifacts/nurvaxt-1.0.7-v9.aab`.
+See `artifacts/nurvaxt-1.0.7-v9.validation.json` for its signature, checksum,
+packaged permissions and 16 KB alignment checks. Azerbaijani release notes are in
+`artifacts/google-play/release-notes-1.0.7-az.txt`; handover details are in
+`artifacts/nurvaxt-1.0.7-README-az.md`. No Play Console submission was performed.
+
+Local signed release APK (version 1.0.7, Android versionCode 9):
 
 ```bash
 npm run android:release-key
@@ -148,7 +161,7 @@ python3 scripts/verify-release-apk.py
 
 The release embeds JS, fonts and the verified data. The APK is produced at
 `android/app/build/outputs/apk/release/app-release.apk`. The delivery copy is
-`artifacts/nurvaxt-1.0.6-release.apk`. This is an APK for installation and testing;
+`artifacts/nurvaxt-1.0.7-release.apk`. This is an APK for installation and testing;
 public-store requirements remain in the release checklist.
 
 The previous 1.0.1 API 35 emulator verification passed with Wi-Fi/mobile data disabled and no Metro tunnel:

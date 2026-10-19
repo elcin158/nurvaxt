@@ -1,0 +1,7 @@
+<az-AZ>
+• Yeni versiyaları tətbiqin içindən yoxlamaq və yeniləmək imkanı.
+• Şəhər və bölgə seçiminin sabitliyi yaxşılaşdırıldı.
+• Namaz xatırlatmalarının mətni və qruplaşdırılması yeniləndi.
+• Aktiv geri sayım bildirişi silindikdə səssiz bərpa edilir.
+• Kərahət müddətləri və xatırlatma ayarları təkmilləşdirildi.
+</az-AZ>
