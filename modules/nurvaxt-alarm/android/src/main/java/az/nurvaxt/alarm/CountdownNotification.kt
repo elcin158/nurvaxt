@@ -5,13 +5,13 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.Typeface
 import android.os.Build
 import android.os.SystemClock
@@ -131,8 +131,16 @@ object CountdownNotification {
   ): RemoteViews = RemoteViews(context.packageName, layout).apply {
     val expanded = layout == R.layout.nurvaxt_countdown_expanded
     val time = displayTime(prayer, plan.timeFormat)
-    setTextViewText(R.id.countdown_prayer, if (expanded) prayer.name else "${prayer.name} · $time")
-    setTextViewText(R.id.countdown_stage, stage)
+    val color = context.getColor(when {
+      remaining <= 900_000 -> R.color.countdown_imminent
+      remaining <= 1_800_000 -> R.color.countdown_soon
+      else -> R.color.countdown_normal
+    })
+    setImageViewBitmap(R.id.countdown_timer_icon, ring(context, progress, color, expanded))
+    setTextViewText(R.id.countdown_prayer, prayer.name)
+    setTextViewText(R.id.countdown_stage,
+      if (expanded) stage else listOf(time, stage).filter { it.isNotEmpty() }.joinToString(" · "))
+    setViewVisibility(R.id.countdown_stage, if (expanded && stage.isEmpty()) View.GONE else View.VISIBLE)
     setChronometerCountDown(R.id.countdown_timer, true)
     // The system renders seconds; the service continues to update only once per minute.
     setChronometer(R.id.countdown_timer, SystemClock.elapsedRealtime() + remaining, null, true)
@@ -143,29 +151,16 @@ object CountdownNotification {
     }
     setContentDescription(R.id.countdown_timer, "$target $duration qalıb")
     if (expanded) {
-      setTextViewText(R.id.countdown_time, time)
-      setTextViewText(R.id.countdown_stage, when {
+      setTextViewText(R.id.countdown_time, "· $time")
+      val expandedStage = when {
         prayer.phase == "end" -> "Sübhün bitməsinə qalan vaxt"
         remaining <= 900_000 -> "Son 15 dəqiqə"
         remaining <= 1_800_000 -> "Son 30 dəqiqə"
         else -> ""
-      })
-      val color = context.getColor(when {
-        remaining <= 900_000 -> R.color.countdown_imminent
-        remaining <= 1_800_000 -> R.color.countdown_soon
-        else -> R.color.countdown_normal
-      })
-      setViewVisibility(R.id.countdown_symbol, if (remaining <= 1_800_000) View.VISIBLE else View.GONE)
-      setImageViewResource(R.id.countdown_symbol,
-        if (remaining <= 900_000) R.drawable.nurvaxt_countdown_diamond else R.drawable.nurvaxt_countdown_circle)
-      setInt(R.id.countdown_symbol, "setColorFilter", color)
-      setTextColor(R.id.countdown_timer, color)
-      setTextColor(R.id.countdown_stage, color)
-      if (Build.VERSION.SDK_INT >= 31) {
-        setColorStateList(R.id.countdown_progress, "setProgressTintList", ColorStateList.valueOf(color))
       }
-      setViewVisibility(R.id.countdown_progress, if (progress == null) View.GONE else View.VISIBLE)
-      setProgressBar(R.id.countdown_progress, 100, progress ?: 0, false)
+      setTextViewText(R.id.countdown_stage, expandedStage)
+      setViewVisibility(R.id.countdown_stage, if (expandedStage.isEmpty()) View.GONE else View.VISIBLE)
+      setTextColor(R.id.countdown_stage, color)
       val kerahat = CountdownSolar.kerahat(plan.kerahat, now)
       setViewVisibility(R.id.countdown_kerahat, if (kerahat == null) View.GONE else View.VISIBLE)
       if (kerahat != null) {
@@ -176,6 +171,36 @@ object CountdownNotification {
         setContentDescription(R.id.countdown_kerahat_timer, "${kerahat.name} kərahətinin bitməsinə ${remainingDescription(kerahat.end - now)} qalıb, təxmini interval.")
       }
     }
+  }
+
+  /** One small bitmap per minute keeps the ring compatible with SystemUI RemoteViews. */
+  internal fun ring(context: Context, progress: Int?, color: Int, expanded: Boolean): Bitmap {
+    val density = context.resources.displayMetrics.density
+    val size = ((if (expanded) 64 else 34) * density).roundToInt().coerceAtLeast(1)
+    val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val stroke = (if (expanded) 3f else 2f) * density
+    val inset = stroke / 2 + density / 2
+    val oval = RectF(inset, inset, size - inset, size - inset)
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+      style = Paint.Style.STROKE
+      strokeWidth = stroke
+      strokeCap = Paint.Cap.ROUND
+      this.color = context.getColor(R.color.countdown_ring_track)
+    }
+    canvas.drawOval(oval, paint)
+    // An absent previous prayer leaves a neutral track instead of inventing elapsed time.
+    if (progress != null && progress > 0) {
+      paint.color = color
+      canvas.drawArc(oval, -90f, 360f * progress.coerceIn(0, 100) / 100, false, paint)
+    }
+    val symbol = requireNotNull(context.getDrawable(R.drawable.nurvaxt_countdown_timer)).mutate()
+    symbol.setTint(color)
+    val symbolSize = ((if (expanded) 24 else 14) * density).roundToInt()
+    val start = (size - symbolSize) / 2
+    symbol.setBounds(start, start, start + symbolSize, start + symbolSize)
+    symbol.draw(canvas)
+    return bitmap
   }
 
   private fun clock(time: String, format: String): String {
@@ -230,7 +255,7 @@ object CountdownNotification {
     builder
       // No app resource IDs: acknowledge a fresh install/start even if SystemUI cached old resources.
       .setSmallIcon(appIcon(context).toIcon(context))
-      .setContentTitle("Namaza qalan vaxt")
+      .setContentTitle("NurVaxt")
       .setContentText("Vaxt göstəricisi hazırlanır…")
       .setShowWhen(false).setOngoing(true).setOnlyAlertOnce(true).setSound(null).setVibrate(null)
       .setAutoCancel(false).setDeleteIntent(CountdownDismissReceiver.restoreIntent(context))
@@ -254,7 +279,7 @@ object CountdownNotification {
       imminent -> "Son 15 dəqiqə"
       soon -> "Son 30 dəqiqə"
       prayer.name == "İmsak" -> "İmsaka qalan vaxt"
-      else -> "Namaza qalan vaxt"
+      else -> ""
     }
     val launch = context.packageManager.getLaunchIntentForPackage(context.packageName)
     val tap = launch?.let {
@@ -262,7 +287,7 @@ object CountdownNotification {
     }
     val kerahat = CountdownSolar.kerahat(plan.kerahat, now)
     val solarSummary = kerahat?.let { "Kərahət vaxtıdır · ${it.name}" }.orEmpty()
-    val body = "$duration · $stage" + if (solarSummary.isEmpty()) "" else " · $solarSummary"
+    val body = listOf(duration, stage, solarSummary).filter { it.isNotEmpty() }.joinToString(" · ")
     val title = "${prayer.name} · $time"
     val progress = prayer.previousTimestamp?.takeIf { it < prayer.timestamp }?.let {
       (((now - it).toDouble() / (prayer.timestamp - it)) * 100).toInt().coerceIn(0, 100)

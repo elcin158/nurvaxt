@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-19T12:20:18.998836+00:00",
+  "apk": "artifacts/nurvaxt-halqa.apk",
+  "sha256": "330e13db70f50c7d3b999c1e77dfe7b55a8532a3c26fdb844abc36c87ddb7a79",
+  "nativeUnitTestsPassed": 15,
+  "countdownInstrumentationTestsPassed": 8,
+  "releaseBuildPassed": true,
+  "releaseSignatureVerified": true,
+  "packagedResourcesVerified": true,
+  "emulatorApi": 35,
+  "screenshotsUseIsolatedTestPackage": true,
+  "emulatorClockChanged": false,
+  "emulatorDisplaySettingsRestored": true,
+  "physicalDeviceTested": false
+}

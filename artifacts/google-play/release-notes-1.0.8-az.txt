@@ -1,0 +1,5 @@
+<az-AZ>
+• Geri sayım bildirişinə taymer nişanı əlavə edildi.
+• Bildirişlərdə artıq mətnlər azaldıldı, görünüş daha yığcam edildi.
+• Açıq və tünd rejimdə geri sayımın oxunaqlılığı yaxşılaşdırıldı.
+</az-AZ>

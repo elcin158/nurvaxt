@@ -72,8 +72,11 @@ class CountdownNotificationTest {
             val expanded = notification.bigContentView.apply(configured, null)
             assertTrue(compact.findViewById<Chronometer>(R.id.countdown_timer).isCountDown)
             assertTrue(expanded.findViewById<Chronometer>(R.id.countdown_timer).isCountDown)
-            assertEquals(if (left <= 1_800_000) View.VISIBLE else View.GONE,
-              expanded.findViewById<ImageView>(R.id.countdown_symbol).visibility)
+            for (content in listOf(compact, expanded)) {
+              val ring = content.findViewById<ImageView>(R.id.countdown_timer_icon)
+              assertEquals(View.VISIBLE, ring.visibility)
+              assertNotNull("Countdown ring is missing", ring.drawable)
+            }
             assertNull(CountdownState.prefs(context).getString("notificationViewError", null))
           }
         }
@@ -95,11 +98,14 @@ class CountdownNotificationTest {
     val notification = roundTrip(CountdownNotification.build(context, plan, imsak, now))
     assertEquals("İmsak · 05:21", notification.extras.getString(Notification.EXTRA_TITLE))
     assertTrue(notification.extras.getString(Notification.EXTRA_TEXT)!!.contains("İmsaka qalan vaxt"))
-    for ((views, label) in listOf(notification.contentView to "İmsak · 05:21", notification.bigContentView to "İmsak")) {
+    for (views in listOf(notification.contentView, notification.bigContentView)) {
       val content = views.apply(context, null)
       val timer = content.findViewById<Chronometer>(R.id.countdown_timer)
       assertTrue(timer.isCountDown)
-      assertEquals(label, content.findViewById<TextView>(R.id.countdown_prayer).text.toString())
+      assertEquals("İmsak", content.findViewById<TextView>(R.id.countdown_prayer).text.toString())
+      val time = content.findViewById<TextView>(R.id.countdown_time)
+        ?: content.findViewById<TextView>(R.id.countdown_stage)
+      assertTrue("İmsak time is missing", time.text.toString().contains("05:21"))
       // Android's Chronometer overrides getContentDescription with its localized duration.
       assertTrue(timer.contentDescription.toString().isNotBlank())
     }

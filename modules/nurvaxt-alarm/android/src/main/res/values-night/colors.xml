@@ -3,7 +3,9 @@
     <color name="countdown_normal">#BCCAFF</color>
     <color name="countdown_soon">#FFD88A</color>
     <color name="countdown_imminent">#FFB5A7</color>
+    <color name="countdown_timer_neutral">#C6C6D0</color>
     <color name="countdown_badge">#14FFFFFF</color>
     <color name="countdown_track">#1FFFFFFF</color>
+    <color name="countdown_ring_track">#3D4555</color>
     <color name="countdown_divider">#2EFFFFFF</color>
 </resources>

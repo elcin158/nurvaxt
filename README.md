@@ -138,21 +138,22 @@ mode and azan recordings are deliberately deferred. No guessed dates or sunset/M
 
 ## Builds and checks
 
-Google Play bundle (version 1.0.7, Android versionCode 9):
+Google Play test bundle (version 1.0.8, Android versionCode 10):
 
 ```bash
 npm run android:bundle
 python3 scripts/verify-release-bundle.py --bundletool /absolute/path/to/bundletool-all-1.18.1.jar
 ```
 
-The signed upload file is written to `artifacts/nurvaxt-1.0.7-v9.aab`. Release
+The signed upload file is written to `artifacts/nurvaxt-1.0.8-v10.aab`. Release
 binaries are not tracked in git; rebuild it with the commands above and compare
-the recorded checksum. See `artifacts/nurvaxt-1.0.7-v9.validation.json` for its
+the recorded checksum. See `artifacts/nurvaxt-1.0.8-v10.validation.json` for its
 signature, checksum, packaged permissions and 16 KB alignment checks. Azerbaijani release notes are in
-`artifacts/google-play/release-notes-1.0.7-az.txt`; handover details are in
-`artifacts/nurvaxt-1.0.7-README-az.md`. No Play Console submission was performed.
+`artifacts/google-play/release-notes-1.0.8-az.txt`; handover details are in
+`artifacts/nurvaxt-1.0.8-README-az.md`. The user uploads the bundle to the existing
+Play test track; no Play Console submission was performed by this task.
 
-Local signed release APK (version 1.0.7, Android versionCode 9):
+Local signed release APK (uses the current configured version):
 
 ```bash
 npm run android:release-key
@@ -162,7 +163,7 @@ python3 scripts/verify-release-apk.py
 
 The release embeds JS, fonts and the verified data. The APK is produced at
 `android/app/build/outputs/apk/release/app-release.apk`. The delivery copy is
-`artifacts/nurvaxt-1.0.7-release.apk`. This is an APK for installation and testing;
+`artifacts/nurvaxt-<version>-release.apk`. This is an APK for installation and testing;
 public-store requirements remain in the release checklist.
 
 The previous 1.0.1 API 35 emulator verification passed with Wi-Fi/mobile data disabled and no Metro tunnel:
