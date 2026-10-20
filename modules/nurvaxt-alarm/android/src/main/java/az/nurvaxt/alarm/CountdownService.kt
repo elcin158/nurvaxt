@@ -66,6 +66,7 @@ class CountdownService : Service() {
       if (prayer == null || currentPlan == null) {
         CountdownState.cancelBoundary(this)
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        CountdownNotification.syncGroupSummary(this, null)
         foreground = false
         CountdownState.prefs(this).edit().putBoolean("active", false).apply()
         stopSelf()
@@ -77,7 +78,7 @@ class CountdownService : Service() {
       } else {
         NotificationManagerCompat.from(this).notify(CountdownState.NOTIFICATION_ID, notification)
       }
-      CountdownNotification.pruneGroupSummary(this)
+      CountdownNotification.syncGroupSummary(this, notification)
       if (armedPrayer != prayer.timestamp) {
         CountdownState.armBoundary(this, currentPlan, prayer, now)
         armedPrayer = prayer.timestamp
@@ -89,7 +90,11 @@ class CountdownService : Service() {
       val left = prayer.timestamp - now
       val power = getSystemService(Context.POWER_SERVICE) as PowerManager
       val step = if (left <= 60_000 && power.isInteractive) 1_000L else 60_000L
-      handler.postDelayed(tick, (left % step).let { if (it == 0L) step else it })
+      val prayerDelay = (left % step).let { if (it == 0L) step else it }
+      // Entry/exit can occur between prayer-aligned minute ticks. Refresh the row at that
+      // boundary too, including while exact-alarm permission is unavailable.
+      val solarDelay = CountdownSolar.boundary(currentPlan.kerahat, now)?.minus(now)
+      handler.postDelayed(tick, minOf(prayerDelay, solarDelay ?: prayerDelay))
     } catch (error: Exception) { fail(error) }
   }
 
@@ -98,6 +103,7 @@ class CountdownService : Service() {
     CountdownState.prefs(this).edit().putBoolean("active", false)
       .putString("lastError", error.message ?: error.javaClass.simpleName).apply()
     ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+    CountdownNotification.syncGroupSummary(this, null)
     foreground = false
     stopSelf()
   }

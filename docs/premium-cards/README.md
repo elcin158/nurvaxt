@@ -10,7 +10,12 @@ The generic “Növbəti namaz” caption is omitted. The specific İmsak and ac
 
 The progress track spans the full inner card width. Its fill continues to reflect the real prayer interval rather than the 100% illustration used in the mockup. The white endpoint has no glow and stays inside the track bounds at both 0% and 100%. Native and web accessibility expose the progress as a labeled 0–100 value without live announcements on each clock tick.
 
-List times use Manrope Bold with tabular digits at 26 dp (22 dp for twelve-hour times on narrow screens) and align to the right, without a separate background behind the digits. The upcoming time uses the selected accent. Calendar rows are at least 48 dp high; large accessibility fonts stack the label above the time. The shared list applies this typography on both the home and calendar screens. Existing prayer calculations, urgency colors, time-format preferences, and day navigation are preserved.
+The generic “Namaza qalan vaxt” caption beneath the timer is omitted. The specific İmsak and active Sübh countdown captions remain.
+
+List names use the platform sans-serif family at 20 dp, adapting down to 18 dp when the available row height is limited. List times use Manrope Bold with tabular digits at 26 dp (22 dp for twelve-hour times on narrow screens) and align to the right, without a separate background behind the digits. A consistent 1 dp inset divider separates every adjacent pair of visible rows, including the upcoming row. The upcoming time uses the selected accent. Calendar rows are at least 48 dp high; large accessibility fonts stack the label above the time. The shared list applies this typography on both the home and calendar screens. Existing prayer calculations, urgency colors, time-format preferences, and day navigation are preserved.
+
+The home time list extends 6 dp beyond the other content on each side, leaving 12 dp screen
+margins so names and times have more horizontal room.
 
 The home screen fills the available height after safe areas and bottom navigation. Its time list
 shares the remaining space equally between visible rows, reducing spacing and number size only
@@ -19,6 +24,16 @@ home view fits without scrolling. Larger accessibility fonts, shorter windows an
 expanded kərahət content retain scrolling so information stays accessible.
 
 ## Verification
+
+The wider home list passed TypeScript, targeted ESLint and all 23 UI tests. Browser checks at
+390 × 844 and 320 × 600 confirmed 12 px margins on both sides (366 px and 296 px list widths).
+The 390 px preview is saved as `screenshots/home-wider-time-list-390.png`.
+
+The larger prayer names and consistent dividers passed TypeScript, targeted ESLint, Prettier,
+and the 23-test UI suite. Browser previews at 390 × 844 and 320 × 600 confirmed that the normal
+home screen fits without scrolling, including all nine rows with twelve-hour times. At 320 × 600,
+the final row ended at 527 px above bottom navigation. Evidence is saved as
+`screenshots/home-large-prayer-names-dark-12h-320x600.jpg`.
 
 The home layout update passed TypeScript, targeted ESLint and the 21-test UI suite. Browser
 previews at 320 × 640 and 320 × 600 with twelve-hour times confirmed all nine rows remained

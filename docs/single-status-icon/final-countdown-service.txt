@@ -1,0 +1,2 @@
+  * ServiceRecord{3061440 u0 az.nurvaxt.app/az.nurvaxt.alarm.CountdownService c:az.nurvaxt.app}
+    isForeground=true foregroundId=7401 types=0x40000000 foregroundNoti=Notification(channel=nurvaxt-countdown-v2 shortcut=null contentView=az.nurvaxt.app/0x7f0d0088 vibrate=null sound=null defaults=0 flags=ONGOING_EVENT|ONLY_ALERT_ONCE|NO_CLEAR|FOREGROUND_SERVICE color=0xff2d5ce3 category=service groupKey=nurvaxt-countdown vis=PUBLIC semFlags=0x0 semPriority=0 semMissedCount=0)

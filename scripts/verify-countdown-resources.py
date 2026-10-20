@@ -27,11 +27,12 @@ for match in re.finditer(r'^    resource (0x[0-9a-f]+) (\S+)\n(.*?)(?=^    resou
 ids = {entry['id'] for entry in entries.values()}
 allowed = {'LinearLayout', 'FrameLayout', 'TextView', 'ImageView', 'Chronometer', 'ProgressBar'}
 layout_views = {
-    'nurvaxt_countdown_compact': ['countdown_prayer', 'countdown_stage', 'countdown_timer', 'countdown_timer_icon'],
-    'nurvaxt_countdown_expanded': ['countdown_prayer', 'countdown_time', 'countdown_stage',
-                                  'countdown_timer', 'countdown_timer_icon',
+    'nurvaxt_countdown_compact': ['countdown_prayer', 'countdown_timer', 'countdown_progress',
+                                 'countdown_kerahat', 'countdown_kerahat_label',
+                                 'countdown_kerahat_timer'],
+    'nurvaxt_countdown_expanded': ['countdown_prayer', 'countdown_timer', 'countdown_progress',
                                   'countdown_kerahat', 'countdown_kerahat_label',
-                                  'countdown_kerahat_stage', 'countdown_kerahat_timer'],
+                                  'countdown_kerahat_timer'],
     'nurvaxt_reminder_message': ['reminder_title', 'reminder_message'],
 }
 report = {'apk': str(apk), 'layouts': {}, 'drawables': {}}
@@ -51,9 +52,7 @@ with zipfile.ZipFile(apk) as archive:
             assert 'id/' + view in entries, f'Missing view ID {view}'
             assert entries['id/' + view]['id'] in references, f'{view} absent from {key}'
         report['layouts'][name] = {'id': entries[key]['id'], 'packagedXml': path[1], 'viewIdsVerified': views}
-    for key in ['drawable/nurvaxt_countdown_app_mark'] + [
-        'drawable/nurvaxt_countdown_' + name for name in ['divider', 'timer']
-    ]:
+    for key in ['drawable/nurvaxt_countdown_app_mark', 'drawable/nurvaxt_countdown_divider']:
         assert key in entries, f'Missing packaged {key}'
         path = re.search(r'^      \((?:nodpi)?\) \(file\) (\S+) type=(XML|PNG)$', entries[key]['values'], re.M)
         assert path and path[1] in archive.namelist(), f'Missing default drawable for {key}'

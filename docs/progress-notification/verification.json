@@ -1,0 +1,69 @@
+{
+  "apk": "artifacts/nurvaxt-progress-panel.apk",
+  "sha256": "8005de3bd7eacfb06b007aef7b67c60299e78f3999e2f4a0a0976d6f304c8e1b",
+  "bytes": 82688826,
+  "signatureVerified": true,
+  "certificateSha256": "01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e",
+  "sameSigningCertificateAsPreviousPreview": true,
+  "checkedAt": "2026-10-20T10:30:57.372Z",
+  "version": "1.0.8",
+  "typecheckPassed": true,
+  "javascriptTestsPassed": 31,
+  "nativeUnitTestsPassed": 19,
+  "countdownInstrumentationTestsPassed": 12,
+  "releaseBuildPassed": true,
+  "releaseVitalLintPassed": true,
+  "packagedResourcesVerified": true,
+  "emulatorApi": 35,
+  "screenshotsUseIsolatedTestPackage": true,
+  "syntheticTimetable": true,
+  "emulatorClockChanged": false,
+  "emulatorDisplaySettingsRestored": true,
+  "physicalDeviceTested": true,
+  "physicalDeviceInstalled": true,
+  "secondsObserved": {
+    "prayer": [
+      "06:48",
+      "06:26"
+    ],
+    "kerahat": [
+      "03:58",
+      "03:36"
+    ]
+  },
+  "publicLiveUpdateTemplateUnchanged": true,
+  "systemHeaderOwnedByAndroid": true,
+  "phoneModel": "Samsung SM-G990E",
+  "phoneApi": 36,
+  "phoneUpdate": {
+    "apk": "artifacts/nurvaxt-progress-panel-phone.apk",
+    "sha256": "eba7b3556d60ea3db6ee8bd3ed97c6477b1d2939bc9b02fd6d550088c114bb50",
+    "bytes": 82800977,
+    "certificateSha256": "fac61745dc0903786fb9ede62a962b399f7348f0bb6f899b8332667591033b9c"
+  },
+  "appDataPreserved": true,
+  "phoneClockChanged": false,
+  "phoneSettingsChanged": false,
+  "prayerTimeInlineInCompact": true,
+  "kerahatStartInlineInCompact": true,
+  "layoutTestWidthsDp": [
+    260,
+    320,
+    390
+  ],
+  "layoutTestFontScales": [
+    1,
+    2
+  ],
+  "latestInstrumentationDevice": "Samsung SM-G990E / API 36",
+  "physicalTestsScopedToIsolatedNotificationLayouts": true,
+  "previewPackage": "az.nurvaxt.alarm.test",
+  "previewLabel": "Önizləmə",
+  "previewTimetableSynthetic": true,
+  "previewExpiresAfterMs": 300000,
+  "emptyProgressTrackColor": "#FFFFFF",
+  "emptyProgressTrackWhiteInBothThemes": true,
+  "latestChange": "White empty progress track; elapsed blue/cyan and kerahat red preserved",
+  "latestValidation": "Release build/vital lint, signatures, packaged colors, and 12 isolated notification tests on Samsung",
+  "phoneScreenshotsWhiteTrack": true
+}

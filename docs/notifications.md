@@ -47,8 +47,14 @@ With exact access, use `setExactAndAllowWhileIdle`; without it use `setAndAllowW
 and show that delivery may be delayed. POST_NOTIFICATIONS is requested contextually on
 Android 13+. Prayer reminder delivery remains independent of the countdown foreground service.
 
-Reminders update a single dismissible card (ID `7404`) in the `nurvaxt-reminders` group.
-The ongoing countdown (ID `7401`, group `nurvaxt-countdown`) stays separate. Each new delivery
+Reminders update a single dismissible card (ID `7404`). It shares the `nurvaxt-countdown`
+group with the ongoing countdown (ID `7401`), so SystemUI shows one status-bar icon.
+The two cards remain individually readable inside the expandable group. The silent owner
+summary (`7402`) mirrors the countdown's current icon, including its minute/second count;
+without an active countdown it uses the application mark. After the last reminder is removed,
+the summary remains while it owns the countdown; SystemUI renders the remaining countdown
+as a single card. Removing both cards drops the summary. Existing `nurvaxt-reminders` cards migrate
+silently into the shared group with their history intact. Each new delivery
 adds its messages to the reminder card; the compact view shows the latest message and the
 expanded view lists messages newest first with Asia/Baku times. Up to 50 recent messages are
 retained to bound the notification payload. History lives in the active notification's extras,
@@ -77,12 +83,17 @@ connected SM-G990E (Android 16), swiping one reminder away:
 record that alerts is the system's summary. Owning the group prevents the aggregate from being
 built at all — `GroupHelper.onNotificationPosted` leaves `isAppGroup()` notifications alone, and
 sparse-group forcing only starts at six such groups. The app's summary sits on the silent countdown
-channel, carries `GROUP_ALERT_CHILDREN` and is never re-posted on dismissal, so the same swipe now
-logs only `notification_canceled`. The reminder's delete intent drops the summary once no reminder
-is left; plan replacement and the countdown tick prune it as a backstop. Delivery itself is not
+channel, carries `GROUP_ALERT_CHILDREN` and updates silently, so the same swipe now
+logs only `notification_canceled`. The reminder's delete intent drops the summary once neither
+card is left; plan replacement and the countdown tick keep its icon current as a backstop. Delivery itself is not
 duplicated: `AlarmQueue.deliver` consumes the due events before presenting them.
 
 ### Persistent countdown
+
+The ordinary expandable card uses the [minimal progress layout](progress-notification/README.md).
+Both sizes show native per-second prayer and upcoming/active kərahət countdowns, plus a horizontal track
+marking real kərahət intervals in red. Both sizes show scheduled prayer and kərahət start times
+beside the event names. The kərahət row counts down to entry while the interval approaches within the current prayer range, then switches to its end while active; unrelated future intervals stay hidden. Prayer digits use system text colors; kərahət digits use crimson/coral.
 
 `Daimi vaxt göstəricisi` defaults on once notifications are enabled, and switching it off posts
 nothing at all — no panel entry and no status-bar slot. While on, a native
@@ -147,10 +158,10 @@ handles system dismissal the same way, persisting that prayer timestamp so minut
 app reconciliation and service restarts do not immediately re-promote it. A later prayer starts
 a new imminent interval. Independent prayer reminders are unaffected.
 
-The optional **Canlı göstərici** onboarding/settings guide on public-API systems opens app-specific public
-Android notification settings: the dedicated promoted-notification action when provided, or the
-normal app notification page containing the Live Updates switch. It preserves reminder choices, requests ordinary
-notification access only after a user tap, and rereads access/actual promotion on app resume.
+The app has no Live Updates settings UI (no screen, onboarding card or hint).
+`POST_PROMOTED_NOTIFICATIONS` is granted by default on public-API systems; if the user turns
+Live Updates off in Android settings, `canPostPromotedNotifications()` returns false and the
+ordinary countdown card is posted instead.
 Samsung SDK 36.0 and other unsupported phones keep the ordinary system-expandable card.
 The optional Samsung developer-test path has been removed at the user's request. The app no
 longer reads its secure switch, emits private ongoing-activity extras or opens Developer options.

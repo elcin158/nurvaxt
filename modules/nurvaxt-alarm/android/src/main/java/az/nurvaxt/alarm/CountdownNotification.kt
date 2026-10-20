@@ -9,17 +9,29 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.LinearGradient
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
+import android.graphics.Shader
 import android.graphics.Typeface
 import android.os.Build
 import android.os.SystemClock
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.RelativeSizeSpan
+import android.text.style.StyleSpan
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.IconCompat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import kotlin.math.roundToInt
 
 object CountdownNotification {
@@ -126,23 +138,15 @@ object CountdownNotification {
   }
 
   private fun content(
-    context: Context, layout: Int, prayer: CountdownPrayer, stage: String, duration: String,
-    remaining: Long, progress: Int?, plan: CountdownPlan, now: Long,
+    context: Context, layout: Int, prayer: CountdownPrayer, duration: String,
+    remaining: Long, plan: CountdownPlan, now: Long,
   ): RemoteViews = RemoteViews(context.packageName, layout).apply {
-    val expanded = layout == R.layout.nurvaxt_countdown_expanded
-    val time = displayTime(prayer, plan.timeFormat)
-    val color = context.getColor(when {
-      remaining <= 900_000 -> R.color.countdown_imminent
-      remaining <= 1_800_000 -> R.color.countdown_soon
-      else -> R.color.countdown_normal
-    })
-    setImageViewBitmap(R.id.countdown_timer_icon, ring(context, progress, color, expanded))
-    setTextViewText(R.id.countdown_prayer, prayer.name)
-    setTextViewText(R.id.countdown_stage,
-      if (expanded) stage else listOf(time, stage).filter { it.isNotEmpty() }.joinToString(" · "))
-    setViewVisibility(R.id.countdown_stage, if (expanded && stage.isEmpty()) View.GONE else View.VISIBLE)
+    val name = if (prayer.phase == "end") "Günçıxma" else prayer.name
+    setTextViewText(R.id.countdown_prayer, inlineTime(name, clock(prayer.time, plan.timeFormat)))
+    setImageViewBitmap(R.id.countdown_progress,
+      progressTrack(context, CountdownTimeline.track(prayer, plan.kerahat, now)))
     setChronometerCountDown(R.id.countdown_timer, true)
-    // The system renders seconds; the service continues to update only once per minute.
+    // Native Chronometer keeps seconds ticking even with the app closed; no JS/second polling.
     setChronometer(R.id.countdown_timer, SystemClock.elapsedRealtime() + remaining, null, true)
     val target = when {
       prayer.phase == "end" -> "Sübhün bitməsinə"
@@ -150,56 +154,90 @@ object CountdownNotification {
       else -> "${prayer.name} namazına"
     }
     setContentDescription(R.id.countdown_timer, "$target $duration qalıb")
-    if (expanded) {
-      setTextViewText(R.id.countdown_time, "· $time")
-      val expandedStage = when {
-        prayer.phase == "end" -> "Sübhün bitməsinə qalan vaxt"
-        remaining <= 900_000 -> "Son 15 dəqiqə"
-        remaining <= 1_800_000 -> "Son 30 dəqiqə"
-        else -> ""
-      }
-      setTextViewText(R.id.countdown_stage, expandedStage)
-      setViewVisibility(R.id.countdown_stage, if (expandedStage.isEmpty()) View.GONE else View.VISIBLE)
-      setTextColor(R.id.countdown_stage, color)
-      val kerahat = CountdownSolar.kerahat(plan.kerahat, now)
-      setViewVisibility(R.id.countdown_kerahat, if (kerahat == null) View.GONE else View.VISIBLE)
-      if (kerahat != null) {
-        setTextViewText(R.id.countdown_kerahat_label, "Kərahət · ${kerahat.name}")
-        setTextViewText(R.id.countdown_kerahat_stage, "Bitməsinə qalan vaxt")
-        setChronometerCountDown(R.id.countdown_kerahat_timer, true)
-        setChronometer(R.id.countdown_kerahat_timer, SystemClock.elapsedRealtime() + kerahat.end - now, null, true)
-        setContentDescription(R.id.countdown_kerahat_timer, "${kerahat.name} kərahətinin bitməsinə ${remainingDescription(kerahat.end - now)} qalıb, təxmini interval.")
-      }
+    setContentDescription(R.id.countdown_prayer, "$name, vaxtı ${displayTime(prayer, plan.timeFormat)}")
+    val kerahat = CountdownSolar.countdown(plan.kerahat, now, prayer.timestamp)
+    setViewVisibility(R.id.countdown_kerahat, if (kerahat == null) View.GONE else View.VISIBLE)
+    if (kerahat != null) {
+      val color = context.getColor(R.color.countdown_kerahat)
+      val label = if (kerahat.active) "Kərahət bitməsinə" else "Kərahət girməsinə"
+      setTextViewText(R.id.countdown_kerahat_label,
+        inlineTime(label, timestampTime(kerahat.event.start, plan.timeFormat)))
+      setTextColor(R.id.countdown_kerahat_label, color)
+      setTextColor(R.id.countdown_kerahat_timer, color)
+      val expanded = layout == R.layout.nurvaxt_countdown_expanded
+      setTextViewTextSize(R.id.countdown_kerahat_timer, TypedValue.COMPLEX_UNIT_PX,
+        timerTextSize(context, kerahat.target - now, if (expanded) 96 else 68,
+          if (expanded) 44 else 21, if (expanded) 24f else 16f))
+      setChronometerCountDown(R.id.countdown_kerahat_timer, true)
+      setChronometer(R.id.countdown_kerahat_timer, SystemClock.elapsedRealtime() + kerahat.target - now, null, true)
+      val startDescription = "başlanğıcı ${timestampTime(kerahat.event.start, plan.timeFormat)}, "
+      val phase = if (kerahat.active) "bitməsinə" else "girməsinə"
+      val description = "${kerahat.event.name} kərahəti, ${startDescription}$phase ${remainingDescription(kerahat.target - now)} qalıb, təxmini interval."
+      setContentDescription(R.id.countdown_kerahat_label, description)
+      setContentDescription(R.id.countdown_kerahat_timer, description)
     }
   }
 
-  /** One small bitmap per minute keeps the ring compatible with SystemUI RemoteViews. */
-  internal fun ring(context: Context, progress: Int?, color: Int, expanded: Boolean): Bitmap {
-    val density = context.resources.displayMetrics.density
-    val size = ((if (expanded) 64 else 34) * density).roundToInt().coerceAtLeast(1)
-    val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
-    val stroke = (if (expanded) 3f else 2f) * density
-    val inset = stroke / 2 + density / 2
-    val oval = RectF(inset, inset, size - inset, size - inset)
+  /** Only the secondary scheduled time is smaller; the live timer stays in its own column. */
+  private fun inlineTime(name: String, time: String): CharSequence {
+    return SpannableString("$name · $time").apply {
+      setSpan(RelativeSizeSpan(0.8f), name.length, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+      setSpan(StyleSpan(Typeface.NORMAL), name.length, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    }
+  }
+
+  /** Reserve every digit before Chronometer ticks, including the hour added by an entry timer. */
+  private fun timerTextSize(context: Context, remaining: Long, widthDp: Int, heightDp: Int, maxSp: Float): Float {
+    val metrics = context.resources.displayMetrics
+    val seconds = units(remaining).first
+    val template = if (seconds >= 3_600) "8".repeat((seconds / 3_600).toString().length) + ":88:88" else "88:88"
     val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-      style = Paint.Style.STROKE
-      strokeWidth = stroke
-      strokeCap = Paint.Cap.ROUND
-      this.color = context.getColor(R.color.countdown_ring_track)
+      typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+      fontFeatureSettings = "tnum"
+      textSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, maxSp, metrics)
     }
-    canvas.drawOval(oval, paint)
-    // An absent previous prayer leaves a neutral track instead of inventing elapsed time.
-    if (progress != null && progress > 0) {
-      paint.color = color
-      canvas.drawArc(oval, -90f, 360f * progress.coerceIn(0, 100) / 100, false, paint)
+    val availableWidth = (widthDp - 2) * metrics.density
+    val availableHeight = (heightDp - 2) * metrics.density
+    val font = paint.fontMetrics
+    return paint.textSize * minOf(1f, availableWidth / paint.measureText(template),
+      availableHeight / (font.descent - font.ascent))
+  }
+
+  /** Small RemoteViews-compatible artwork; only the native chronometers tick every second. */
+  internal fun progressTrack(context: Context, track: CountdownTrack): Bitmap {
+    val density = context.resources.displayMetrics.density
+    val width = (360 * density).roundToInt().coerceIn(1, 1440)
+    val height = (4 * density).roundToInt().coerceAtLeast(1)
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val bounds = RectF(0f, 0f, width.toFloat(), height.toFloat())
+    val radius = height / 2f
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+      color = context.getColor(R.color.countdown_progress_track)
     }
-    val symbol = requireNotNull(context.getDrawable(R.drawable.nurvaxt_countdown_timer)).mutate()
-    symbol.setTint(color)
-    val symbolSize = ((if (expanded) 24 else 14) * density).roundToInt()
-    val start = (size - symbolSize) / 2
-    symbol.setBounds(start, start, start + symbolSize, start + symbolSize)
-    symbol.draw(canvas)
+    canvas.drawRoundRect(bounds, radius, radius, paint)
+    canvas.save()
+    canvas.clipPath(Path().apply { addRoundRect(bounds, radius, radius, Path.Direction.CW) })
+    val progress = track.progress
+    if (progress != null && progress > 0f) {
+      val right = width * progress.coerceIn(0f, 1f)
+      paint.shader = LinearGradient(0f, 0f, right, 0f,
+        context.getColor(R.color.countdown_progress_start), context.getColor(R.color.countdown_progress_end),
+        Shader.TileMode.CLAMP)
+      canvas.drawRoundRect(RectF(0f, 0f, right, height.toFloat()), radius, radius, paint)
+      paint.shader = null
+    }
+    paint.color = context.getColor(R.color.countdown_kerahat_track)
+    for (interval in track.kerahat) {
+      canvas.drawRect(width * interval.start, 0f, width * interval.end, height.toFloat(), paint)
+    }
+    if (progress != null && progress > 0f && progress < 1f) {
+      paint.color = Color.WHITE
+      val center = width * progress
+      val half = maxOf(1f, density) / 2f
+      canvas.drawRect(center - half, 0f, center + half, height.toFloat(), paint)
+    }
+    canvas.restore()
     return bitmap
   }
 
@@ -211,6 +249,11 @@ object CountdownNotification {
 
   private fun displayTime(prayer: CountdownPrayer, format: String): String =
     (if (prayer.phase == "end") "Günçıxma · " else "") + clock(prayer.time, format)
+
+  private fun timestampTime(timestamp: Long, format: String): String = clock(
+    SimpleDateFormat("HH:mm", Locale.ROOT).apply { timeZone = TimeZone.getTimeZone("Asia/Baku") }
+      .format(Date(timestamp)), format,
+  )
 
   private fun createChannel(context: Context) {
     val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -226,25 +269,36 @@ object CountdownNotification {
     }
   }
 
-  /** Silent owner of the reminder group; the ongoing countdown remains a separate card. */
-  fun groupSummary(context: Context): Notification {
+  /** One silent status-bar icon for both cards, retaining the countdown's minute/second mark. */
+  fun groupSummary(context: Context, countdown: Notification? = null): Notification {
     createChannel(context)
     return NotificationCompat.Builder(context, CountdownState.CHANNEL)
-      .setSmallIcon(appIcon(context))
+      .setSmallIcon(countdown?.smallIcon?.let { IconCompat.createFromIcon(context, it) } ?: appIcon(context))
       .setContentTitle("NurVaxt")
-      .setGroup(ReminderNotification.GROUP).setGroupSummary(true)
+      .setGroup(CountdownState.GROUP).setGroupSummary(true)
       .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
       .setOnlyAlertOnce(true).setSilent(true)
       .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
       .build()
   }
 
-  /** The summary only exists to own reminders; drop it once the panel holds none. */
-  fun pruneGroupSummary(context: Context) {
+  /** Keep an existing summary while the countdown remains: canceling it cancels its children. */
+  fun syncGroupSummary(context: Context) {
+    val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val active = runCatching { manager.activeNotifications }.getOrNull() ?: return
+    syncGroupSummary(context, active.firstOrNull { it.id == CountdownState.NOTIFICATION_ID }?.notification)
+  }
+
+  fun syncGroupSummary(context: Context, countdown: Notification?) {
     val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     val active = runCatching { manager.activeNotifications }.getOrNull() ?: return
     val reminders = active.any { it.id == ReminderNotification.NOTIFICATION_ID }
-    if (!reminders) manager.cancel(CountdownState.SUMMARY_ID)
+    val groupedCountdown = countdown != null && active.any { it.id == CountdownState.SUMMARY_ID }
+    if (reminders || groupedCountdown) {
+      manager.notify(CountdownState.SUMMARY_ID, groupSummary(context, countdown))
+    } else {
+      manager.cancel(CountdownState.SUMMARY_ID)
+    }
   }
 
   /** A fast foreground notification with a small local app bitmap, no plan parsing or custom layouts. */
@@ -285,13 +339,13 @@ object CountdownNotification {
     val tap = launch?.let {
       PendingIntent.getActivity(context, 7401, it, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     }
-    val kerahat = CountdownSolar.kerahat(plan.kerahat, now)
-    val solarSummary = kerahat?.let { "Kərahət vaxtıdır · ${it.name}" }.orEmpty()
+    val kerahat = CountdownSolar.countdown(plan.kerahat, now, prayer.timestamp)
+    val solarSummary = kerahat?.let {
+      val phase = if (it.active) "bitməsinə" else "girməsinə"
+      "${it.event.name} kərahətinin $phase ${remainingDescription(it.target - now)}"
+    }.orEmpty()
     val body = listOf(duration, stage, solarSummary).filter { it.isNotEmpty() }.joinToString(" · ")
     val title = "${prayer.name} · $time"
-    val progress = prayer.previousTimestamp?.takeIf { it < prayer.timestamp }?.let {
-      (((now - it).toDouble() / (prayer.timestamp - it)) * 100).toInt().coerceIn(0, 100)
-    }
     val builder = NotificationCompat.Builder(context, CountdownState.CHANNEL)
       .setSmallIcon(icon(context, remaining))
       .setContentTitle(title)
@@ -317,10 +371,8 @@ object CountdownNotification {
       if (live.hasPromotableCharacteristics()) return live
     }
     return customOrStandard(context, builder) {
-      content(context, R.layout.nurvaxt_countdown_compact, prayer,
-        if (prayer.phase == "end") stage else solarSummary.ifEmpty { stage }, duration, remaining, progress, plan, now) to
-        content(context, R.layout.nurvaxt_countdown_expanded, prayer,
-          stage, duration, remaining, progress, plan, now)
+      content(context, R.layout.nurvaxt_countdown_compact, prayer, duration, remaining, plan, now) to
+        content(context, R.layout.nurvaxt_countdown_expanded, prayer, duration, remaining, plan, now)
     }
   }
 

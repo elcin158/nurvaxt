@@ -4,9 +4,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 
-/** Swiping a reminder away can leave the group summary with nothing left to own. */
+/** Retain the countdown's shared icon, or drop the owner when neither card remains. */
 class ReminderDismissReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
-    CountdownNotification.pruneGroupSummary(context.applicationContext)
+    CountdownNotification.syncGroupSummary(context.applicationContext)
   }
 }

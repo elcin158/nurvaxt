@@ -1,5 +1,9 @@
 # Separate countdown and combined reminders
 
+Historical verification: the separate groups described below were replaced on 20 October
+2026 by a shared group to remove the duplicate status-bar icon. See
+`../single-status-icon/` for the current implementation and device checks.
+
 The ongoing countdown remains notification `7401` in `nurvaxt-countdown`. Actual prayer,
 kərahət and test reminders update one dismissible notification, `7404`, in
 `nurvaxt-reminders`. A silent owner summary (`7402`) prevents Samsung's aggregate summary

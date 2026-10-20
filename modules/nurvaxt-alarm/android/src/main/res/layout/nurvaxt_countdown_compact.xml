@@ -1,74 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:layout_width="match_parent" android:layout_height="48dp"
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/countdown_timer_icon"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
-        android:layout_marginEnd="10dp"
-        android:importantForAccessibility="no"
-        android:scaleType="fitCenter" />
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:layout_marginEnd="8dp"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/countdown_prayer"
-            style="@style/TextAppearance.Compat.Notification.Title"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:autoSizeTextType="uniform"
-            android:autoSizeMinTextSize="10sp"
-            android:autoSizeMaxTextSize="16sp"
-            android:autoSizeStepGranularity="1sp"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:includeFontPadding="false"
-            android:maxLines="1"
-            android:textSize="16sp"
-            android:fontFamily="sans-serif-medium" />
-
-        <TextView
-            android:id="@+id/countdown_stage"
-            style="@style/TextAppearance.Compat.Notification"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:autoSizeTextType="uniform"
-            android:autoSizeMinTextSize="8sp"
-            android:autoSizeMaxTextSize="11sp"
-            android:autoSizeStepGranularity="1sp"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:includeFontPadding="false"
-            android:maxLines="1"
-            android:textSize="11sp" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:gravity="center_vertical" android:orientation="horizontal">
+        <TextView android:id="@+id/countdown_prayer" style="@style/TextAppearance.Compat.Notification.Title"
+            android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+            android:layout_marginEnd="12dp" android:gravity="center_vertical" android:fontFamily="sans-serif-medium"
+            android:autoSizeTextType="uniform" android:autoSizeMinTextSize="9sp" android:autoSizeMaxTextSize="16sp"
+            android:ellipsize="end" android:includeFontPadding="false" android:maxLines="1" android:textSize="16sp" />
+        <Chronometer android:id="@+id/countdown_timer" style="@style/TextAppearance.Compat.Notification.Title"
+            android:layout_width="100dp" android:layout_height="match_parent" android:gravity="center_vertical|end"
+            android:autoSizeTextType="uniform" android:autoSizeMinTextSize="9sp" android:autoSizeMaxTextSize="26sp"
+            android:fontFamily="sans-serif-medium" android:fontFeatureSettings="tnum" android:includeFontPadding="false"
+            android:singleLine="true" android:textDirection="ltr" android:textSize="26sp" />
     </LinearLayout>
 
-    <Chronometer
-        android:id="@+id/countdown_timer"
-        style="@style/TextAppearance.Compat.Notification.Title"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:autoSizeTextType="uniform"
-        android:autoSizeMinTextSize="18sp"
-        android:autoSizeMaxTextSize="26sp"
-        android:autoSizeStepGranularity="1sp"
-        android:fontFamily="sans-serif-medium"
-        android:fontFeatureSettings="tnum"
-        android:gravity="center_vertical|end"
-        android:includeFontPadding="false"
-        android:singleLine="true"
-        android:textDirection="ltr"
-        android:textSize="26sp" />
+    <ImageView android:id="@+id/countdown_progress" android:layout_width="match_parent"
+        android:layout_height="4dp" android:layout_marginTop="1dp"
+        android:importantForAccessibility="no" android:scaleType="fitXY" />
+
+    <LinearLayout android:id="@+id/countdown_kerahat" android:layout_width="match_parent"
+        android:layout_height="21dp" android:gravity="center_vertical" android:orientation="horizontal"
+        android:visibility="gone">
+        <TextView android:id="@+id/countdown_kerahat_label" style="@style/TextAppearance.Compat.Notification.Title"
+            android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+            android:layout_marginEnd="6dp" android:gravity="center_vertical" android:fontFamily="sans-serif-medium"
+            android:autoSizeTextType="uniform" android:autoSizeMinTextSize="7sp" android:autoSizeMaxTextSize="13sp"
+            android:ellipsize="end" android:includeFontPadding="false" android:maxLines="1" android:textSize="13sp" />
+        <Chronometer android:id="@+id/countdown_kerahat_timer" style="@style/TextAppearance.Compat.Notification.Title"
+            android:layout_width="68dp" android:layout_height="match_parent" android:gravity="center_vertical|end"
+            android:fontFamily="sans-serif-medium" android:fontFeatureSettings="tnum" android:includeFontPadding="false"
+            android:singleLine="true" android:textDirection="ltr" android:textSize="16sp" />
+    </LinearLayout>
 </LinearLayout>

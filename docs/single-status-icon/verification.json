@@ -1,0 +1,50 @@
+{
+  "checkedAt": "2026-10-20T13:11:30.035697+04:00",
+  "version": "1.0.8",
+  "versionCode": 10,
+  "applicationId": "az.nurvaxt.app",
+  "releaseBuildPassed": true,
+  "releaseSignatureVerified": true,
+  "certificateSha256": "01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e",
+  "packagedNotificationResourcesVerified": true,
+  "nativeUnitTestsPassed": 15,
+  "physicalDeviceInstrumentation": {
+    "reminder": 7,
+    "countdown": 8,
+    "dismissalRecovery": 5,
+    "total": 20,
+    "failures": 0
+  },
+  "physicalDevice": {
+    "model": "SM-G990E",
+    "android": "16",
+    "realAlarmManagerDeliveries": 3,
+    "combinedReminderMessages": 3,
+    "observedStatusIconsBefore": 2,
+    "observedStatusIconsAfter": 1,
+    "separateCardsInsideGroup": true,
+    "reminderSwipe": {
+      "cancellationReason": 2,
+      "countdownStillVisible": true,
+      "alertsBefore": 3,
+      "alertsAfter": 3,
+      "soundReplayed": false
+    },
+    "cleanup": {
+      "syntheticRemindersRemoved": true,
+      "testPackageRemoved": true,
+      "countdownRemains": true
+    }
+  },
+  "artifact": {
+    "artifact": "artifacts/nurvaxt-single-status-icon.apk",
+    "bytes": 106119759,
+    "sha256": "a973eaab093a58094406b611b7058c143a20ce9a6703f7e5ab7c999c3585bc3e",
+    "installedSha256": "a973eaab093a58094406b611b7058c143a20ce9a6703f7e5ab7c999c3585bc3e",
+    "installedArtifactMatches": true
+  },
+  "limitations": [
+    "Phone countdown was over one hour; numerical summary icon updates were verified by the on-device bitmap instrumentation test.",
+    "Samsung clears reminder notifications during package replacement; migration history was verified inside the isolated test package."
+  ]
+}

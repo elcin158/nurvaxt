@@ -35,7 +35,7 @@ object AlarmQueue {
     cancel(context)
     check(prefs(context).edit().putString("plan", events.toString()).putString("registered", "[]").commit())
     refill(context)
-    CountdownNotification.pruneGroupSummary(context)
+    CountdownNotification.syncGroupSummary(context)
   }
   @Synchronized fun scheduleTest(context: Context) {
     val time = System.currentTimeMillis() + 5_000

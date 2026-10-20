@@ -7,5 +7,10 @@
     <color name="countdown_badge">#14FFFFFF</color>
     <color name="countdown_track">#1FFFFFFF</color>
     <color name="countdown_ring_track">#3D4555</color>
+    <color name="countdown_progress_start">#2186FF</color>
+    <color name="countdown_progress_end">#16D6EA</color>
+    <color name="countdown_progress_track">#FFFFFF</color>
+    <color name="countdown_kerahat">#FF9099</color>
+    <color name="countdown_kerahat_track">#F36A7B</color>
     <color name="countdown_divider">#2EFFFFFF</color>
 </resources>

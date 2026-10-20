@@ -5,7 +5,6 @@ import { BrandBackdrop, BrandIcon, BrandLockup } from '../../src/components/bran
 import { Screen } from '../../src/components/layout/Screen';
 import { AppText, Button, Card, Chip, Icon, IconButton } from '../../src/components/ui';
 import { CityButton } from '../../src/features/locations/CityButton';
-import { LiveNotificationEntry } from '../../src/features/settings/LiveNotificationEntry';
 import { usePreferences } from '../../src/store/preferences';
 import { DAILY_PRAYERS } from '../../src/constants/prayers';
 import {
@@ -168,9 +167,6 @@ export default function Onboarding() {
             ))}
           </View>
         </Card>
-      )}
-      {step === 3 && prefs.reminders.enabled && prefs.reminders.ongoingCountdown && (
-        <LiveNotificationEntry onboarding />
       )}
       <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 8, marginVertical: 16 }}>
         {pages.map((_, index) => (

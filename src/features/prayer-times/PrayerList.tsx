@@ -1,5 +1,5 @@
 import { memo, useState } from 'react';
-import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Platform, useWindowDimensions, View, type StyleProp, type ViewStyle } from 'react-native';
 import { AppText } from '../../components/ui';
 import { LABELS, PRAYER_FIELDS, type PrayerField } from '../../constants/prayers';
 import type { PrayerDay } from '../../types/data';
@@ -13,12 +13,14 @@ export const PrayerList = memo(function PrayerList({
   ending = false,
   showShare = true,
   fit = false,
+  style,
 }: {
   day: PrayerDay;
   upcoming?: PrayerField;
   ending?: boolean;
   showShare?: boolean;
   fit?: boolean;
+  style?: StyleProp<ViewStyle>;
 }) {
   const fields = usePreferences((s) => s.visibleFields);
   const format = usePreferences((s) => s.timeFormat);
@@ -33,21 +35,26 @@ export const PrayerList = memo(function PrayerList({
     ? Math.min(baseTimeSize, Math.max(18, (rowHeight - 4) / fontScale - 6))
     : baseTimeSize;
   const timeLineHeight = fit ? Math.min(32, Math.max(22, (rowHeight - 4) / fontScale)) : 32;
+  const nameSize = fit ? Math.min(20, Math.max(18, (rowHeight - 4) / fontScale - 6)) : 20;
+  const nameLineHeight = fit ? Math.min(28, Math.max(22, (rowHeight - 4) / fontScale)) : 28;
   return (
     <View
       onLayout={fit ? (event) => setHeight(event.nativeEvent.layout.height) : undefined}
-      style={{
-        ...(fit ? { flex: 1, minHeight: 0 } : {}),
-        backgroundColor: colors.surface,
-        borderRadius: tokens.radius.md,
-        borderWidth: 1,
-        borderColor: colors.border,
-        overflow: 'hidden',
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.025,
-        shadowRadius: 12,
-      }}
+      style={[
+        {
+          ...(fit ? { flex: 1, minHeight: 0 } : {}),
+          backgroundColor: colors.surface,
+          borderRadius: tokens.radius.md,
+          borderWidth: 1,
+          borderColor: colors.border,
+          overflow: 'hidden',
+          shadowColor: colors.shadow,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.025,
+          shadowRadius: 12,
+        },
+        style,
+      ]}
     >
       {visible.map((field, index) => (
         <View
@@ -77,8 +84,8 @@ export const PrayerList = memo(function PrayerList({
           >
             <AppText
               style={{
-                fontSize: fit && rowHeight < 32 ? 14 : 15,
-                lineHeight: fit && rowHeight < 32 ? 20 : 24,
+                fontSize: nameSize,
+                lineHeight: nameLineHeight,
                 color: upcoming === field ? colors.selectedText : colors.text,
                 // Manrope lacks U+018F; use one family for the entire prayer name.
                 fontFamily: Platform.select({
@@ -124,7 +131,7 @@ export const PrayerList = memo(function PrayerList({
           >
             {formatTime(day[field]!, format)}
           </AppText>
-          {index < visible.length - 1 && upcoming !== field && upcoming !== visible[index + 1] && (
+          {index < visible.length - 1 && (
             <View
               pointerEvents="none"
               style={{
@@ -132,7 +139,7 @@ export const PrayerList = memo(function PrayerList({
                 bottom: 0,
                 left: 16,
                 right: 16,
-                height: StyleSheet.hairlineWidth,
+                height: 1,
                 backgroundColor: colors.border,
               }}
             />

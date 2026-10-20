@@ -1,6 +1,7 @@
 package az.nurvaxt.alarm
 
 import android.app.Notification
+import android.app.NotificationManager
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -9,6 +10,7 @@ import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Icon
 import android.os.Parcel
+import android.os.SystemClock
 import android.view.View
 import android.widget.Chronometer
 import android.widget.ImageView
@@ -73,9 +75,17 @@ class CountdownNotificationTest {
             assertTrue(compact.findViewById<Chronometer>(R.id.countdown_timer).isCountDown)
             assertTrue(expanded.findViewById<Chronometer>(R.id.countdown_timer).isCountDown)
             for (content in listOf(compact, expanded)) {
-              val ring = content.findViewById<ImageView>(R.id.countdown_timer_icon)
-              assertEquals(View.VISIBLE, ring.visibility)
-              assertNotNull("Countdown ring is missing", ring.drawable)
+              val progress = content.findViewById<ImageView>(R.id.countdown_progress)
+              assertEquals(View.VISIBLE, progress.visibility)
+              assertNotNull("Horizontal progress is missing", progress.drawable)
+              val solar = CountdownSolar.countdown(kerahat, now, prayer.timestamp)
+              assertEquals(if (solar == null) View.GONE else View.VISIBLE,
+                content.findViewById<View>(R.id.countdown_kerahat).visibility)
+              if (solar != null) {
+                val timer = content.findViewById<Chronometer>(R.id.countdown_kerahat_timer)
+                assertTrue(timer.isCountDown)
+                assertEquals(configured.getColor(R.color.countdown_kerahat), timer.currentTextColor)
+              }
             }
             assertNull(CountdownState.prefs(context).getString("notificationViewError", null))
           }
@@ -102,10 +112,9 @@ class CountdownNotificationTest {
       val content = views.apply(context, null)
       val timer = content.findViewById<Chronometer>(R.id.countdown_timer)
       assertTrue(timer.isCountDown)
-      assertEquals("İmsak", content.findViewById<TextView>(R.id.countdown_prayer).text.toString())
-      val time = content.findViewById<TextView>(R.id.countdown_time)
-        ?: content.findViewById<TextView>(R.id.countdown_stage)
-      assertTrue("İmsak time is missing", time.text.toString().contains("05:21"))
+      assertTrue(content.findViewById<TextView>(R.id.countdown_prayer).text.toString().startsWith("İmsak"))
+      val label = content.findViewById<TextView>(R.id.countdown_prayer).text.toString()
+      assertTrue("Prayer time is missing", label.contains("05:21"))
       // Android's Chronometer overrides getContentDescription with its localized duration.
       assertTrue(timer.contentDescription.toString().isNotBlank())
     }
@@ -129,9 +138,145 @@ class CountdownNotificationTest {
   @Test fun invalidRemoteViewsActionFallsBack() {
     standard(CountdownNotification.customOrStandard(context, base()) {
       RemoteViews(context.packageName, R.layout.nurvaxt_countdown_compact).apply {
-        setInt(R.id.countdown_stage, "methodThatDoesNotExist", 1)
+        setInt(R.id.countdown_prayer, "methodThatDoesNotExist", 1)
       } to RemoteViews(context.packageName, R.layout.nurvaxt_countdown_expanded)
     })
+  }
+
+  @Test fun bothSizesShowInlinePrayerAndKerahatTimesInBothFormats() {
+    val now = 1_792_497_000_000L
+    val prayer = CountdownPrayer("Məğrib", "2026-10-20", "18:30", now + 600_000, now - 3_600_000)
+    val kerahat = CountdownKerahat("Axşam", "2026-10-20", now - 60_000, now + 300_000)
+    for (format in listOf("12", "24")) {
+      val plan = CountdownPlan(true, "Bakı", format, listOf(prayer), listOf(kerahat))
+      val notification = roundTrip(CountdownNotification.build(context, plan, prayer, now))
+      val compact = notification.contentView.apply(context, null)
+      val expanded = notification.bigContentView.apply(context, null)
+      assertEquals(if (format == "12") "Məğrib · 6:30 PM" else "Məğrib · 18:30",
+        compact.findViewById<TextView>(R.id.countdown_prayer).text.toString())
+      assertEquals(if (format == "12") "Məğrib · 6:30 PM" else "Məğrib · 18:30",
+        expanded.findViewById<TextView>(R.id.countdown_prayer).text.toString())
+      val start = java.text.SimpleDateFormat(if (format == "12") "h:mm a" else "HH:mm", java.util.Locale.US)
+        .apply { timeZone = java.util.TimeZone.getTimeZone("Asia/Baku") }.format(java.util.Date(kerahat.start))
+      assertEquals("Kərahət bitməsinə · $start", compact.findViewById<TextView>(R.id.countdown_kerahat_label).text.toString())
+      assertEquals("Kərahət bitməsinə · $start", expanded.findViewById<TextView>(R.id.countdown_kerahat_label).text.toString())
+    }
+  }
+
+  @Test fun kerahatEntryBecomesExitAtStartAndHidesAtEnd() {
+    val now = 1_792_497_000_000L
+    val prayer = CountdownPrayer("Məğrib", "2026-10-20", "18:30", now + 600_000, now - 3_600_000)
+    val event = CountdownKerahat("Günbatımı", "2026-10-20", now + 60_000, now + 180_000)
+    val plan = CountdownPlan(true, "Bakı", "24", listOf(prayer), listOf(event))
+    for (at in listOf(now, event.start, event.end - 1, event.end)) {
+      val notification = roundTrip(CountdownNotification.build(context, plan, prayer, at))
+      for (views in listOf(notification.contentView, notification.bigContentView)) {
+        val content = views.apply(context, null)
+        val visible = at < event.end
+        assertEquals(if (visible) View.VISIBLE else View.GONE,
+          content.findViewById<View>(R.id.countdown_kerahat).visibility)
+        if (visible) {
+          val active = at >= event.start
+          assertTrue(content.findViewById<TextView>(R.id.countdown_kerahat_label).text.toString()
+            .startsWith(if (active) "Kərahət bitməsinə" else "Kərahət girməsinə"))
+          val timer = content.findViewById<Chronometer>(R.id.countdown_kerahat_timer)
+          val target = if (active) event.end else event.start
+          assertEquals((target - at).toDouble(), (timer.base - SystemClock.elapsedRealtime()).toDouble(), 1_000.0)
+          assertTrue(notification.extras.getString(Notification.EXTRA_TEXT)!!
+            .contains(if (active) "bitməsinə" else "girməsinə"))
+        }
+      }
+    }
+  }
+
+  @Test fun nativeChronometersKeepSecondsAndPrayerDigitsRemainNeutral() {
+    val now = System.currentTimeMillis()
+    for (left in listOf(30_000L, 480_000L, 3_700_000L)) {
+      val prayer = CountdownPrayer("Məğrib", "2026-10-20", "18:30", now + left, now - 3_600_000)
+      val plan = CountdownPlan(true, "Bakı", "24", listOf(prayer),
+        listOf(CountdownKerahat("Axşam", "2026-10-20", now - 60_000, now + 300_000)))
+      val notification = roundTrip(CountdownNotification.build(context, plan, prayer, now))
+      for (views in listOf(notification.contentView, notification.bigContentView)) {
+        val content = views.apply(context, null)
+        val timer = content.findViewById<Chronometer>(R.id.countdown_timer)
+        assertEquals(left.toDouble(), (timer.base - SystemClock.elapsedRealtime()).toDouble(), 1_000.0)
+        assertTrue("Seconds missing: ${timer.text}", timer.text.toString().matches(Regex("\\d+:\\d{2}(:\\d{2})?")))
+        assertEquals(content.findViewById<TextView>(R.id.countdown_prayer).currentTextColor, timer.currentTextColor)
+      }
+    }
+  }
+
+  @Test fun redArtworkMatchesTheRealIntervalAndKeepsTheNeutralTail() {
+    val track = CountdownTrack(0.7f, listOf(CountdownTrackRange(0.5f, 0.9f)))
+    val bitmap = CountdownNotification.progressTrack(context, track)
+    val y = bitmap.height / 2
+    assertEquals(context.getColor(R.color.countdown_kerahat_track), bitmap.getPixel((bitmap.width * 0.6).toInt(), y))
+    assertEquals(context.getColor(R.color.countdown_kerahat_track), bitmap.getPixel((bitmap.width * 0.8).toInt(), y))
+    assertEquals(context.getColor(R.color.countdown_progress_track), bitmap.getPixel((bitmap.width * 0.95).toInt(), y))
+    assertEquals(android.graphics.Color.WHITE, bitmap.getPixel((bitmap.width * 0.7).toInt(), y))
+    assertTrue(bitmap.width * bitmap.height * 4 < 128_000)
+  }
+
+  @Test fun countdownsAndInlineTimesFitSmallScreensAndLargeSystemFonts() {
+    val now = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.ROOT)
+      .apply { timeZone = java.util.TimeZone.getTimeZone("Asia/Baku") }.parse("2026-10-20 11:30")!!.time
+    val basePrayer = CountdownPrayer("Məğrib", "2026-10-20", "18:30", now + 3_700_000, now - 3_600_000)
+    for (prayer in listOf(basePrayer, basePrayer.copy(name = "Sübh", time = "06:45", phase = "end")))
+    for (night in listOf(Configuration.UI_MODE_NIGHT_NO, Configuration.UI_MODE_NIGHT_YES)) {
+      for (scale in listOf(1f, 2f)) for (widthDp in listOf(260, 320, 390)) for (format in listOf("12", "24"))
+      for (active in listOf(false, true)) {
+        val configured = context.createConfigurationContext(Configuration(context.resources.configuration).apply {
+          uiMode = uiMode and Configuration.UI_MODE_NIGHT_MASK.inv() or night
+          fontScale = scale
+        })
+        val plan = CountdownPlan(true, "Bakı", format, listOf(prayer),
+          listOf(CountdownKerahat("Axşam", "2026-10-20", now + if (active) -60_000 else 3_660_000,
+            now + if (active) 300_000 else 3_780_000)))
+        val notification = roundTrip(CountdownNotification.build(configured, plan, prayer, now))
+        for (views in listOf(notification.contentView, notification.bigContentView)) {
+          val content = views.apply(configured, null)
+          val density = configured.resources.displayMetrics.density
+          content.measure(View.MeasureSpec.makeMeasureSpec((widthDp * density).toInt(), View.MeasureSpec.EXACTLY),
+            if (views == notification.contentView) View.MeasureSpec.makeMeasureSpec((48 * density).toInt(), View.MeasureSpec.EXACTLY)
+            else View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+          content.layout(0, 0, content.measuredWidth, content.measuredHeight)
+          for (id in listOf(R.id.countdown_prayer, R.id.countdown_timer,
+              R.id.countdown_kerahat_label, R.id.countdown_kerahat_timer)) {
+            val text = content.findViewById<TextView>(id)
+            val message = "Clipped ${text.text}: width=$widthDp scale=$scale format=$format compact=${views == notification.contentView}, " +
+              "box=${text.width}x${text.height} textSize=${text.textSize} layoutHeight=${text.layout.height}"
+            assertTrue(message, text.width > 0 && text.height > 0)
+            assertTrue(message, text.layout.height <= text.height - text.compoundPaddingTop - text.compoundPaddingBottom)
+            for (line in 0 until text.layout.lineCount) {
+              assertEquals(message, 0, text.layout.getEllipsisCount(line))
+              // Wrapped trailing spaces can extend beyond the line; check the visible text advance.
+              assertTrue(message, text.layout.getLineMax(line) <= text.width - text.compoundPaddingLeft - text.compoundPaddingRight + 1)
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /** Isolated instrumentation-package preview, without modifying app data or the device clock. */
+  fun preview(showKerahat: Boolean, upcomingKerahat: Boolean = false) {
+    val now = System.currentTimeMillis()
+    val target = (now / 60_000 + 8) * 60_000
+    val time = java.text.SimpleDateFormat("HH:mm", java.util.Locale.ROOT)
+      .apply { timeZone = java.util.TimeZone.getTimeZone("Asia/Baku") }.format(java.util.Date(target))
+    val prayer = CountdownPrayer("Nümunə", "2026-10-20", time,
+      target, target - 1_500_000)
+    val plan = CountdownPlan(true, "Bakı", "24", listOf(prayer), if (showKerahat)
+      listOf(CountdownKerahat("Axşam", "2026-10-20",
+        if (upcomingKerahat) now + 90_000 else target - 780_000, target - 170_000)) else emptyList())
+    // The preview has no live foreground-service/group owner, unlike the application.
+    val previewDeadline = if (showKerahat) {
+      if (upcomingKerahat) now + 90_000 else target - 170_000
+    } else now + 300_000
+    val notification = Notification.Builder.recoverBuilder(context,
+      CountdownNotification.build(context, plan, prayer, now)).setGroup(null)
+      .setSubText("Nümunə vaxtlar").setTimeoutAfter(minOf(300_000L, previewDeadline - now)).build()
+    (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(7490, notification)
   }
 
   @Test fun startupUsesAppBitmapAndNoCustomLayouts() {

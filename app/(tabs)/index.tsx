@@ -152,6 +152,7 @@ export default function Home() {
           <ActivityIndicator color={colors.primary} />
         ) : day ? (
           <PrayerList
+            style={{ marginHorizontal: -6 }}
             day={day}
             showShare={false}
             fit={fitOnScreen}

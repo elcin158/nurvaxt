@@ -1,0 +1,5 @@
+Namaz vaxtları siyahısı genişləndirildi, adlar böyüdüldü və sətir ayırıcıları aydınlaşdırıldı.
+Geri sayım kartında təkrarlanan yazılar azaldıldı.
+Bildirişdə namaz və kərahət saatları, saniyəlik geri sayım və vaxtın gedişini göstərən xətt yeniləndi.
+Namaz xatırlatmaları və geri sayım status sətrində vahid nişan altında birləşdirildi.
+Artıq lazım olmayan ayrıca canlı bildiriş ayarları ekranı çıxarıldı.

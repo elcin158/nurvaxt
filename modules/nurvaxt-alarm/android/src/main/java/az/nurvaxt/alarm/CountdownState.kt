@@ -38,7 +38,7 @@ data class CountdownPlan(
 object CountdownState {
   const val CHANNEL = "nurvaxt-countdown-v2"
   const val NOTIFICATION_ID = 7401
-  // Keep the countdown outside the combined reminder card and any system aggregate summary.
+  // One app-owned group gives the countdown and reminder cards a single status-bar icon.
   const val GROUP = "nurvaxt-countdown"
   const val SUMMARY_ID = 7402
   fun prefs(context: Context) = context.getSharedPreferences("nurvaxt-countdown", Context.MODE_PRIVATE)
@@ -130,6 +130,7 @@ object CountdownState {
         cancelBoundary(context)
         context.stopService(Intent(context, CountdownService::class.java))
         NotificationManagerCompat.from(context).cancel(NOTIFICATION_ID)
+        CountdownNotification.syncGroupSummary(context, null)
         prefs(context).edit().putBoolean("active", false).remove("lastError").apply()
       } else {
         armBoundary(context, plan!!, next, now)
@@ -151,9 +152,9 @@ object CountdownState {
       val plan = read(context)?.takeIf { it.enabled && allowed(context) } ?: return
       val now = System.currentTimeMillis()
       val prayer = next(plan, now) ?: return
-      NotificationManagerCompat.from(context).notify(
-        NOTIFICATION_ID, CountdownNotification.build(context, plan, prayer, now),
-      )
+      val notification = CountdownNotification.build(context, plan, prayer, now)
+      NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
+      CountdownNotification.syncGroupSummary(context, notification)
     } catch (error: Exception) {
       Log.e("NurvaxtCountdown", "Dismissed countdown could not be restored", error)
       prefs(context).edit().putString("lastError", error.message ?: error.javaClass.simpleName).apply()

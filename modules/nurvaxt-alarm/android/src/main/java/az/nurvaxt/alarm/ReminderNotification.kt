@@ -23,7 +23,7 @@ import java.util.TimeZone
 /** One dismissible reminder card, independent of the ongoing countdown. */
 object ReminderNotification {
   const val NOTIFICATION_ID = 7404
-  const val GROUP = "nurvaxt-reminders"
+  const val GROUP = CountdownState.GROUP
   internal const val EXTRA_ENTRIES = "az.nurvaxt.reminderEntries"
   private const val MAX_ENTRIES = 50
 
@@ -79,15 +79,17 @@ object ReminderNotification {
   /** Collapse reminders left by an older APK without playing their sound again. */
   @Synchronized fun migrate(context: Context) {
     val active = manager(context).activeNotifications
-    val latest = active.filter { legacy(it) }.maxByOrNull { it.postTime } ?: return
+    val latest = active.filter { legacy(it) || (it.id == NOTIFICATION_ID && it.notification.group != GROUP) }
+      .maxByOrNull { it.postTime } ?: return
     val channel = if (Build.VERSION.SDK_INT >= 26) latest.notification.channelId else "nurvaxt-default-true-v1"
     publish(context, build(context, channel, history(active, emptyList()), false), active)
   }
 
   private fun publish(context: Context, notification: Notification, active: Array<StatusBarNotification>) {
     val notifications = manager(context)
-    // A silent summary owns only the reminder group. The countdown has its own group.
-    notifications.notify(CountdownState.SUMMARY_ID, CountdownNotification.groupSummary(context))
+    // Both cards share one silent summary, whose icon follows the live countdown.
+    val countdown = active.firstOrNull { it.id == CountdownState.NOTIFICATION_ID }?.notification
+    notifications.notify(CountdownState.SUMMARY_ID, CountdownNotification.groupSummary(context, countdown))
     notifications.notify(NOTIFICATION_ID, notification)
     active.filter { legacy(it) }.forEach { notifications.cancel(it.tag, it.id) }
   }

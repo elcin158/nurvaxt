@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.drawable.BitmapDrawable
 import androidx.core.app.NotificationCompat
 import org.json.JSONArray
 import org.json.JSONObject
@@ -55,7 +56,7 @@ class ReminderNotificationTest {
     throw AssertionError("Expected one combined card with $count entries")
   }
 
-  @Test fun separateDeliveriesReuseOneCardAndKeepCountdownIndependent() {
+  @Test fun separateDeliveriesShareOneStatusIconAndKeepCountdownIndependent() {
     manager.notify(CountdownState.NOTIFICATION_ID, CountdownNotification.startup(context))
     val now = System.currentTimeMillis()
     ReminderNotification.post(context, listOf(event(15, now - 600_000)))
@@ -66,7 +67,7 @@ class ReminderNotificationTest {
     assertEquals(1, active.count { it.id == ReminderNotification.NOTIFICATION_ID })
     assertTrue(active.any { it.id == CountdownState.NOTIFICATION_ID })
     assertEquals(ReminderNotification.GROUP, combined.group)
-    assertNotEquals(CountdownState.GROUP, combined.group)
+    assertEquals(CountdownState.GROUP, combined.group)
     assertEquals("Zöhr namazına 5 dəqiqə qalıb.", combined.extras.getString(Notification.EXTRA_TEXT))
     val expanded = combined.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString()
     assertTrue(expanded.indexOf("5 dəqiqə") < expanded.indexOf("15 dəqiqə"))
@@ -78,6 +79,58 @@ class ReminderNotificationTest {
     assertEquals(ReminderNotification.GROUP, summary.group)
     assertTrue(summary.flags and Notification.FLAG_ONLY_ALERT_ONCE != 0)
     assertEquals(Notification.GROUP_ALERT_CHILDREN, summary.groupAlertBehavior)
+    assertTrue(active.all { it.notification.group == CountdownState.GROUP })
+  }
+
+  @Test fun sharedIconFollowsCountdownUpdatesAndResetsWhenCountdownStops() {
+    val now = System.currentTimeMillis()
+    fun countdown(minutes: Int): Notification {
+      val prayer = CountdownPrayer("Zöhr", "2026-10-20", "13:30", now + minutes * 60_000L, null)
+      return CountdownNotification.build(context, CountdownPlan(true, "Bakı", "24", listOf(prayer)), prayer, now)
+    }
+    fun icon(notification: Notification) = (notification.smallIcon.loadDrawable(context) as BitmapDrawable).bitmap
+    fun summary() = manager.activeNotifications.first { it.id == CountdownState.SUMMARY_ID }.notification
+    val first = countdown(40)
+    manager.notify(CountdownState.NOTIFICATION_ID, first)
+    awaitState("Countdown was not posted") { manager.activeNotifications.any { it.id == CountdownState.NOTIFICATION_ID } }
+    ReminderNotification.post(context, listOf(event(15)))
+    card(1)
+    awaitState("Summary did not inherit the countdown icon") { icon(summary()).sameAs(icon(first)) }
+    Thread.sleep(1_100)
+    val next = countdown(39)
+    manager.notify(CountdownState.NOTIFICATION_ID, next)
+    CountdownNotification.syncGroupSummary(context, next)
+    awaitState("Summary icon did not advance with the countdown") { icon(summary()).sameAs(icon(next)) }
+    assertFalse(icon(first).sameAs(icon(next)))
+    Thread.sleep(1_100)
+    manager.cancel(CountdownState.NOTIFICATION_ID)
+    CountdownNotification.syncGroupSummary(context, null)
+    val app = CountdownNotification.appIcon(context).toIcon(context).loadDrawable(context) as BitmapDrawable
+    awaitState("Reminder-only summary did not return to the application mark") { icon(summary()).sameAs(app.bitmap) }
+    assertTrue(summary().flags and Notification.FLAG_ONLY_ALERT_ONCE != 0)
+    assertEquals(Notification.GROUP_ALERT_CHILDREN, summary().groupAlertBehavior)
+    manager.cancel(ReminderNotification.NOTIFICATION_ID)
+    awaitState("Last reminder was not removed") { manager.activeNotifications.none { it.id == ReminderNotification.NOTIFICATION_ID } }
+    CountdownNotification.syncGroupSummary(context, null)
+    awaitState("Summary without any remaining cards was not removed") { manager.activeNotifications.isEmpty() }
+  }
+
+  @Test fun upgradeMovesExistingCombinedCardIntoSharedGroupSilently() {
+    ReminderNotification.post(context, listOf(event(15)))
+    val previous = Notification.Builder.recoverBuilder(context, card(1)).setGroup("nurvaxt-reminders").build()
+    Thread.sleep(1_100)
+    manager.notify(ReminderNotification.NOTIFICATION_ID, previous)
+    awaitState("Old separate group was not posted") {
+      manager.activeNotifications.firstOrNull { it.id == ReminderNotification.NOTIFICATION_ID }
+        ?.notification?.group == "nurvaxt-reminders"
+    }
+    Thread.sleep(1_100)
+    ReminderNotification.migrate(context)
+    awaitState("Existing card was not migrated into the shared group") { card(1).group == CountdownState.GROUP }
+    val migrated = card(1)
+    assertTrue(migrated.flags and Notification.FLAG_ONLY_ALERT_ONCE != 0)
+    assertEquals("nurvaxt:test:15", JSONArray(migrated.extras.getString(ReminderNotification.EXTRA_ENTRIES))
+      .getJSONObject(0).getString("id"))
   }
 
   @Test fun clearingRemindersStartsFreshWithoutCancelingCountdown() {
@@ -87,11 +140,17 @@ class ReminderNotificationTest {
     manager.cancel(ReminderNotification.NOTIFICATION_ID)
     awaitState("Reminder was not removed") { manager.activeNotifications.none { it.id == ReminderNotification.NOTIFICATION_ID } }
     ReminderDismissReceiver().onReceive(context, Intent())
-    assertFalse(manager.activeNotifications.any { it.id == CountdownState.SUMMARY_ID })
+    // The owner remains while the countdown is its only child; canceling it would also
+    // cancel the countdown. SystemUI renders the remaining countdown as a single card.
+    assertTrue(manager.activeNotifications.any { it.id == CountdownState.SUMMARY_ID })
     assertTrue(manager.activeNotifications.any { it.id == CountdownState.NOTIFICATION_ID })
     ReminderNotification.post(context, listOf(event(5)))
     val saved = JSONArray(card(1).extras.getString(ReminderNotification.EXTRA_ENTRIES))
     assertEquals("nurvaxt:test:5", saved.getJSONObject(0).getString("id"))
+    awaitState("Countdown did not rejoin the next reminder's shared icon") {
+      manager.activeNotifications.filter { it.id == CountdownState.NOTIFICATION_ID || it.id == CountdownState.SUMMARY_ID }
+        .let { it.size == 2 && it.all { record -> record.notification.group == CountdownState.GROUP } }
+    }
   }
 
   @Test fun upgradeConsolidatesLegacyCardsSilentlyAndPreservesTheirText() {

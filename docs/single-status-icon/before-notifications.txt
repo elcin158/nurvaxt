@@ -1,0 +1,254 @@
+    NotificationRecord(0x0b6c5271: pkg=az.nurvaxt.app user=UserHandle{0} id=7402 tag=null importance=3 key=0|az.nurvaxt.app|7402|null|10428: Notification(channel=nurvaxt-countdown-v2 shortcut=null contentView=null vibrate=null sound=null defaults=0 flags=ONLY_ALERT_ONCE|GROUP_SUMMARY color=0x00000000 groupKey=nurvaxt-reminders vis=PUBLIC semFlags=0x0 semPriority=0 semMissedCount=0))
+      uid=10428 userId=0
+      opPkg=az.nurvaxt.app
+      icon=Icon(typ=BITMAP size=96x96)
+      flags=ONLY_ALERT_ONCE|GROUP_SUMMARY
+      originalFlags=ONLY_ALERT_ONCE|GROUP_SUMMARY
+      pri=0
+      key=0|az.nurvaxt.app|7402|null|10428
+      seen=false
+      groupKey=0|az.nurvaxt.app|g:nurvaxt-reminders
+      notification=
+            fullscreenIntent=null
+            contentIntent=null
+            deleteIntent=null
+            number=0
+            groupAlertBehavior=2
+            when=1792486462167/1792486462167
+            tickerText=null
+            vis=1
+            contentView=null
+            bigContentView=null
+            headsUpContentView=null
+            color=0x00000000
+            timeout=PT72H
+            parcelDataSize=2452
+            mAllowSystemGeneratedContextualActions=true
+            extras={
+                android.title=String (NurVaxt)
+                android.reduced.images=Boolean (true)
+                android.subText=null
+                android.showChronometer=Boolean (false)
+                android.text=null
+                android.progress=Integer (0)
+                android.progressMax=Integer (0)
+                android.appInfo=ApplicationInfo (ApplicationInfo{2a3b856 az.nurvaxt.app})
+                android.showWhen=Boolean (true)
+                android.largeIcon=null
+                android.infoText=null
+                android.progressIndeterminate=Boolean (false)
+                android.remoteInputHistory=null
+                android.shortCriticalText=null
+            }
+      publicNotification=
+            None
+      stats=SingleNotificationStats{posttimeElapsedMs=1406468721, posttimeToFirstClickMs=-1, posttimeToDismissMs=-1, airtimeCount=0, airtimeMs=0, currentAirtimeStartElapsedMs=-1, airtimeExpandedMs=0, posttimeToFirstVisibleExpansionMs=-1, currentAirtimeExpandedStartElapsedMs=-1, requestedImportance=3, naturalImportance=3, isNoisy=false}
+      mContactAffinity=0.0
+      mRecentlyIntrusive=false
+      mPackagePriority=0
+      mPackageVisibility=-1000
+      mSystemImportance=UNSPECIFIED
+      mAsstImportance=UNSPECIFIED
+      mImportance=DEFAULT
+      mImportanceExplanation=app
+      mProposedImportance=UNSPECIFIED
+      mIsAppImportanceLocked=true
+      mSensitiveContent=false
+      mCanceledAfterLifetimeExtension=false
+      mIntercept=false
+      mHidden==false
+      mGlobalSortKey=crtcl=0x0002:intrsv=2:grnk=0x0001:gsmry=0:nsk:rnk=0x0000
+      mRankingTimeMs=1792486462167(2026-10-20 12:54:22.167+0400)
+      mCreationTimeMs=1792486449983(2026-10-20 12:54:09.983+0400)
+      mVisibleSinceMs=0(1970-01-01 04:00:00.000+0400)
+      mUpdateTimeMs=1792486462173(2026-10-20 12:54:22.173+0400)
+      mInterruptionTimeMs=1792486462173(2026-10-20 12:54:22.173+0400)
+      mSuppressedVisualEffects= 0
+      mSound= null
+      mVibration= null
+      mAttributes= AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null
+      mLight= null
+      mShowBadge=false
+      mColorized=false
+      mAllowBubble=false
+      isBubble=false
+      mIsInterruptive=false
+      effectiveNotificationChannel=NotificationChannel{mId='nurvaxt-countdown-v2', mName=Namaza qalan vaxt, mDescription=hasDescription , mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=true, mVibrationEnabled=false, mShowBadge=false, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedByOEM=false, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0, mSoundMissingReason=0}
+      mAdjustments=[]
+      shortcut=null found valid? false
+      mUserVisOverride=-1000
+      hasSummarization=false
+      mSuggestionsGeneratedByAssistant=false
+
+    NotificationRecord(0x0a63e0d7: pkg=az.nurvaxt.app user=UserHandle{0} id=7404 tag=null importance=4 key=0|az.nurvaxt.app|7404|null|10428: Notification(channel=nurvaxt-default-true-v1 shortcut=null contentView=null vibrate=null sound=null defaults=0 flags=AUTO_CANCEL color=0x00000000 groupKey=nurvaxt-reminders vis=PRIVATE semFlags=0x2008 semPriority=0 semMissedCount=0))
+      uid=10428 userId=0
+      opPkg=az.nurvaxt.app
+      icon=Icon(typ=BITMAP size=96x96)
+      flags=AUTO_CANCEL
+      originalFlags=AUTO_CANCEL
+      pri=1
+      key=0|az.nurvaxt.app|7404|null|10428
+      seen=false
+      groupKey=0|az.nurvaxt.app|g:nurvaxt-reminders
+      notification=
+            fullscreenIntent=null
+            contentIntent=PendingIntent{8526dc4: PendingIntentRecord{777386d az.nurvaxt.app startActivity (allowlist: e868636:+30s0ms/0/NOTIFICATION_SERVICE/NotificationManagerService)}}
+            deleteIntent=PendingIntent{222a4ad: PendingIntentRecord{2426ca2 az.nurvaxt.app broadcastIntent (allowlist: e868636:+30s0ms/0/NOTIFICATION_SERVICE/NotificationManagerService)}}
+            number=3
+            groupAlertBehavior=2
+            when=1792486462072/1792486462072
+            tickerText=null
+            vis=0
+            contentView=null
+            bigContentView=null
+            headsUpContentView=null
+            color=0x00000000
+            timeout=PT72H
+            parcelDataSize=4280
+            mAllowSystemGeneratedContextualActions=true
+            extras={
+                android.title=String (NurVaxt)
+                android.reduced.images=Boolean (true)
+                android.subText=String (3 xatırlatma)
+                android.template=String (android.app.Notification$BigTextStyle)
+                android.showChronometer=Boolean (false)
+                android.text=String (Sınaq bildirişi. Namaz xatırlatmaları üçün icazə aktivdir.)
+                android.progress=Integer (0)
+                androidx.core.app.extra.COMPAT_TEMPLATE=String (androidx.core.app.NotificationCompat$BigTextStyle)
+                android.progressMax=Integer (0)
+                android.appInfo=ApplicationInfo (ApplicationInfo{1bb03e2 az.nurvaxt.app})
+                az.nurvaxt.reminderEntries=String ([{"id":"nurvaxt:test:1792486462072","timestamp":1792486462072,"body":"Sınaq bildirişi. Namaz xatırlatmaları üçün icazə aktivdir."},{"id":"nurvaxt:test:1792486455909","timestamp":1792486455909,"body":"Sınaq bildirişi. Namaz xatırlatmaları üçün icazə aktivdir."},{"id":"nurvaxt:test:1792486449903","timestamp":1792486449903,"body":"Sınaq bildirişi. Namaz xatırlatmaları üçün icazə aktivdir."}])
+                android.showWhen=Boolean (true)
+                android.largeIcon=null
+                android.bigText=String (12:54 · Sınaq bildirişi. Namaz xatırlatmaları üçün icazə aktivdir.
+12:54 · Sınaq bildirişi. Namaz xatırlatmaları üçün icazə aktivdir.
+12:54 · Sınaq bildirişi. Namaz xatırlatmaları üçün icazə aktivdir.)
+                android.infoText=null
+                android.progressIndeterminate=Boolean (false)
+                android.remoteInputHistory=null
+                android.shortCriticalText=null
+            }
+      publicNotification=
+            None
+      stats=SingleNotificationStats{posttimeElapsedMs=1406468728, posttimeToFirstClickMs=-1, posttimeToDismissMs=-1, airtimeCount=1, airtimeMs=5695, currentAirtimeStartElapsedMs=-1, airtimeExpandedMs=0, posttimeToFirstVisibleExpansionMs=-1, currentAirtimeExpandedStartElapsedMs=-1, requestedImportance=4, naturalImportance=4, isNoisy=true}
+      mContactAffinity=0.0
+      mRecentlyIntrusive=true
+      mPackagePriority=0
+      mPackageVisibility=-1000
+      mSystemImportance=UNSPECIFIED
+      mAsstImportance=UNSPECIFIED
+      mImportance=HIGH
+      mImportanceExplanation=app
+      mProposedImportance=UNSPECIFIED
+      mIsAppImportanceLocked=true
+      mSensitiveContent=false
+      mCanceledAfterLifetimeExtension=false
+      mIntercept=false
+      mHidden==false
+      mGlobalSortKey=crtcl=0x0002:intrsv=2:grnk=0x0001:gsmry=1:nsk:rnk=0x0001
+      mRankingTimeMs=1792486462072(2026-10-20 12:54:22.072+0400)
+      mCreationTimeMs=1792486449985(2026-10-20 12:54:09.985+0400)
+      mVisibleSinceMs=1792486450885(2026-10-20 12:54:10.885+0400)
+      mUpdateTimeMs=1792486462176(2026-10-20 12:54:22.176+0400)
+      mInterruptionTimeMs=1792486462388(2026-10-20 12:54:22.388+0400)
+      mSuppressedVisualEffects= 0
+      mSound= content://settings/system/notification_sound
+      mVibration= Composed{segments=[Step{amplitude=0.0, frequencyHz=0.0, duration=0}, Step{amplitude=-1.0, frequencyHz=0.0, duration=200}], repeat=-1, mMagnitudeType=TYPE_EXTRA}
+      mAttributes= AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null
+      mLight= null
+      mShowBadge=true
+      mColorized=false
+      mAllowBubble=false
+      isBubble=false
+      mIsInterruptive=true
+      effectiveNotificationChannel=NotificationChannel{mId='nurvaxt-default-true-v1', mName=Namaz xatırlatmaları, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=[0, 200], mVibrationEffect=Composed{segments=[Step{amplitude=0.0, frequencyHz=0.0, duration=0}, Step{amplitude=-1.0, frequencyHz=0.0, duration=200}], repeat=-1, mMagnitudeType=TYPE_EXTRA}, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedByOEM=false, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0, mSoundMissingReason=0}
+      mAdjustments=[]
+      shortcut=null found valid? false
+      mUserVisOverride=-1000
+      hasSummarization=false
+      mSuggestionsGeneratedByAssistant=false
+
+    NotificationRecord(0x0a9bb373: pkg=az.nurvaxt.app user=UserHandle{0} id=7401 tag=null importance=3 key=0|az.nurvaxt.app|7401|null|10428: Notification(channel=nurvaxt-countdown-v2 shortcut=null contentView=az.nurvaxt.app/0x7f0d0088 vibrate=null sound=null defaults=0 flags=ONGOING_EVENT|ONLY_ALERT_ONCE|NO_CLEAR|FOREGROUND_SERVICE color=0xff2d5ce3 category=service groupKey=nurvaxt-countdown vis=PUBLIC semFlags=0x0 semPriority=0 semMissedCount=0))
+      uid=10428 userId=0
+      opPkg=az.nurvaxt.app
+      icon=Icon(typ=BITMAP size=96x96)
+      flags=ONGOING_EVENT|ONLY_ALERT_ONCE|NO_CLEAR|FOREGROUND_SERVICE
+      originalFlags=ONGOING_EVENT|ONLY_ALERT_ONCE|FOREGROUND_SERVICE
+      pri=0
+      key=0|az.nurvaxt.app|7401|null|10428
+      seen=false
+      groupKey=0|az.nurvaxt.app|g:nurvaxt-countdown
+      notification=
+            fullscreenIntent=null
+            contentIntent=PendingIntent{2eaa230: PendingIntentRecord{ebca799 az.nurvaxt.app startActivity (allowlist: e868636:+30s0ms/0/NOTIFICATION_SERVICE/NotificationManagerService)}}
+            deleteIntent=PendingIntent{c71dea9: PendingIntentRecord{10f77e5 az.nurvaxt.app broadcastIntent (allowlist: e868636:+30s0ms/0/NOTIFICATION_SERVICE/NotificationManagerService)}}
+            number=0
+            groupAlertBehavior=1
+            when=1792498200000/1792498200000
+            tickerText=null
+            vis=1
+            contentView=az.nurvaxt.app/0x7f0d0088 (41616 bytes): android.widget.RemoteViews@e097c2e
+            bigContentView=az.nurvaxt.app/0x7f0d0089 (147456 bytes): android.widget.RemoteViews@77413cf
+            headsUpContentView=null
+            color=0xff2d5ce3
+            timeout=PT72H
+            parcelDataSize=9400
+            mAllowSystemGeneratedContextualActions=true
+            extras={
+                android.title=String (Əsr · 16:10)
+                android.reduced.images=Boolean (true)
+                android.subText=String (Bakı)
+                android.template=String (android.app.Notification$DecoratedCustomViewStyle)
+                android.showChronometer=Boolean (false)
+                android.text=String (3 saat 16 dəq.)
+                android.progress=Integer (0)
+                androidx.core.app.extra.COMPAT_TEMPLATE=String (androidx.core.app.NotificationCompat$DecoratedCustomViewStyle)
+                android.progressMax=Integer (0)
+                android.appInfo=ApplicationInfo (ApplicationInfo{b8fb15c az.nurvaxt.app})
+                android.contains.customView=Boolean (true)
+                android.showWhen=Boolean (false)
+                android.largeIcon=null
+                android.infoText=null
+                android.progressIndeterminate=Boolean (false)
+                android.remoteInputHistory=null
+                android.shortCriticalText=null
+            }
+      publicNotification=
+            None
+      stats=SingleNotificationStats{posttimeElapsedMs=1406355430, posttimeToFirstClickMs=-1, posttimeToDismissMs=-1, airtimeCount=1, airtimeMs=977, currentAirtimeStartElapsedMs=-1, airtimeExpandedMs=0, posttimeToFirstVisibleExpansionMs=-1, currentAirtimeExpandedStartElapsedMs=-1, requestedImportance=3, naturalImportance=3, isNoisy=false}
+      mContactAffinity=0.0
+      mRecentlyIntrusive=false
+      mPackagePriority=0
+      mPackageVisibility=-1000
+      mSystemImportance=UNSPECIFIED
+      mAsstImportance=UNSPECIFIED
+      mImportance=DEFAULT
+      mImportanceExplanation=app
+      mProposedImportance=UNSPECIFIED
+      mIsAppImportanceLocked=true
+      mSensitiveContent=false
+      mCanceledAfterLifetimeExtension=false
+      mIntercept=false
+      mHidden==false
+      mGlobalSortKey=crtcl=0x0002:intrsv=2:grnk=0x0002:gsmry=1:nsk:rnk=0x0002
+      mRankingTimeMs=1792486336706(2026-10-20 12:52:16.706+0400)
+      mCreationTimeMs=1792486336706(2026-10-20 12:52:16.706+0400)
+      mVisibleSinceMs=1792486343469(2026-10-20 12:52:23.469+0400)
+      mUpdateTimeMs=1792486457082(2026-10-20 12:54:17.082+0400)
+      mInterruptionTimeMs=1792486457082(2026-10-20 12:54:17.082+0400)
+      mSuppressedVisualEffects= 0
+      mSound= null
+      mVibration= null
+      mAttributes= AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null
+      mLight= null
+      mShowBadge=false
+      mColorized=false
+      mAllowBubble=false
+      isBubble=false
+      mIsInterruptive=false
+      effectiveNotificationChannel=NotificationChannel{mId='nurvaxt-countdown-v2', mName=Namaza qalan vaxt, mDescription=hasDescription , mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=true, mVibrationEnabled=false, mShowBadge=false, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedByOEM=false, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0, mSoundMissingReason=0}
+      mAdjustments=[]
+      shortcut=null found valid? false
+      mUserVisOverride=-1000
+      hasSummarization=false
+      mSuggestionsGeneratedByAssistant=false

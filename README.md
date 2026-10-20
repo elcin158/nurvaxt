@@ -126,7 +126,7 @@ for adding 2027 when QMİ publishes it; the app does not download new years auto
 - System/light/dark themes, bundled Manrope fonts, font scaling, screen reader labels.
 - Independent multi-reminders for five prayers and İmsak; quiet hours, vibration and tone.
 - Default at-time notifications for all five prayers, alongside optional advance reminders.
-- Android silent ongoing countdown with numerical status icon; circle at 30 minutes, diamond at 15.
+- Android silent ongoing countdown with a minute/second status icon, horizontal progress and upcoming/active kərahət timers.
 - Safe-area-aware bottom navigation and amber/coral countdown urgency labels.
 - Android durable AlarmManager queue, reboot/time-change receivers and user-granted exact access.
 - iOS local notifications via Expo/UNUserNotificationCenter, bounded rolling reconciliation.
@@ -138,19 +138,19 @@ mode and azan recordings are deliberately deferred. No guessed dates or sunset/M
 
 ## Builds and checks
 
-Google Play test bundle (version 1.0.8, Android versionCode 10):
+Google Play test bundle (version 1.0.9, Android versionCode 12):
 
 ```bash
 npm run android:bundle
 python3 scripts/verify-release-bundle.py --bundletool /absolute/path/to/bundletool-all-1.18.1.jar
 ```
 
-The signed upload file is written to `artifacts/nurvaxt-1.0.8-v10.aab`. Release
+The signed upload file is written to `artifacts/nurvaxt-1.0.9-v12.aab`. Release
 binaries are not tracked in git; rebuild it with the commands above and compare
-the recorded checksum. See `artifacts/nurvaxt-1.0.8-v10.validation.json` for its
+the recorded checksum. See `artifacts/nurvaxt-1.0.9-v12.validation.json` for its
 signature, checksum, packaged permissions and 16 KB alignment checks. Azerbaijani release notes are in
-`artifacts/google-play/release-notes-1.0.8-az.txt`; handover details are in
-`artifacts/nurvaxt-1.0.8-README-az.md`. The user uploads the bundle to the existing
+`artifacts/google-play/release-notes-1.0.9-az.txt`; handover details are in
+`artifacts/nurvaxt-1.0.9-README-az.md`. The user uploads the bundle to the existing
 Play test track; no Play Console submission was performed by this task.
 
 Local signed release APK (uses the current configured version):

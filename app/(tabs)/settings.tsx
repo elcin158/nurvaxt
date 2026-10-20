@@ -8,7 +8,6 @@ import { AppText, Button, Card, Chip, ChoiceGroup } from '../../src/components/u
 import { SettingsRow, Toggle } from '../../src/features/settings/SettingsRow';
 import { KerahatDurationSettings } from '../../src/features/settings/KerahatDurationSettings';
 import { TimeVisibilitySettings } from '../../src/features/settings/TimeVisibilitySettings';
-import { LiveNotificationEntry } from '../../src/features/settings/LiveNotificationEntry';
 import { locationName } from '../../src/features/locations/locations';
 import { usePreferences } from '../../src/store/preferences';
 import {
@@ -181,7 +180,6 @@ export default function Settings() {
               />
             </SettingsRow>
           )}
-          {Platform.OS === 'android' && <LiveNotificationEntry />}
           {diagnostic.countdownError && (
             <AppText variant="caption" style={{ color: colors.error }}>
               Daimi göstərici açıla bilmədi. Tətbiqi yenidən açın və bildiriş ayarlarını yoxlayın.

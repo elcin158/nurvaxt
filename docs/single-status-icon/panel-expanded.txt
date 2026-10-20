@@ -1,0 +1,6 @@
+NurVaxt [66,388][246,454]
+Əsr [378,529][632,601]
+16:10 [378,601][632,673]
+NurVaxt [246,761][404,817]
+3 xatırlatma [428,769][603,813]
+Sınaq bildirişi. Namaz xatırlatmaları üçün icazə aktivdir. [246,820][918,921]

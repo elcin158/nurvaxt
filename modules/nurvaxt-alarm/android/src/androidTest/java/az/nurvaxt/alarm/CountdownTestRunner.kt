@@ -12,10 +12,14 @@ import org.junit.runner.notification.RunListener
 class CountdownTestRunner : Instrumentation() {
   private var testClass: Class<*> = CountdownNotificationTest::class.java
   private var preview = false
+  private var countdownPreview: String? = null
 
   override fun onCreate(arguments: Bundle?) {
     super.onCreate(arguments)
     preview = arguments?.getString("preview") == "reminders"
+    countdownPreview = arguments?.getString("preview")?.takeIf {
+      it in listOf("countdown", "countdown-kerahat", "countdown-kerahat-upcoming")
+    }
     if (arguments?.getString("class") == SystemSoundPreviewTest::class.java.name) {
       testClass = SystemSoundPreviewTest::class.java
     }
@@ -36,6 +40,13 @@ class CountdownTestRunner : Instrumentation() {
     if (preview) {
       ReminderNotificationTest().preview()
       finish(Activity.RESULT_OK, Bundle().apply { putString("stream", "Combined reminder preview posted") })
+      return
+    }
+    countdownPreview?.let { mode ->
+      runOnMainSync {
+        CountdownNotificationTest().preview(mode != "countdown", mode == "countdown-kerahat-upcoming")
+      }
+      finish(Activity.RESULT_OK, Bundle().apply { putString("stream", "Countdown preview posted") })
       return
     }
     val junit = JUnitCore()

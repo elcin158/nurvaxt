@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-20T12:55:59.540115+00:00",
+  "apk": "artifacts/nurvaxt-1.0.9-v11-release.apk",
+  "version": "1.0.9",
+  "versionCode": 11,
+  "applicationId": "az.nurvaxt.app",
+  "bytes": 106281222,
+  "sha256": "825070ea1cd65c399d324e9d9f0b2c7793f05573f3baf92400e03dbd4e20670a",
+  "certificateSha256": "01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e",
+  "signatureVerified": true,
+  "matchesPreviousReleaseKey": true,
+  "generatedFromVerifiedAab": true,
+  "zip16KbAlignmentVerified": true,
+  "debuggable": false,
+  "abis": ["arm64-v8a", "armeabi-v7a", "x86", "x86_64"],
+  "bundledDatabaseMatchesSource": true,
+  "allFourReminderSoundsBundled": true,
+  "countdownResourcesVerified": true,
+  "deviceRuntimeTested": false
+}

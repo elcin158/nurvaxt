@@ -1,0 +1,14 @@
+{
+  "compact": {
+    "resourceId": "0x7f0d0088",
+    "packagedPath": "res/k2.xml",
+    "hasProgress": true,
+    "chronometers": 2
+  },
+  "expanded": {
+    "resourceId": "0x7f0d0089",
+    "packagedPath": "res/Nr.xml",
+    "hasProgress": true,
+    "chronometers": 2
+  }
+}

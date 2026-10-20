@@ -15,9 +15,6 @@ jest.mock('expo-router', () => ({
   router: { push: jest.fn(), back: jest.fn(), replace: jest.fn() },
 }));
 jest.mock('react-native-safe-area-context', () => ({ SafeAreaView: require('react-native').View }));
-jest.mock('../src/features/settings/LiveNotificationEntry', () => ({
-  LiveNotificationEntry: () => null,
-}));
 jest.mock('../src/features/notifications/service', () => ({
   promptExactAccess: jest.fn(async () => {}),
   requestNotificationPermission: jest.fn(async () => true),
