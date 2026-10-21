@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="az.nurvaxt.alarm.CountdownLiveUpdateTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-21T10:54:15.730Z" hostname="egpc047" time="0.028">
+  <properties/>
+  <testcase name="WholeIntervalIsPromotedUntilThePrayer" classname="az.nurvaxt.alarm.CountdownLiveUpdateTest" time="0.002"/>
+  <testcase name="DismissalSuppressesUpdatesForThatPrayerButNotTheNextPrayer" classname="az.nurvaxt.alarm.CountdownLiveUpdateTest" time="0.001"/>
+  <testcase name="SegmentsEndWithTheFinalThirtyAndFifteenMinutes" classname="az.nurvaxt.alarm.CountdownLiveUpdateTest" time="0.023"/>
+  <testcase name="OldAndroidAndDeniedAccessRetainTheOrdinaryCountdown" classname="az.nurvaxt.alarm.CountdownLiveUpdateTest" time="0.0"/>
+  <testcase name="ProgressCountsElapsedSecondsWithinTheInterval" classname="az.nurvaxt.alarm.CountdownLiveUpdateTest" time="0.001"/>
+  <testcase name="IntervalStartsAtThePreviousPrayerOrCoversTheFinalHalfHour" classname="az.nurvaxt.alarm.CountdownLiveUpdateTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

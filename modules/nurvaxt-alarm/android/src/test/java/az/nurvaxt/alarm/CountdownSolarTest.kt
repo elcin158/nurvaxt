@@ -60,4 +60,18 @@ class CountdownSolarTest {
     assertNull(CountdownSolar.countdown(listOf(morning.copy(end = morning.start)), 2_000, 7_000))
     assertNull(CountdownSolar.countdown(listOf(noon), 4_000, 4_999))
   }
+
+  @Test fun minuteRefreshTracksTheSolarTargetBetweenPrayerTicks() {
+    val event = CountdownKerahat("Axşam", "2026-10-21", 150_000, 340_000)
+    assertEquals(30_000L, CountdownSolar.refreshDelay(listOf(event), 0, 600_000))
+    assertEquals(60_000L, CountdownSolar.refreshDelay(listOf(event), 30_000, 600_000))
+    assertEquals(1L, CountdownSolar.refreshDelay(listOf(event), 149_999, 600_000))
+    assertEquals(10_000L, CountdownSolar.refreshDelay(listOf(event), 150_000, 600_000))
+    assertEquals(60_000L, CountdownSolar.refreshDelay(listOf(event), 280_000, 600_000))
+    assertEquals(1L, CountdownSolar.refreshDelay(listOf(event), 339_999, 600_000))
+    assertNull(CountdownSolar.refreshDelay(listOf(event), 340_000, 600_000))
+    assertNull(CountdownSolar.refreshDelay(emptyList(), 0, 600_000))
+    // An unrelated later interval still needs its boundary, but no minute updates yet.
+    assertEquals(150_000L, CountdownSolar.refreshDelay(listOf(event), 0, 100_000))
+  }
 }

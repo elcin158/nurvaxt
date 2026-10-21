@@ -1,32 +1,46 @@
 # Minimal progress notification
 
-The ordinary Android countdown now uses the approved compact/expanded layout. Both views
-contain a horizontal time track and native, per-second prayer and upcoming/active kərahət chronometers.
-Both compact and expanded content show the scheduled times inline beside event names, such as `Məğrib · 18:30` and `Kərahət girməsinə · 18:17`. Scheduled times honor the saved 12/24-hour
-format and kərahət starts are formatted in Asia/Baku.
+The ordinary Android countdown contains a horizontal time track in both sizes. Compact
+content shows only the prayer name, scheduled time and native per-second prayer countdown;
+kərahət is represented only by its red interval on the track. Expanded content adds the
+upcoming/active kərahət row, with a minute-only countdown such as `5`, without a unit suffix. It rounds up,
+including the final minute, and refreshes at the kərahət target's minute boundaries even
+when they differ from the prayer timer's ticks.
 
-Prayer digits inherit Android notification text colors (dark in light mode, light in dark mode).
-Kərahət names and timers use accessible crimson/coral. There is no extra body logo, sun icon,
-urgency caption, unit suffix, “qalıb”, “Başlanğıc” or “Kərahət intervalı” label. Screen-reader
-descriptions retain the event meaning, scheduled times and estimated nature of kərahət.
+The kərahət label and clock stay on one line, including at large font sizes. The narrower
+minute column leaves room for that inline clock. The clock matches the phase: `Kərahət girməsinə` shows the start, while
+`Kərahət bitməsinə` shows the end. Scheduled times honor the saved 12/24-hour format;
+kərahət endpoints are formatted in Asia/Baku. Prayer digits inherit Android notification
+text colors, and kərahət labels/digits use crimson/coral. Screen-reader descriptions retain
+the event meaning, minute unit and estimated nature of kərahət, without reintroducing seconds.
 During the sunrise end phase, `Günçıxma` distinguishes an end countdown from a prayer start.
 
-The empty track is white in both themes, filling blue/cyan as time elapses.
-The track maps the actual previous/next prayer timestamps to a shared scale. Real kərahət
-intervals are clipped to that range, merged when they overlap, and shown in red, including their
-upcoming portion. A thin white tick marks the current position; this is a read-only indicator.
-Without a valid previous prayer the track stays neutral instead of inventing an elapsed fraction.
-A separate kərahət timer appears before an interval only when its start is at or before the displayed prayer boundary. It shows `Kərahət girməsinə` until the start, then `Kərahət bitməsinə` until the end; expired and unrelated future intervals are hidden. The clock beside the label remains the interval start in both phases.
-The existing minute refresh and exact solar-boundary updates remain in place; the system owns
-both chronometers' per-second ticking.
+The empty track is white in both themes, filling blue/cyan as time elapses. Actual previous/next
+prayer timestamps define the shared scale. Real kərahət intervals are clipped to that range,
+merged when they overlap, and shown in red, including upcoming portions. A small, solid circular
+marker shows the current position: dark blue in light mode and pale blue in dark mode,
+without rings, outlines or glow. The artwork scales uniformly so the marker stays circular
+in compact and expanded content. Without a valid previous prayer, the track stays
+neutral and the position marker is omitted.
 
-The compact body stays within Android's 48 dp limit, including the upcoming/active kərahət row.
-Timer columns have bounded widths. Kərahət digits are fitted to the full expected hour/minute/second format and row height before ticking, avoiding Chronometer autosize clipping when an approaching interval is more than an hour away. Prayer labels autosize; expanded names/times can wrap when
-accessibility font sizes require it. The system owns the outer header, app name, icon and
-expansion control. The duplicate name is absent from our content, but Android's app name is not
-suppressed. Public Live Updates retain their native system template and existing promotion behavior;
-this custom layout is for the ordinary expandable notification, including Samsung SDK 36.0.
-The existing shared countdown/reminder group and single status-bar icon changes are preserved.
+Expanded content shows an approaching interval only when its start is at or before the
+displayed prayer boundary; expired and unrelated future rows are hidden. The compact body
+stays within Android's 48 dp limit. Timer columns are bounded and text autosizes for narrow
+screens and large system fonts. The system owns the outer header, app name, icon and expansion
+control. Public Live Updates retain their native template and promotion behavior; this custom
+layout serves ordinary expandable notifications, including Samsung SDK 36.0. The shared
+countdown/reminder group and single status-bar icon behavior are preserved.
+
+The latest signed APK is `artifacts/nurvaxt-progress-minutes.apk`. Current checks and screenshots
+are recorded in [minute-update/verification.json](minute-update/verification.json). Preview
+screenshots use the isolated `Önizləmə` test package with synthetic times.
+
+- [Compact, light](minute-update/compact-light.png)
+- [Expanded, light](minute-update/expanded-light.png)
+- [Compact, dark, 200% font](minute-update/compact-dark-200.png)
+- [Expanded, dark, 200% font](minute-update/expanded-dark-200.png)
+
+## Earlier preview verification
 
 The signed preview APK is `artifacts/nurvaxt-progress-panel.apk`. Validation and artifact identity
 are recorded in `verification.json`. Screenshots use the isolated `az.nurvaxt.alarm.test` package
@@ -53,8 +67,8 @@ that both native countdowns advance by seconds. Other manufacturers were not tes
 ## Connected Samsung follow-up
 
 On the connected Samsung SM-G990E / Android 16, the saved Bakı timetable was preserved and
-the real compact countdown showed `Əsr · 16:10`. Both compact and expanded layouts now add
-the kərahət start beside its name too. The matching phone update is
+the real compact countdown showed `Əsr · 16:10`. At that stage both compact and expanded layouts added
+the kərahət start beside its name. The matching phone update is
 `artifacts/nurvaxt-progress-panel-phone.apk`; it uses the repository development key matching
 the already-installed app. The separately kept release-key APK is for release-key installations.
 

@@ -1,86 +1,66 @@
-# NurVaxt — Google Play üçün hazır fayllar
+# NurVaxt — Google Play şəkilləri
 
-ZIP-i aç, sonra Play Console-da **Add assets** vasitəsilə uyğun faylları seç.
+## 21 oktyabr 2026 — cari telefon görüntüləri
 
-| Play Console bölməsi | Yüklənəcək fayl və ya qovluq | Ölçü |
+`phone/` qovluğundakı səkkiz PNG cari iş qovluğundan yığılmış **NurVaxt 1.0.9** release tətbiqindən hazırlanıb. Şəkillər 1080 × 1920, 24-bit RGB PNG formatındadır; adındakı nömrə sırası ilə əlavə edilir.
+
+| Sıra | Fayl | Görüntü |
 | --- | --- | --- |
-| App icon | `app-icon-512.png` | 512 × 512 |
-| Feature graphic | `feature-graphic-1024x500.png` | 1024 × 500 |
-| Phone screenshots | `phone/` qovluğundakı 5 PNG | 1080 × 1920 |
-| 7-inch tablet screenshots | `tablet-7/` qovluğundakı 4 PNG | 1440 × 2560 |
-| 10-inch tablet screenshots | `tablet-10/` qovluğundakı 4 PNG | 1440 × 2560 |
+| 01 | `phone/01-namaz-vaxtlari.png` | Beş gündəlik namaz və cari geri sayım |
+| 02 | `phone/02-canli-bildiris.png` | Genişləndirilmiş Android bildirişi və vaxt zolağı |
+| 03 | `phone/03-qible.png` | Cari qiblə kompası və istiqamət məlumatları |
+| 04 | `phone/04-xatirlatmalar.png` | Namazdan əvvəl xatırlatma seçimləri |
+| 05 | `phone/05-tund-gorunus.png` | Cari əsas ekranın tünd görünüşü |
+| 06 | `phone/06-kerahet-vaxtlari.png` | Aktiv zəval kərahəti və üç təxmini interval |
+| 07 | `phone/07-kerahet-bildirisi.png` | Bildirişdə qırmızı interval və kərahətin bitməsinə qalan dəqiqələr |
+| 08 | `phone/08-kerahet-ayarlari.png` | Günçıxma, zəval və günbatımı müddətlərinin ayrıca seçilməsi |
 
-Hər qrupda şəkilləri adındakı 01, 02, 03, 04, 05 sırasına görə əlavə et.
-Telefon üçün beşinci şəkil tünd görünüşü göstərir. Digər ekranlar namaz vaxtları,
-təqvim, qiblə və xatırlatmalardır.
+Cari tətbiqdə ayrıca təqvim bölməsi olmadığı üçün əvvəlki `02-teqvim.png` çıxarılıb. Telefon şəkilləri və tanıtım banneri cari üç bölməli interfeysi göstərir.
 
-## 16 oktyabr 2026 — yeni telefon dizaynı
+Çəkilişlər ayrıca **NurVaxt_Store / Android 15** emulyatorunda, **Bakı · 21 oktyabr 2026** üçün aparılıb. Əsas çəkiliş vaxtı 15:30, aktiv zəval çəkilişləri 12:20-dir. Tətbiqin mövcud `visibleFields` ayarı ilə beş namaz göstərilib. Kərahət 06–08 şəkillərində aktivdir; müddətlər 45/10/45 dəqiqədir. İntervallar təxminidir.
 
-`phone/` qovluğundakı beş şəkil və `feature-graphic-1024x500.png` yenidən hazırlanıb.
-Göy və açıq fonlar, iri Azərbaycan dilində başlıqlar və tətbiqin real ekranları istifadə olunub.
-Əsas ekranın açıq/tünd görünüşlərində və təqvimdə yalnız **Sübh, Zöhr, Əsr, Məğrib, İşa** var.
-İmsak, Günçıxma, Günbatımı və Gecəyarısı çəkiliş emulyatorunda tətbiqin mövcud
-`visibleFields` ayarı ilə gizlədilib. Tətbiqin standart ayarları və mənbə kodu dəyişdirilməyib.
-Xatırlatmalar ekranı gündəlik namaz kartlarına qədər sürüşdürülüb; görünən hissədə İmsak yoxdur.
+Bildirişlər `az.nurvaxt.app` release paketinin həqiqi `CountdownService` xidmətindən və tətbiqin yoxlanmış Bakı məlumatlarından yaranıb. Test paketi və uydurma namaz cədvəli istifadə edilməyib. Hər bildiriş kartı UIAutomator sərhədləri ilə kəsilib, yanında tətbiq ekranı göstərilib. Tətbiq və bildiriş pikselləri dəyişdirilməyib; nisbətlər qorunub. Marketinq mətnləri və çərçivələr ekranın xaricindədir. Əvvəlki fon və seriyanın göy/açıq üslubu saxlanılıb.
 
-- `phone-preview.jpg` — beş yeni şəkil və bannerin birlikdə önizləməsi.
-- `../nurvaxt-phone-redesign.zip` — yalnız yenilənmiş 5 telefon PNG-si, banner və alternativ mətnlər.
-- `../nurvaxt-google-play-assets.zip` — yeni şəkilləri də ehtiva edən tam paket.
-- `alt-text-az.md` — Play Console üçün Azərbaycan dilində alternativ mətnlər.
+## Hazır fayllar
 
-Telefon PNG-ləri 1080 × 1920, banner 1024 × 500 ölçüsündə, şəffaflığı olmayan RGB formatındadır.
-Panel daxilindəki tətbiq ekranlarının nisbətləri qorunub; yalnız Android sistem zolaqları kəsilib.
-Planşet görüntüləri və video əvvəlki çəkilişlərdir; bu yeniləməyə daxil edilməyib.
+- `phone-preview.jpg` — səkkiz telefon şəkli və yenilənmiş bannerin ümumi önizləməsi.
+- `../nurvaxt-phone-redesign.zip` — səkkiz telefon PNG-si, banner, önizləmə, alternativ mətnlər və yoxlama nəticələri.
+- `../nurvaxt-google-play-assets.zip` — bütün yerli Google Play fayllarının yenilənmiş paketi.
+- `alt-text-az.md` — şəkillərin Azərbaycan dilində alternativ mətnləri.
+- `validation.json` — ölçülər, rəng kanalları, fayl həcmləri və SHA-256 yoxlaması.
+- `source/capture-metadata.json` — çəkiliş APK-sının SHA-256 dəyəri və çəkiliş ayarları.
 
-Təkrar ixrac:
+Play Console-un **Phone screenshots** bölməsinə yalnız `phone/` qovluğundakı səkkiz PNG əlavə edilir. `phone-preview.jpg`, `preview.jpg` və `source/` yüklənmir.
+
+## Təkrar hazırlamaq
+
+İlkin ekran PNG-ləri `source/captures/phone/`, redaktə edilən kompozisiyalar `source/*.svg` daxilindədir. Mövcud çəkilişlərdən yenidən ixrac üçün:
 
 ```bash
 node artifacts/google-play/source/build-assets.mjs
 ```
 
-`source/captures/phone/` real ilkin PNG-ləri, `source/*.svg` redaktə edilən kompozisiyaları saxlayır.
-Fon daxili **imagegen** aləti ilə hazırlanıb; tam prompt `source/imagegen-prompt.txt` faylındadır.
-Təkrar ixrac imagegen, internet və ya emulyator tələb etmir; `sharp` və sistemdə Noto Sans şrifti kifayətdir.
-Yeni çəkiliş üçün `source/capture-campaign.py` yalnız ayrıca `NurVaxt_Store` AVD-si ilə işləyir.
-Bu AVD-də cari APK quraşdırılıb bir dəfə açıldıqdan və `adb root` icra edildikdən sonra
-`prepare`, `home`, `calendar`, `qibla`, `reminders`, `dark` əmrləri ardıcıllıqla çağırılır.
+Yeni çəkiliş üçün `source/capture-campaign.py` yalnız `emulator-5558` ünvanındakı ayrıca **NurVaxt_Store** AVD-si ilə işləyir. Cari release APK quraşdırılıb bir dəfə açıldıqdan və `adb root` icra edildikdən sonra bu əmrlər ardıcıllıqla çağırılır:
 
-Yeni telefon çəkilişlərinin APK SHA-256 dəyəri:
-`9cca7cc066770f04908c684c44e0bc46ab199452c3ba3f153d26e9a4095cc6a1`.
-Ekranlar Bakı üçün **16 oktyabr 2026** tarixini göstərir. Xam ölçü 1080 × 2160,
-sıxlıq əsas ekranlarda 360 dpi, bütün beş sətrin görünməsi üçün təqvimdə 340 dpi-dir.
+```bash
+python3 artifacts/google-play/source/capture-campaign.py prepare
+python3 artifacts/google-play/source/capture-campaign.py home
+python3 artifacts/google-play/source/capture-campaign.py qibla
+python3 artifacts/google-play/source/capture-campaign.py reminders
+python3 artifacts/google-play/source/capture-campaign.py dark
+python3 artifacts/google-play/source/capture-campaign.py kerahat
+python3 artifacts/google-play/source/capture-campaign.py notification
+python3 artifacts/google-play/source/capture-campaign.py kerahat-notification
+python3 artifacts/google-play/source/capture-campaign.py kerahat-settings
+node artifacts/google-play/source/build-assets.mjs
+```
 
-## Video — istəyə bağlı
+Emulyatorun xam ölçüsü 1080 × 2160, sıxlığı 360 dpi-dir. Skript yalnız ayrıca emulyatorun saatını və ayarlarını dəyişir.
 
-`nurvaxt-preview-30s.mp4` — 30 saniyə, 1920 × 1080, 16:9, H.264, səssiz tanıtım videosu.
-Tətbiqin real işləyən ekranları göstərilir.
+## Digər materiallar
 
-1. Videonu öz YouTube kanalına yüklə.
-2. Görünürlük üçün **Public** və ya **Unlisted** seç.
-3. Reklam/monetizasiyanı söndür və yaş məhdudiyyəti qoyma.
-4. Videonun `https://www.youtube.com/watch?v=...` linkini Play Console-dakı **Video** sahəsinə daxil et.
+`app-icon-512.png` 512 × 512, `feature-graphic-1024x500.png` 1024 × 500 ölçüsündədir.
 
-Video YouTube-a hələ yüklənməyib. Bu sahəni boş qoyaraq da davam edə bilərsən.
+`tablet-7/` və `tablet-10/` qovluqlarındakı dördər 1440 × 2560 PNG, eləcə də `nurvaxt-preview-30s.mp4` əvvəlki versiyanın çəkilişləridir. Onlar bu telefon yeniləməsinə daxil deyil və cari telefon interfeysini tam əks etdirmir. Video Play Console-a əlavə olunmaq üçün istifadəçinin YouTube kanalında yerləşdirilməlidir; hələ yüklənməyib.
 
-## Digər fayllar
-
-- `preview.jpg` — bütün ekran şəkillərinə birlikdə baxmaq üçündür; Play Console-a yüklənmir.
-- `store-listing-az.md` — əvvəl hazırlanmış tətbiq adı, qısa və tam açıqlama.
-- `validation.json` — ölçü, rəng kanalı və fayl həcmi yoxlaması.
-- `source/` — təkrar ixrac üçün skriptlər, redaktə edilə bilən SVG və ilkin video; Play Console-a yüklənmir.
-
-İkon 32-bit PNG, digər yüklənəcək şəkillər şəffaflığı olmayan 24-bit RGB PNG-dir.
-Ekran şəkillərinin nisbəti 9:16-dır; bütün qruplarda ən azı dörd şəkil və ən qısa tərəfdə
-ən azı 1080 piksel var. Faylların hamısı müvafiq həcm limitindən kiçikdir.
-
-Əvvəlki planşet şəkilləri NurVaxt 1.0.6 release build-indən Android 15 emulyatorunda
-720 dp və 960 dp enli planşet görünüşləri ilə çəkilib. Telefon şəkilləri böyüdülərək
-planşet şəkli kimi istifadə edilməyib. Planşet ekranları Bakı üçün 14 oktyabr 2026 tarixini göstərir.
-
-Əvvəlki planşet/video çəkilişində istifadə edilən APK-nın SHA-256 dəyəri:
-`fba6474757172729c18beacecd100b76fbbb098b8f14c73461b69ba10a460adc`
-
-Cari təqvim məlumatları 1 oktyabr–31 dekabr 2026 tarixlərini əhatə edir; bu sərhəd
-mağaza açıqlamasında göstərilib.
-
-[Google Play qrafik və video tələbləri](https://support.google.com/googleplay/android-developer/answer/9866151?hl=en)
+`store-listing-az.md` mövcud mağaza mətnidir və bu şəkil yeniləməsi zamanı dəyişdirilməyib.

@@ -206,7 +206,9 @@ the app card and ongoing panel count down to the next day's İmsak, then switch 
 exact İmsak time. Overnight progress keeps the previous day's İşa anchor across midnight and
 resets at İmsak for the interval until Sübh. Missing İmsak falls back to Sübh without inventing
 a time. From the exact Sübh start until sunrise, both the app card and ongoing panel
-show **Sübhün bitməsinə qalan vaxt**, with **Günçıxma** beside the deadline time. At sunrise they
+count down to sunrise, with **Günçıxma** beside the deadline time. The app card has no
+İmsak/Sübh helper caption under the digits; its urgency row shows **Son 30 dəqiqə** or
+**Son 15 dəqiqə** when applicable. At sunrise they
 advance to Zöhr. This end event requires both endpoints in the same verified record; it creates
 no reminder and does not request Live Update promotion. Missing sunrise omits the end event.
 Older native events without `phase` still decode as prayer starts; reconciliation supplies the

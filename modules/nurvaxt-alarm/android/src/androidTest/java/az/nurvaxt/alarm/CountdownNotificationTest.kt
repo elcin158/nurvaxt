@@ -78,12 +78,18 @@ class CountdownNotificationTest {
               val progress = content.findViewById<ImageView>(R.id.countdown_progress)
               assertEquals(View.VISIBLE, progress.visibility)
               assertNotNull("Horizontal progress is missing", progress.drawable)
+              if (content == compact) {
+                assertNull(content.findViewById<View>(R.id.countdown_kerahat))
+                assertNull(content.findViewById<View>(R.id.countdown_kerahat_timer))
+                continue
+              }
               val solar = CountdownSolar.countdown(kerahat, now, prayer.timestamp)
               assertEquals(if (solar == null) View.GONE else View.VISIBLE,
                 content.findViewById<View>(R.id.countdown_kerahat).visibility)
               if (solar != null) {
-                val timer = content.findViewById<Chronometer>(R.id.countdown_kerahat_timer)
-                assertTrue(timer.isCountDown)
+                val timer = content.findViewById<TextView>(R.id.countdown_kerahat_timer)
+                assertFalse(timer is Chronometer)
+                assertTrue(timer.text.toString().matches(Regex("\\d+")))
                 assertEquals(configured.getColor(R.color.countdown_kerahat), timer.currentTextColor)
               }
             }
@@ -143,11 +149,11 @@ class CountdownNotificationTest {
     })
   }
 
-  @Test fun bothSizesShowInlinePrayerAndKerahatTimesInBothFormats() {
+  @Test fun bothSizesShowPrayerTimeAndOnlyExpandedShowsKerahatTargetInBothFormats() {
     val now = 1_792_497_000_000L
     val prayer = CountdownPrayer("Məğrib", "2026-10-20", "18:30", now + 600_000, now - 3_600_000)
-    val kerahat = CountdownKerahat("Axşam", "2026-10-20", now - 60_000, now + 300_000)
-    for (format in listOf("12", "24")) {
+    for (format in listOf("12", "24")) for (active in listOf(false, true)) {
+      val kerahat = CountdownKerahat("Axşam", "2026-10-20", now + if (active) -60_000 else 60_000, now + 300_000)
       val plan = CountdownPlan(true, "Bakı", format, listOf(prayer), listOf(kerahat))
       val notification = roundTrip(CountdownNotification.build(context, plan, prayer, now))
       val compact = notification.contentView.apply(context, null)
@@ -156,10 +162,12 @@ class CountdownNotificationTest {
         compact.findViewById<TextView>(R.id.countdown_prayer).text.toString())
       assertEquals(if (format == "12") "Məğrib · 6:30 PM" else "Məğrib · 18:30",
         expanded.findViewById<TextView>(R.id.countdown_prayer).text.toString())
-      val start = java.text.SimpleDateFormat(if (format == "12") "h:mm a" else "HH:mm", java.util.Locale.US)
-        .apply { timeZone = java.util.TimeZone.getTimeZone("Asia/Baku") }.format(java.util.Date(kerahat.start))
-      assertEquals("Kərahət bitməsinə · $start", compact.findViewById<TextView>(R.id.countdown_kerahat_label).text.toString())
-      assertEquals("Kərahət bitməsinə · $start", expanded.findViewById<TextView>(R.id.countdown_kerahat_label).text.toString())
+      assertNull(compact.findViewById<TextView>(R.id.countdown_kerahat_label))
+      val target = java.text.SimpleDateFormat(if (format == "12") "h:mm a" else "HH:mm", java.util.Locale.US)
+        .apply { timeZone = java.util.TimeZone.getTimeZone("Asia/Baku") }
+        .format(java.util.Date(if (active) kerahat.end else kerahat.start))
+      assertEquals("Kərahət ${if (active) "bitməsinə" else "girməsinə"} · $target",
+        expanded.findViewById<TextView>(R.id.countdown_kerahat_label).text.toString())
     }
   }
 
@@ -172,6 +180,10 @@ class CountdownNotificationTest {
       val notification = roundTrip(CountdownNotification.build(context, plan, prayer, at))
       for (views in listOf(notification.contentView, notification.bigContentView)) {
         val content = views.apply(context, null)
+        if (views == notification.contentView) {
+          assertNull(content.findViewById<View>(R.id.countdown_kerahat))
+          continue
+        }
         val visible = at < event.end
         assertEquals(if (visible) View.VISIBLE else View.GONE,
           content.findViewById<View>(R.id.countdown_kerahat).visibility)
@@ -179,13 +191,31 @@ class CountdownNotificationTest {
           val active = at >= event.start
           assertTrue(content.findViewById<TextView>(R.id.countdown_kerahat_label).text.toString()
             .startsWith(if (active) "Kərahət bitməsinə" else "Kərahət girməsinə"))
-          val timer = content.findViewById<Chronometer>(R.id.countdown_kerahat_timer)
+          val timer = content.findViewById<TextView>(R.id.countdown_kerahat_timer)
           val target = if (active) event.end else event.start
-          assertEquals((target - at).toDouble(), (timer.base - SystemClock.elapsedRealtime()).toDouble(), 1_000.0)
+          assertEquals("${(target - at + 59_999) / 60_000}", timer.text.toString())
           assertTrue(notification.extras.getString(Notification.EXTRA_TEXT)!!
             .contains(if (active) "bitməsinə" else "girməsinə"))
         }
       }
+    }
+  }
+
+  @Test fun kerahatUsesCeilRoundedMinutesEvenInTheLastMinute() {
+    val now = System.currentTimeMillis()
+    val prayer = CountdownPrayer("Məğrib", "2026-10-21", "18:30", now + 7_200_000, now - 3_600_000)
+    for ((left, minutes) in listOf(1L to 1, 30_000L to 1, 60_000L to 1, 60_001L to 2,
+        480_000L to 8, 3_700_000L to 62)) for (active in listOf(false, true)) {
+      val event = CountdownKerahat("Axşam", "2026-10-21", now + if (active) -60_000 else left,
+        now + if (active) left else left + 300_000)
+      val notification = roundTrip(CountdownNotification.build(context,
+        CountdownPlan(true, "Bakı", "24", listOf(prayer), listOf(event)), prayer, now))
+      val expanded = notification.bigContentView.apply(context, null)
+      val timer = expanded.findViewById<TextView>(R.id.countdown_kerahat_timer)
+      assertFalse(timer is Chronometer)
+      assertEquals("$minutes", timer.text.toString())
+      assertTrue(timer.contentDescription.toString().contains("$minutes dəqiqə qalıb"))
+      assertTrue(notification.extras.getString(Notification.EXTRA_TEXT)!!.endsWith("$minutes dəqiqə"))
     }
   }
 
@@ -206,15 +236,31 @@ class CountdownNotificationTest {
     }
   }
 
-  @Test fun redArtworkMatchesTheRealIntervalAndKeepsTheNeutralTail() {
-    val track = CountdownTrack(0.7f, listOf(CountdownTrackRange(0.5f, 0.9f)))
-    val bitmap = CountdownNotification.progressTrack(context, track)
-    val y = bitmap.height / 2
-    assertEquals(context.getColor(R.color.countdown_kerahat_track), bitmap.getPixel((bitmap.width * 0.6).toInt(), y))
-    assertEquals(context.getColor(R.color.countdown_kerahat_track), bitmap.getPixel((bitmap.width * 0.8).toInt(), y))
-    assertEquals(context.getColor(R.color.countdown_progress_track), bitmap.getPixel((bitmap.width * 0.95).toInt(), y))
-    assertEquals(android.graphics.Color.WHITE, bitmap.getPixel((bitmap.width * 0.7).toInt(), y))
-    assertTrue(bitmap.width * bitmap.height * 4 < 128_000)
+  @Test fun solidIndicatorKeepsTheRealRedIntervalAndNeutralTailWithoutRingsOrGlowInBothThemes() {
+    for (night in listOf(Configuration.UI_MODE_NIGHT_NO, Configuration.UI_MODE_NIGHT_YES)) {
+      val configured = context.createConfigurationContext(Configuration(context.resources.configuration).apply {
+        uiMode = uiMode and Configuration.UI_MODE_NIGHT_MASK.inv() or night
+      })
+      val track = CountdownTrack(0.7f, listOf(CountdownTrackRange(0.5f, 0.9f)))
+      val bitmap = CountdownNotification.progressTrack(configured, track)
+      val y = bitmap.height / 2
+      assertEquals(configured.getColor(R.color.countdown_kerahat_track), bitmap.getPixel((bitmap.width * 0.6).toInt(), y))
+      assertEquals(configured.getColor(R.color.countdown_kerahat_track), bitmap.getPixel((bitmap.width * 0.8).toInt(), y))
+      assertEquals(configured.getColor(R.color.countdown_progress_track), bitmap.getPixel((bitmap.width * 0.95).toInt(), y))
+      assertEquals(configured.getColor(R.color.countdown_progress_indicator), bitmap.getPixel((bitmap.width * 0.7).toInt(), y))
+      val center = (bitmap.width * 0.7).toInt()
+      val density = configured.resources.displayMetrics.density
+      assertEquals(configured.getColor(R.color.countdown_progress_indicator),
+        bitmap.getPixel(center, y + (2.5f * density).toInt()))
+      assertEquals(0, android.graphics.Color.alpha(bitmap.getPixel(center, y + (4 * density).toInt())))
+      assertEquals(0, android.graphics.Color.alpha(bitmap.getPixel(center, y + (5.5f * density).toInt())))
+      val ordinary = CountdownNotification.progressTrack(configured, track.copy(kerahat = emptyList()))
+      assertEquals(configured.getColor(R.color.countdown_progress_indicator),
+        ordinary.getPixel(center, y + (2.5f * density).toInt()))
+      val unknown = CountdownNotification.progressTrack(configured, CountdownTrack(null, emptyList()))
+      assertEquals(0, android.graphics.Color.alpha(unknown.getPixel(center, y + (4 * density).toInt())))
+      assertTrue(bitmap.width * bitmap.height * 4 < 384_000)
+    }
   }
 
   @Test fun countdownsAndInlineTimesFitSmallScreensAndLargeSystemFonts() {
@@ -240,12 +286,17 @@ class CountdownNotificationTest {
             if (views == notification.contentView) View.MeasureSpec.makeMeasureSpec((48 * density).toInt(), View.MeasureSpec.EXACTLY)
             else View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
           content.layout(0, 0, content.measuredWidth, content.measuredHeight)
+          val matrix = FloatArray(9)
+          content.findViewById<ImageView>(R.id.countdown_progress).imageMatrix.getValues(matrix)
+          assertEquals("Position marker is stretched at width=$widthDp",
+            matrix[android.graphics.Matrix.MSCALE_X], matrix[android.graphics.Matrix.MSCALE_Y], 0.001f)
           for (id in listOf(R.id.countdown_prayer, R.id.countdown_timer,
               R.id.countdown_kerahat_label, R.id.countdown_kerahat_timer)) {
-            val text = content.findViewById<TextView>(id)
+            val text = content.findViewById<TextView>(id) ?: continue
             val message = "Clipped ${text.text}: width=$widthDp scale=$scale format=$format compact=${views == notification.contentView}, " +
               "box=${text.width}x${text.height} textSize=${text.textSize} layoutHeight=${text.layout.height}"
             assertTrue(message, text.width > 0 && text.height > 0)
+            if (id == R.id.countdown_kerahat_label) assertEquals(message, 1, text.layout.lineCount)
             assertTrue(message, text.layout.height <= text.height - text.compoundPaddingTop - text.compoundPaddingBottom)
             for (line in 0 until text.layout.lineCount) {
               assertEquals(message, 0, text.layout.getEllipsisCount(line))

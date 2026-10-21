@@ -1,0 +1,38 @@
+{
+  "apk": "/home/elchinaghali/Projects/Own/nurvaxt-mobile/artifacts/nurvaxt-1.0.10-release.apk",
+  "layouts": {
+    "nurvaxt_countdown_compact": {
+      "id": "0x7f0d0088",
+      "packagedXml": "res/layout/nurvaxt_countdown_compact.xml",
+      "viewIdsVerified": [
+        "countdown_prayer",
+        "countdown_timer",
+        "countdown_progress"
+      ]
+    },
+    "nurvaxt_countdown_expanded": {
+      "id": "0x7f0d0089",
+      "packagedXml": "res/layout/nurvaxt_countdown_expanded.xml",
+      "viewIdsVerified": [
+        "countdown_prayer",
+        "countdown_timer",
+        "countdown_progress",
+        "countdown_kerahat",
+        "countdown_kerahat_label",
+        "countdown_kerahat_timer"
+      ]
+    },
+    "nurvaxt_reminder_message": {
+      "id": "0x7f0d008a",
+      "packagedXml": "res/layout/nurvaxt_reminder_message.xml",
+      "viewIdsVerified": [
+        "reminder_title",
+        "reminder_message"
+      ]
+    }
+  },
+  "drawables": {
+    "drawable/nurvaxt_countdown_app_mark": "0x7f0801ac",
+    "drawable/nurvaxt_countdown_divider": "0x7f0801b0"
+  }
+}

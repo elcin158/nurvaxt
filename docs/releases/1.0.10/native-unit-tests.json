@@ -1,0 +1,48 @@
+{
+  "suites": 5,
+  "tests": 24,
+  "failures": 0,
+  "errors": 0,
+  "results": [
+    {
+      "name": "az.nurvaxt.alarm.CountdownLiveUpdateTest",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "timestamp": "2026-10-21T10:54:15.730Z"
+    },
+    {
+      "name": "az.nurvaxt.alarm.CountdownSolarTest",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "timestamp": "2026-10-21T10:54:15.762Z"
+    },
+    {
+      "name": "az.nurvaxt.alarm.CountdownStateTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "timestamp": "2026-10-21T10:54:15.777Z"
+    },
+    {
+      "name": "az.nurvaxt.alarm.CountdownStatusTimeTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "timestamp": "2026-10-21T10:54:15.808Z"
+    },
+    {
+      "name": "az.nurvaxt.alarm.CountdownTimelineTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "timestamp": "2026-10-21T10:54:15.827Z"
+    }
+  ]
+}

@@ -14,9 +14,10 @@ const campaign = [
   { file: '01-namaz-vaxtlari', label: 'NAMAZ VAXTLARI', title: ['Hər namaz,', 'öz vaxtında.'],
     subtitle: 'Beş namaz vaxtı. Bir aydın baxış.', light: false, font: 100,
     alt: 'NurVaxt: Bakı üçün beş gündəlik namaz vaxtı və növbəti namaza qalan vaxt.' },
-  { file: '02-teqvim', label: 'TƏQVİM', title: ['Gününüzü', 'öncədən planlayın.'],
-    subtitle: 'Günlük və aylıq namaz təqvimi.', light: true, font: 88,
-    alt: 'NurVaxt təqvimi: ayın günləri və seçilmiş günün beş namaz vaxtı.' },
+  { file: '02-canli-bildiris', label: 'CANLI BİLDİRİŞ', title: ['Qalan vaxt,', 'bir baxışda.'],
+    subtitle: 'Bildiriş panelində canlı namaz geri sayımı.', light: true, font: 96,
+    notification: true, companion: '01-namaz-vaxtlari',
+    alt: 'NurVaxt Android bildirişi: Əsr 16:09, canlı geri sayım və vaxtın irəliləyiş zolağı.' },
   { file: '03-qible', label: 'QİBLƏ', title: ['Qiblənizi', 'asanlıqla tapın.'],
     subtitle: 'Olduğunuz yerdən qiblə istiqaməti.', light: false, font: 96,
     alt: 'NurVaxt qiblə ekranı: kompas, Bakıdan qiblə istiqaməti və Kəbəyə məsafə.' },
@@ -26,6 +27,16 @@ const campaign = [
   { file: '05-tund-gorunus', label: 'TÜND GÖRÜNÜŞ', title: ['Gecəyə uyğun', 'sakit görünüş.'],
     subtitle: 'Eyni aydınlıq. Daha yumşaq rənglər.', light: false, night: true, font: 94,
     alt: 'NurVaxt tünd görünüşdə: beş gündəlik namaz vaxtı və canlı geri sayım.' },
+  { file: '06-kerahet-vaxtlari', label: 'KƏRAHƏT VAXTLARI', title: ['Kərahət vaxtları,', 'aydın görünsün.'],
+    subtitle: 'Günçıxma, zəval və günbatımı üçün təxmini vaxtlar.', light: true, font: 88,
+    alt: 'NurVaxt əsas ekranı: aktiv zəval kərahəti, bitməsinə qalan vaxt və üç təxmini kərahət intervalı.' },
+  { file: '07-kerahet-bildirisi', label: 'KƏRAHƏT BİLDİRİŞİ', title: ['Kərahət vaxtı,', 'paneldə də aydın.'],
+    subtitle: 'Qırmızı interval. Bitməsinə qalan dəqiqələr.', light: false, font: 88,
+    notification: true, companion: '06-kerahet-vaxtlari',
+    alt: 'NurVaxtın genişləndirilmiş Android bildirişi: Zöhrə geri sayım, qırmızı kərahət intervalı və kərahətin bitməsinə qalan dəqiqələr.' },
+  { file: '08-kerahet-ayarlari', label: 'KƏRAHƏT AYARLARI', title: ['Hər intervalı', 'özünüz seçin.'],
+    subtitle: 'Üç kərahət müddətini ayrıca tənzimləyin.', light: true, font: 96,
+    alt: 'NurVaxt kərahət ayarları: aktiv göstərmə seçimi və günçıxma, zəval, günbatımı üçün ayrıca 45, 10 və 45 dəqiqəlik müddətlər.' },
 ];
 
 const background = uri(await sharp(path.join(source, 'campaign-background.png')).jpeg({ quality: 96 }).toBuffer(), 'jpeg');
@@ -35,10 +46,13 @@ for (const item of campaign) {
   const input = path.join(source, 'captures/phone', `${item.file}.png`);
   const meta = await sharp(input).metadata();
   if (meta.width !== 1080 || meta.height !== 2160) throw new Error(`Unexpected raw size: ${input}`);
-  // Crop Android status/navigation bars only; preserve every app pixel and its proportions.
-  const bytes = await sharp(input).extract({ left: 0, top: 108, width: 1080, height: 1980 })
+  // App crops omit system bars. Notification crops use the native card's UIAutomator bounds.
+  const crop = item.notification
+    ? JSON.parse(await fs.readFile(path.join(source, 'captures/phone', `${item.file}.crop.json`), 'utf8'))
+    : { left: 0, top: 108, width: 1080, height: 1980 };
+  const bytes = await sharp(input).extract(crop)
     .removeAlpha().png({ compressionLevel: 9 }).toBuffer();
-  screens[item.file] = { uri: uri(bytes), ratio: 1980 / 1080 };
+  screens[item.file] = { uri: uri(bytes), ratio: crop.height / crop.width, crop };
 }
 
 const defs = `<defs>
@@ -70,8 +84,22 @@ function panel(id, screenName, x, y, width, { night = false, small = false } = {
   </g>`;
 }
 
+function notificationComposition(item, ink, muted) {
+  const screen = screens[item.file];
+  const x = 72, y = 548, width = 936, height = width * screen.ratio;
+  return `
+    ${text(74, 502, 'ANDROID BİLDİRİŞ PANELİ', 22, muted, 700, 'letter-spacing="2"')}
+    <g filter="url(#shadow)">
+      <defs><clipPath id="notificationCard"><rect x="${x}" y="${y}" width="${width}" height="${height}" rx="67"/></clipPath></defs>
+      <image x="${x}" y="${y}" width="${width}" height="${height}" href="${screen.uri}" clip-path="url(#notificationCard)"/>
+    </g>
+    ${text(540, 1035, item.companion === '01-namaz-vaxtlari' ? 'Tətbiqdə namaz vaxtları' : 'Tətbiqdə kərahət vaxtları', 26, ink, 600, 'text-anchor="middle"')}
+    ${panel('companion', item.companion, 340, 1065, 400, { small: true })}
+  `;
+}
+
 function wrap(width, height, body, title) {
-  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><title>${xml(title)}</title>${defs}<g font-family="Noto Sans, sans-serif">${body}</g></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><title>${xml(title)}</title>${defs}<g font-family="Noto Sans, sans-serif">${body}</g></svg>`.replace(/[\t ]+$/gm, '');
 }
 
 async function exportSvg(name, svg, destination) {
@@ -95,8 +123,8 @@ for (const [index, item] of campaign.entries()) {
     ${text(70, 237, item.title[0], item.font, ink, 700, 'letter-spacing="-3.6"')}
     ${text(70, 348, item.title[1], item.font, accent, 700, 'letter-spacing="-3.6"')}
     ${text(74, 408, item.subtitle, 30, muted, 400, 'letter-spacing="-.4"')}
-    ${panel('screen', item.file, 164, 474, 752, { night: item.night })}
-    <g fill="${item.light ? '#0D5BD7' : '#B4DAFF'}">${campaign.map((_, i) => `<rect x="${485 + i * 27}" y="1874" width="${i === index ? 20 : 6}" height="6" rx="3" opacity="${i === index ? 1 : .32}"/>`).join('')}</g>
+    ${item.notification ? notificationComposition(item, ink, muted) : panel('screen', item.file, 164, 474, 752, { night: item.night })}
+    <g fill="${item.light ? '#0D5BD7' : '#B4DAFF'}">${campaign.map((_, i) => `<rect x="${431 + i * 29}" y="1874" width="${i === index ? 20 : 6}" height="6" rx="3" opacity="${i === index ? 1 : .32}"/>`).join('')}</g>
   `;
   await exportSvg(item.file, wrap(1080, 1920, body, item.alt), `phone/${item.file}.png`);
 }
@@ -108,7 +136,7 @@ const featureBody = `
   <rect x="64" y="108" width="34" height="3" rx="1.5" fill="#7AEAFF"/>
   ${text(60, 211, 'Hər gün,', 67, '#FFFFFF', 700, 'letter-spacing="-2.7"')}
   ${text(60, 291, 'vaxtında.', 67, '#8EEBFF', 700, 'letter-spacing="-2.7"')}
-  ${text(64, 338, 'Namaz vaxtları · Təqvim · Qiblə', 20, '#D3E4FA')}
+  ${text(64, 338, 'Namaz vaxtları · Qiblə · Bildirişlər', 20, '#D3E4FA')}
   <rect x="64" y="389" width="290" height="38" rx="19" fill="#71CFFF" fill-opacity=".12" stroke="#B1E3FF" stroke-opacity=".25"/>
   <g transform="translate(79,400)" fill="none" stroke="#8EEBFF" stroke-width="1.6"><path d="M8 17C8 17 1 10 1 6a7 7 0 0 1 14 0c0 4-7 11-7 11Z"/><circle cx="8" cy="6" r="2.3"/></g>
   ${text(104, 414, 'Azərbaycanın 74 şəhər və rayonu', 14, '#E4F2FF')}
@@ -116,17 +144,17 @@ const featureBody = `
   ${panel('front', '01-namaz-vaxtlari', 563, 44, 232, { small: true })}
 `;
 await exportSvg('feature-graphic', wrap(1024, 500, featureBody,
-  'NurVaxt — Hər gün, vaxtında. Beş namaz vaxtı, təqvim və qiblə.'), 'feature-graphic-1024x500.png');
+  'NurVaxt — Hər gün, vaxtında. Beş namaz vaxtı, qiblə və bildirişlər.'), 'feature-graphic-1024x500.png');
 
 // Campaign-only contact sheet and a separate overview of all upload assets.
 const thumbs = await Promise.all(campaign.map(async (item, index) => ({
   input: await sharp(path.join(root, `phone/${item.file}.png`)).resize(270, 480).png().toBuffer(),
-  left: 30 + index * 288, top: 48,
+  left: 30 + index % 4 * 288, top: 48 + Math.floor(index / 4) * 510,
 })));
 const banner = await sharp(path.join(root, 'feature-graphic-1024x500.png')).resize(768, 375).png().toBuffer();
-const overviewTitle = Buffer.from(`<svg width="1470" height="970"><g font-family="Noto Sans, sans-serif">${text(30, 29, 'NurVaxt · Google Play · Telefon seriyası', 20, '#203556', 700)}${text(351, 560, 'Tanıtım banneri · 1024 × 500', 18, '#203556', 700)}</g></svg>`);
-await sharp({ create: { width: 1470, height: 970, channels: 3, background: '#E8EFF8' } })
-  .composite([...thumbs, { input: banner, left: 351, top: 580 }, { input: overviewTitle, left: 0, top: 0 }])
+const overviewTitle = Buffer.from(`<svg width="1194" height="1470"><g font-family="Noto Sans, sans-serif">${text(30, 29, 'NurVaxt · Cari görünüş · 21 oktyabr 2026', 20, '#203556', 700)}${text(213, 1080, 'Tanıtım banneri · 1024 × 500', 18, '#203556', 700)}</g></svg>`);
+await sharp({ create: { width: 1194, height: 1470, channels: 3, background: '#E8EFF8' } })
+  .composite([...thumbs, { input: banner, left: 213, top: 1095 }, { input: overviewTitle, left: 0, top: 0 }])
   .jpeg({ quality: 94 }).toFile(path.join(root, 'phone-preview.jpg'));
 
 const fullTiles = [];
@@ -134,18 +162,21 @@ for (const [row, folder] of ['phone', 'tablet-7', 'tablet-10'].entries()) {
   const files = (await fs.readdir(path.join(root, folder))).filter((f) => f.endsWith('.png')).sort();
   for (const [column, file] of files.entries()) {
     fullTiles.push({ input: await sharp(path.join(root, folder, file)).resize({ height: 320 }).png().toBuffer(),
-      left: 32 + column * 270, top: 58 + row * 385 });
+      left: 32 + column % 4 * 270, top: 58 + (row === 0 ? Math.floor(column / 4) : row + 1) * 385 });
   }
 }
-const previewLabels = Buffer.from(`<svg width="1390" height="1170"><g font-family="Noto Sans, sans-serif">${[
-  'Telefon · Yeni dizayn · 1080 × 1920', '7 düymlük planşet · Əvvəlki çəkilişlər · 1440 × 2560',
+const previewLabels = Buffer.from(`<svg width="1110" height="1555"><g font-family="Noto Sans, sans-serif">${[
+  'Telefon · Cari görünüş · 1080 × 1920', '', '7 düymlük planşet · Əvvəlki çəkilişlər · 1440 × 2560',
   '10 düymlük planşet · Əvvəlki çəkilişlər · 1440 × 2560',
 ].map((label, i) => text(32, 37 + i * 385, label, 22, '#203556', 700)).join('')}</g></svg>`);
-await sharp({ create: { width: 1390, height: 1170, channels: 3, background: '#E8EFF8' } })
+await sharp({ create: { width: 1110, height: 1555, channels: 3, background: '#E8EFF8' } })
   .composite([...fullTiles, { input: previewLabels, left: 0, top: 0 }])
   .jpeg({ quality: 92 }).toFile(path.join(root, 'preview.jpg'));
 
 const images = [];
+const phoneFiles = (await fs.readdir(path.join(root, 'phone'))).filter(file => file.endsWith('.png')).sort();
+if (JSON.stringify(phoneFiles) !== JSON.stringify(campaign.map(item => `${item.file}.png`).sort()))
+  throw new Error('Phone folder must contain exactly the eight current campaign images.');
 for (const folder of ['phone', 'tablet-7', 'tablet-10', '']) {
   for (const file of (await fs.readdir(path.join(root, folder))).filter((f) => f.endsWith('.png')).sort()) {
     const relative = path.join(folder, file);
@@ -167,14 +198,15 @@ for (const folder of ['phone', 'tablet-7', 'tablet-10', '']) {
 }
 await fs.writeFile(path.join(root, 'validation.json'), JSON.stringify({
   checkedAt: new Date().toISOString(),
-  source: 'Phone campaign: real Android 15 release screenshots with existing five-prayer visibility setting; AI-generated background, vector typography and framing.',
+  source: 'Current-workspace NurVaxt release: real Android 15 app screens and production notifications, with existing five-prayer visibility and opt-in kerahat settings; existing background, vector typography and framing.',
   capture: JSON.parse(await fs.readFile(path.join(source, 'capture-metadata.json'), 'utf8')),
   composition: { outputSize: [1080, 1920], appCrop: { left: 0, top: 108, width: 1080, height: 1980 },
+    notificationCrops: Object.fromEntries(campaign.filter(item => item.notification).map(item => [item.file, screens[item.file].crop])),
     appPixelsRetouched: false, marketingCopyOutsideApp: true, appScreenshotAspectRatioPreserved: true },
   unchangedAssets: ['app-icon-512.png', 'tablet-7/', 'tablet-10/', 'nurvaxt-preview-30s.mp4'],
   images,
 }, null, 2) + '\n');
 await fs.writeFile(path.join(root, 'alt-text-az.md'), '# Google Play üçün alternativ mətnlər\n\n' +
   campaign.map((item) => `- \`phone/${item.file}.png\`: ${item.alt}`).join('\n') +
-  '\n- `feature-graphic-1024x500.png`: NurVaxt — Hər gün, vaxtında. Namaz vaxtları, təqvim və qiblə; Azərbaycanın 74 şəhər və rayonu.\n');
+  '\n- `feature-graphic-1024x500.png`: NurVaxt — Hər gün, vaxtında. Namaz vaxtları, qiblə və bildirişlər; Azərbaycanın 74 şəhər və rayonu.\n');
 console.log(`Exported ${campaign.length} phone images, feature graphic and previews. Validated ${images.length} upload images.`);

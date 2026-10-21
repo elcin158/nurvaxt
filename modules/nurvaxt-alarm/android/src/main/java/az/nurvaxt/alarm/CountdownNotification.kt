@@ -23,7 +23,6 @@ import android.text.Spanned
 import android.text.style.RelativeSizeSpan
 import android.text.style.StyleSpan
 import android.util.Log
-import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
@@ -56,6 +55,8 @@ object CountdownNotification {
       else -> "${seconds.coerceAtLeast(1)} san."
     }
   }
+
+  private fun remainingMinutes(remaining: Long): String = units(remaining).second.coerceAtLeast(1).toString()
 
   private fun mark(context: Context): Bitmap =
     requireNotNull(BitmapFactory.decodeResource(context.resources, R.drawable.nurvaxt_countdown_app_mark))
@@ -155,24 +156,21 @@ object CountdownNotification {
     }
     setContentDescription(R.id.countdown_timer, "$target $duration qalıb")
     setContentDescription(R.id.countdown_prayer, "$name, vaxtı ${displayTime(prayer, plan.timeFormat)}")
+    // Compact content conveys kərahət only through the shared timeline.
+    if (layout != R.layout.nurvaxt_countdown_expanded) return@apply
     val kerahat = CountdownSolar.countdown(plan.kerahat, now, prayer.timestamp)
     setViewVisibility(R.id.countdown_kerahat, if (kerahat == null) View.GONE else View.VISIBLE)
     if (kerahat != null) {
       val color = context.getColor(R.color.countdown_kerahat)
       val label = if (kerahat.active) "Kərahət bitməsinə" else "Kərahət girməsinə"
       setTextViewText(R.id.countdown_kerahat_label,
-        inlineTime(label, timestampTime(kerahat.event.start, plan.timeFormat)))
+        inlineTime(label, timestampTime(kerahat.target, plan.timeFormat)))
       setTextColor(R.id.countdown_kerahat_label, color)
       setTextColor(R.id.countdown_kerahat_timer, color)
-      val expanded = layout == R.layout.nurvaxt_countdown_expanded
-      setTextViewTextSize(R.id.countdown_kerahat_timer, TypedValue.COMPLEX_UNIT_PX,
-        timerTextSize(context, kerahat.target - now, if (expanded) 96 else 68,
-          if (expanded) 44 else 21, if (expanded) 24f else 16f))
-      setChronometerCountDown(R.id.countdown_kerahat_timer, true)
-      setChronometer(R.id.countdown_kerahat_timer, SystemClock.elapsedRealtime() + kerahat.target - now, null, true)
+      setTextViewText(R.id.countdown_kerahat_timer, remainingMinutes(kerahat.target - now))
       val startDescription = "başlanğıcı ${timestampTime(kerahat.event.start, plan.timeFormat)}, "
       val phase = if (kerahat.active) "bitməsinə" else "girməsinə"
-      val description = "${kerahat.event.name} kərahəti, ${startDescription}$phase ${remainingDescription(kerahat.target - now)} qalıb, təxmini interval."
+      val description = "${kerahat.event.name} kərahəti, ${startDescription}$phase ${remainingMinutes(kerahat.target - now)} dəqiqə qalıb, təxmini interval."
       setContentDescription(R.id.countdown_kerahat_label, description)
       setContentDescription(R.id.countdown_kerahat_timer, description)
     }
@@ -186,32 +184,16 @@ object CountdownNotification {
     }
   }
 
-  /** Reserve every digit before Chronometer ticks, including the hour added by an entry timer. */
-  private fun timerTextSize(context: Context, remaining: Long, widthDp: Int, heightDp: Int, maxSp: Float): Float {
-    val metrics = context.resources.displayMetrics
-    val seconds = units(remaining).first
-    val template = if (seconds >= 3_600) "8".repeat((seconds / 3_600).toString().length) + ":88:88" else "88:88"
-    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-      typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-      fontFeatureSettings = "tnum"
-      textSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, maxSp, metrics)
-    }
-    val availableWidth = (widthDp - 2) * metrics.density
-    val availableHeight = (heightDp - 2) * metrics.density
-    val font = paint.fontMetrics
-    return paint.textSize * minOf(1f, availableWidth / paint.measureText(template),
-      availableHeight / (font.descent - font.ascent))
-  }
-
-  /** Small RemoteViews-compatible artwork; only the native chronometers tick every second. */
+  /** Small RemoteViews-compatible artwork with room for the current-position marker. */
   internal fun progressTrack(context: Context, track: CountdownTrack): Bitmap {
     val density = context.resources.displayMetrics.density
     val width = (360 * density).roundToInt().coerceIn(1, 1440)
-    val height = (4 * density).roundToInt().coerceAtLeast(1)
+    val height = (12 * density).roundToInt().coerceAtLeast(1)
     val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
-    val bounds = RectF(0f, 0f, width.toFloat(), height.toFloat())
-    val radius = height / 2f
+    val centerY = height / 2f
+    val radius = 2 * density
+    val bounds = RectF(0f, centerY - radius, width.toFloat(), centerY + radius)
     val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
       color = context.getColor(R.color.countdown_progress_track)
     }
@@ -224,20 +206,21 @@ object CountdownNotification {
       paint.shader = LinearGradient(0f, 0f, right, 0f,
         context.getColor(R.color.countdown_progress_start), context.getColor(R.color.countdown_progress_end),
         Shader.TileMode.CLAMP)
-      canvas.drawRoundRect(RectF(0f, 0f, right, height.toFloat()), radius, radius, paint)
+      canvas.drawRoundRect(RectF(0f, bounds.top, right, bounds.bottom), radius, radius, paint)
       paint.shader = null
     }
     paint.color = context.getColor(R.color.countdown_kerahat_track)
     for (interval in track.kerahat) {
-      canvas.drawRect(width * interval.start, 0f, width * interval.end, height.toFloat(), paint)
-    }
-    if (progress != null && progress > 0f && progress < 1f) {
-      paint.color = Color.WHITE
-      val center = width * progress
-      val half = maxOf(1f, density) / 2f
-      canvas.drawRect(center - half, 0f, center + half, height.toFloat(), paint)
+      canvas.drawRect(width * interval.start, bounds.top, width * interval.end, bounds.bottom, paint)
     }
     canvas.restore()
+    if (progress != null) {
+      // One solid dot, without rings or glow, marks the same position on every interval.
+      val markerRadius = 3.5f * density
+      val center = (width * progress.coerceIn(0f, 1f)).coerceIn(markerRadius, width - markerRadius)
+      paint.color = context.getColor(R.color.countdown_progress_indicator)
+      canvas.drawCircle(center, centerY, markerRadius, paint)
+    }
     return bitmap
   }
 
@@ -342,7 +325,7 @@ object CountdownNotification {
     val kerahat = CountdownSolar.countdown(plan.kerahat, now, prayer.timestamp)
     val solarSummary = kerahat?.let {
       val phase = if (it.active) "bitməsinə" else "girməsinə"
-      "${it.event.name} kərahətinin $phase ${remainingDescription(it.target - now)}"
+      "${it.event.name} kərahətinin $phase ${remainingMinutes(it.target - now)} dəqiqə"
     }.orEmpty()
     val body = listOf(duration, stage, solarSummary).filter { it.isNotEmpty() }.joinToString(" · ")
     val title = "${prayer.name} · $time"

@@ -45,13 +45,14 @@ export default function Home() {
   const adjustment = usePreferences((s) => s.hijriAdjustment);
   const updateVisible = useAppUpdates((s) => s.visible);
   const availableHeight = height - insets.top - tabBarHeight;
-  const fitOnScreen = fontScale <= 1.1 && !showKerahat && !updateVisible && availableHeight >= 540;
+  const fitOnScreen = fontScale <= 1.1 && !updateVisible && availableHeight >= 540;
+  const contentHeight = availableHeight - (compact ? 6 : 10) - 16;
   const navigate = (offset: number) => {
     setSelectedDate(shiftDate(date, offset));
   };
   return (
     <Screen
-      scroll={!fitOnScreen}
+      scroll={showKerahat || !fitOnScreen}
       contentStyle={{
         paddingHorizontal: 18,
         paddingTop: compact ? 6 : 10,
@@ -61,107 +62,118 @@ export default function Home() {
     >
       <View
         style={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          columnGap: 8,
-          rowGap: 6,
+          gap: compact ? 6 : 12,
+          ...(fitOnScreen
+            ? showKerahat
+              ? { height: contentHeight }
+              : { flex: 1, minHeight: 0 }
+            : {}),
         }}
       >
-        <BrandLockup compact />
         <View
           style={{
             flexDirection: 'row',
+            flexWrap: 'wrap',
             alignItems: 'center',
-            gap: 2,
-            maxWidth: '50%',
-            flexShrink: 1,
+            justifyContent: 'space-between',
+            columnGap: 8,
+            rowGap: 6,
           }}
         >
-          <CityButton compact />
-          {day && <PrayerTimesShareButton day={day} compact />}
-        </View>
-      </View>
-      <UpdateBanner />
-      <NextPrayerCard compact={compact} onPrayerChange={onChange} />
-      <View
-        style={{
-          gap: compact ? 2 : 8,
-          ...(fitOnScreen ? { flex: 1, minHeight: 0 } : {}),
-        }}
-      >
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Əvvəlki gün"
-            onPress={() => navigate(-1)}
-            style={({ pressed }) => ({
-              width: 44,
-              height: 44,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 14,
-              backgroundColor: pressed ? colors.pressed : 'transparent',
-            })}
-          >
-            <Icon name="chevron-back" size={18} color={colors.muted} />
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`${formatDate(date)}. Növbəti namazın gününə qayıt`}
-            onPress={() => setSelectedDate(undefined)}
+          <BrandLockup compact />
+          <View
             style={{
-              flex: 1,
-              minHeight: 44,
+              flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'center',
-              paddingVertical: 4,
+              gap: 2,
+              maxWidth: '50%',
+              flexShrink: 1,
             }}
           >
-            <AppText
-              variant="caption"
-              style={{ textAlign: 'center', fontFamily: tokens.font.semibold }}
-            >
-              {date === today ? 'Bu gün · ' : date === shiftDate(today, 1) ? 'Sabah · ' : ''}
-              {formatDate(date).split(',')[0]}
-            </AppText>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Növbəti gün"
-            onPress={() => navigate(1)}
-            style={({ pressed }) => ({
-              width: 44,
-              height: 44,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 14,
-              backgroundColor: pressed ? colors.pressed : 'transparent',
-            })}
-          >
-            <Icon name="chevron-forward" size={18} color={colors.muted} />
-          </Pressable>
+            <CityButton compact />
+            {day && <PrayerTimesShareButton day={day} compact />}
+          </View>
         </View>
-        {showHijri && (
-          <AppText variant="caption" style={{ textAlign: 'center', color: colors.muted }}>
-            {hijriDate(date, adjustment)} · hesablanmış tarix
-          </AppText>
-        )}
-        {isPending ? (
-          <ActivityIndicator color={colors.primary} />
-        ) : day ? (
-          <PrayerList
-            style={{ marginHorizontal: -6 }}
-            day={day}
-            showShare={false}
-            fit={fitOnScreen}
-            upcoming={upcoming.date === date ? upcoming.field : undefined}
-            ending={upcoming.phase === 'end'}
-          />
-        ) : (
-          <EmptyState error={isError} />
-        )}
+        <UpdateBanner />
+        <NextPrayerCard compact={compact} onPrayerChange={onChange} />
+        <View
+          style={{
+            gap: compact ? 2 : 8,
+            ...(fitOnScreen ? { flex: 1, minHeight: 0 } : {}),
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Əvvəlki gün"
+              onPress={() => navigate(-1)}
+              style={({ pressed }) => ({
+                width: 44,
+                height: 44,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 14,
+                backgroundColor: pressed ? colors.pressed : 'transparent',
+              })}
+            >
+              <Icon name="chevron-back" size={18} color={colors.muted} />
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`${formatDate(date)}. Növbəti namazın gününə qayıt`}
+              onPress={() => setSelectedDate(undefined)}
+              style={{
+                flex: 1,
+                minHeight: 44,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingVertical: 4,
+              }}
+            >
+              <AppText
+                variant="caption"
+                style={{ textAlign: 'center', fontFamily: tokens.font.semibold }}
+              >
+                {date === today ? 'Bu gün · ' : date === shiftDate(today, 1) ? 'Sabah · ' : ''}
+                {formatDate(date).split(',')[0]}
+              </AppText>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Növbəti gün"
+              onPress={() => navigate(1)}
+              style={({ pressed }) => ({
+                width: 44,
+                height: 44,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 14,
+                backgroundColor: pressed ? colors.pressed : 'transparent',
+              })}
+            >
+              <Icon name="chevron-forward" size={18} color={colors.muted} />
+            </Pressable>
+          </View>
+          {showHijri && (
+            <AppText variant="caption" style={{ textAlign: 'center', color: colors.muted }}>
+              {hijriDate(date, adjustment)} · hesablanmış tarix
+            </AppText>
+          )}
+          {isPending ? (
+            <ActivityIndicator color={colors.primary} />
+          ) : day ? (
+            <PrayerList
+              style={{ marginHorizontal: -6 }}
+              day={day}
+              showShare={false}
+              fit={fitOnScreen}
+              upcoming={upcoming.date === date ? upcoming.field : undefined}
+              ending={upcoming.phase === 'end'}
+            />
+          ) : (
+            <EmptyState error={isError} />
+          )}
+        </View>
       </View>
       {showKerahat && <KerahatTimesCard compact date={date} />}
     </Screen>

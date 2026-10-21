@@ -91,9 +91,8 @@ class CountdownService : Service() {
       val power = getSystemService(Context.POWER_SERVICE) as PowerManager
       val step = if (left <= 60_000 && power.isInteractive) 1_000L else 60_000L
       val prayerDelay = (left % step).let { if (it == 0L) step else it }
-      // Entry/exit can occur between prayer-aligned minute ticks. Refresh the row at that
-      // boundary too, including while exact-alarm permission is unavailable.
-      val solarDelay = CountdownSolar.boundary(currentPlan.kerahat, now)?.minus(now)
+      // Kərahət minutes and entry/exit can change between prayer-aligned minute ticks.
+      val solarDelay = CountdownSolar.refreshDelay(currentPlan.kerahat, now, prayer.timestamp)
       handler.postDelayed(tick, minOf(prayerDelay, solarDelay ?: prayerDelay))
     } catch (error: Exception) { fail(error) }
   }

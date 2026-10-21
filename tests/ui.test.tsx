@@ -332,7 +332,7 @@ test('after İşa the hero counts down to İmsak with its own time labels', asyn
   );
   expect(screen.getByText('İMSAK VAXTI')).toBeOnTheScreen();
   expect(screen.getByText('İmsak')).toBeOnTheScreen();
-  expect(screen.getByText('İmsaka qalan vaxt')).toBeOnTheScreen();
+  expect(screen.queryByText('İmsaka qalan vaxt')).not.toBeOnTheScreen();
   expect(screen.getByLabelText('İmsak vaxtı 05:21 vaxtındadır.')).toBeOnTheScreen();
   expect(onPrayerChange).toHaveBeenLastCalledWith('imsak', '2026-10-09', 'start');
   expect(screen.queryByText('Günçıxma')).not.toBeOnTheScreen();
@@ -411,7 +411,7 @@ test('Sübh hero counts down to sunrise and changes to Zöhr exactly at sunrise'
     </ThemeProvider>,
   );
   expect(screen.getByText('SÜBH NAMAZI')).toBeOnTheScreen();
-  expect(screen.getByText('Sübhün bitməsinə qalan vaxt')).toBeOnTheScreen();
+  expect(screen.queryByText('Sübhün bitməsinə qalan vaxt')).not.toBeOnTheScreen();
   expect(screen.getByText(`Günçıxma · ${day.sunrise}`)).toBeOnTheScreen();
   expect(screen.getByText('00:44:00')).toBeOnTheScreen();
   expect(screen.queryByText('Zöhr')).not.toBeOnTheScreen();

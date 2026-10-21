@@ -171,20 +171,6 @@ export function NextPrayerCard({
                 >
                   {formatCountdown(result.remaining)}
                 </AppText>
-                {(ending || imsak) && (
-                  <AppText
-                    variant="caption"
-                    style={{
-                      color: colors.heroMuted,
-                      fontSize: dense ? 10 : 11,
-                      lineHeight: dense ? 14 : 16,
-                      fontFamily: tokens.font.regular,
-                      textAlign: stacked ? 'left' : 'right',
-                    }}
-                  >
-                    {ending ? 'Sübhün bitməsinə qalan vaxt' : 'İmsaka qalan vaxt'}
-                  </AppText>
-                )}
               </View>
             </View>
             {urgency !== 'normal' && (

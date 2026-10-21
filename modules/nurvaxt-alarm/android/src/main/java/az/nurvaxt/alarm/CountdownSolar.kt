@@ -21,4 +21,13 @@ object CountdownSolar {
 
   fun boundary(kerahat: List<CountdownKerahat>, now: Long): Long? =
     kerahat.flatMap { listOf(it.start, it.end) }.filter { it > now }.minOrNull()
+
+  /** Refresh ceil-rounded minutes at their own target, which may differ from the prayer tick. */
+  fun refreshDelay(events: List<CountdownKerahat>, now: Long, prayerTimestamp: Long): Long? {
+    val boundaryDelay = boundary(events, now)?.minus(now)
+    val minuteDelay = countdown(events, now, prayerTimestamp)?.let {
+      ((it.target - now) % 60_000).let { remainder -> if (remainder == 0L) 60_000L else remainder }
+    }
+    return listOfNotNull(boundaryDelay, minuteDelay).minOrNull()
+  }
 }

@@ -20,8 +20,10 @@ margins so names and times have more horizontal room.
 The home screen fills the available height after safe areas and bottom navigation. Its time list
 shares the remaining space equally between visible rows, reducing spacing and number size only
 when needed. At system font scales up to 1.1 and with at least 540 dp of usable height, the normal
-home view fits without scrolling. Larger accessibility fonts, shorter windows and the optional
-expanded kərahət content retain scrolling so information stays accessible.
+home view fits without scrolling. Enabling kərahət preserves that main section's height and row
+spacing, with the kərahət card below it in the scrollable content. Active countdowns and expanded
+kərahət details do not compress the main timetable. Larger accessibility fonts and shorter
+windows retain scrolling so information stays accessible.
 
 ## Verification
 

@@ -1,0 +1,5 @@
+Kərahət vaxtları aktiv olduqda əsas ekranın yerləşməsi və sürüşdürülməsi yaxşılaşdırıldı.
+Geri sayım kartında təkrarlanan izahlar azaldıldı.
+Kompakt bildirişdə kərahət intervalı vaxt zolağında göstərilir.
+Geniş bildirişdə kərahətə qalan dəqiqələr və başlanma/bitmə saatı dəqiqləşdirildi.
+Vaxt zolağına cari mövqeni göstərən nöqtə əlavə edildi.
