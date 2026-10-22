@@ -1,0 +1,27 @@
+{
+  "checkedAt": "2026-10-22T08:51:26.418250+00:00",
+  "previousAab": "artifacts/nurvaxt-1.0.10-v13.aab",
+  "currentAab": "artifacts/nurvaxt-1.0.12-v15.aab",
+  "versionCode": 15,
+  "sameApplicationId": true,
+  "sameSigningCertificate": true,
+  "sameSdkRequirements": true,
+  "sameManifestDeviceFilters": true,
+  "samePermissions": true,
+  "sameRequiredLibraries": true,
+  "sameAbiCoverage": true,
+  "sameNativeLibraryNamesForEveryAbi": true,
+  "abis": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86",
+    "x86_64"
+  ],
+  "nativeLibrariesPerAbi": {
+    "arm64-v8a": 24,
+    "armeabi-v7a": 24,
+    "x86": 24,
+    "x86_64": 24
+  },
+  "playDeviceCatalogVerified": false
+}

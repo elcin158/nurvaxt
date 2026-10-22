@@ -138,16 +138,20 @@ mode and azan recordings are deliberately deferred. No guessed dates or sunset/M
 
 ## Builds and checks
 
-Google Play test bundle (version 1.0.12, Android versionCode 14):
+Google Play test bundle (version 1.0.12, Android versionCode 15):
 
 ```bash
-npm run android:bundle -- -PreactNativeArchitectures=arm64-v8a,armeabi-v7a,x86_64
+npm run android:bundle
 python3 scripts/verify-release-bundle.py --bundletool /absolute/path/to/bundletool-all-1.18.1.jar
 ```
 
-The signed upload file is written to `artifacts/nurvaxt-1.0.12-v14.aab`. Release
+Keep all four default architectures (`armeabi-v7a`, `arm64-v8a`, `x86`, `x86_64`)
+to preserve the CPU coverage of the previous Play release. The verifier rejects
+bundles with missing architectures.
+
+The signed upload file is written to `artifacts/nurvaxt-1.0.12-v15.aab`. Release
 binaries are not tracked in git; rebuild it with the commands above and compare
-the recorded checksum. See `artifacts/nurvaxt-1.0.12-v14.validation.json` for its
+the recorded checksum. See `artifacts/nurvaxt-1.0.12-v15.validation.json` for its
 signature, checksum, packaged permissions and 16 KB alignment checks. Azerbaijani release notes are in
 `artifacts/google-play/release-notes-1.0.12-az.txt`; handover details are in
 `artifacts/nurvaxt-1.0.12-README-az.md`. The user uploads the bundle to the existing
@@ -157,7 +161,7 @@ Local signed release APK (uses the current configured version):
 
 ```bash
 npm run android:release-key
-npm run android:release -- -PreactNativeArchitectures=arm64-v8a,armeabi-v7a,x86_64
+npm run android:release
 python3 scripts/verify-release-apk.py
 ```
 

@@ -77,7 +77,20 @@ with zipfile.ZipFile(bundle) as archive:
     database = archive.read('base/res/raw/data_verified_prayertimes.db')
     assert database == (root / 'data/verified/prayer-times.db').read_bytes()
     abis = sorted({name.split('/')[2] for name in names if name.startswith('base/lib/')})
-    assert 'arm64-v8a' in abis
+    # Preserve the CPU coverage of the published v13 bundle, including 32-bit Intel.
+    expected_abis = ['arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64']
+    assert abis == expected_abis, f'Release ABI coverage changed: expected {expected_abis}, got {abis}'
+    machines = {'arm64-v8a': 183, 'armeabi-v7a': 40, 'x86': 3, 'x86_64': 62}
+    libraries_per_abi = {abi: 0 for abi in abis}
+    for name in names:
+        if not name.startswith('base/lib/') or not name.endswith('.so'):
+            continue
+        abi = name.split('/')[2]
+        data = archive.read(name)
+        assert data[:4] == b'\x7fELF' and data[5] == 1, name
+        assert struct.unpack_from('<H', data, 18)[0] == machines[abi], name
+        libraries_per_abi[abi] += 1
+    assert all(libraries_per_abi.values()), 'Missing native libraries for a supported ABI'
     native_libraries = []
     for name in names:
         if not name.endswith('.so') or name.split('/')[2] not in ('arm64-v8a', 'x86_64'):
@@ -111,6 +124,8 @@ report = {
     'bundletoolValidation': True,
     'debuggable': False,
     'abis': abis,
+    'allFourArchitecturesVerified': True,
+    'nativeLibrariesPerAbi': libraries_per_abi,
     'embeddedJavaScriptBytes': js_bytes,
     'bundledDatabaseMatchesSource': True,
     'zipAlignment': alignment,

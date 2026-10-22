@@ -58,7 +58,7 @@ with zipfile.ZipFile(apk) as archive:
     bundle = archive.read('assets/index.android.bundle')
     assert len(bundle) > 100_000, 'Missing embedded JavaScript/Hermes bundle'
     abis = sorted({name.split('/')[1] for name in archive.namelist() if name.startswith('lib/')})
-    assert abis == ['arm64-v8a', 'armeabi-v7a', 'x86_64'], abis
+    assert abis == ['arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64'], abis
     # Resource shrinking can rename the packaged path; compare the actual sound bytes.
     tone_hash = hashlib.sha256((root / 'assets/nurvaxt_tone.wav').read_bytes()).hexdigest()
     tone = any(hashlib.sha256(archive.read(name)).hexdigest() == tone_hash

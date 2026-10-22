@@ -1,63 +1,58 @@
-# NurVaxt 1.0.12 — Play Store buraxılışı
+# NurVaxt 1.0.12 — kod 15, cihaz uyğunluğu düzəlişi
 
-22 oktyabr 2026. Paket: `az.nurvaxt.app`; versiya: **1.0.12**;
-`versionCode`: **14** — istifadəçinin göstərdiyi kod.
+22 oktyabr 2026. Paket: `az.nurvaxt.app`; versiya: **1.0.12**; `versionCode`: **15**.
 
-## Hazır fayllar
+## Play Console üçün
 
-- **Play Console üçün:** `nurvaxt-1.0.12-v14.aab` — 59.25 MiB.
-- **Yenilik mətni:** `google-play/release-notes-1.0.12-az.txt` — 197 simvol.
-- **Birbaşa quraşdırma üçün:** `nurvaxt-1.0.12-release.apk` — 79.01 MiB; yoxlanmış AAB-dən çıxarılıb.
-- **Paket hesabatları:** `nurvaxt-1.0.12-v14.validation.json`, `nurvaxt-1.0.12-release.json`.
-- **Ümumi yoxlama hesabatı:** `../docs/releases/1.0.12/verification.json`.
+- **AAB:** `nurvaxt-1.0.12-v15.aab` — 72.68 MiB.
+- **Release name:** `1.0.12 (15)`.
+- **Yenilik mətni:** `google-play/release-notes-1.0.12-az.txt`.
+- **Birbaşa quraşdırma üçün APK:** `nurvaxt-1.0.12-v15-release.apk` — 101.36 MiB; bu AAB-dən çıxarılıb.
+- **Ümumi yoxlama hesabatı:** `../docs/releases/1.0.12/v15/verification.json`.
 
-Play Console-a AAB faylı və Azərbaycan dilində yenilik mətni əlavə edilir.
-Bu tapşırıqda Console-a yükləmə və yayım edilməyib.
+Buraxılışdakı əvvəlki kod 14 AAB-sini bu kod 15 faylı ilə əvəz edin.
+Kod 14 Console-a yükləndiyinə görə yeni fayl üçün kod 15 seçilib;
+[Google Play istifadə olunmuş versiya kodunun təkrar yüklənməsini qəbul etmir](https://developer.android.com/studio/publish/versioning).
+Bu tapşırıqda Play Console-a yükləmə və yayım edilməyib.
 
-## Dəyişiklik
+## Düzəliş
 
-Əsas namaz kartındakı “Son 15 dəqiqə” və “Son 30 dəqiqə” yazıları çıxarılıb.
-Saniyəlik geri sayım, vaxt zolağı və yaxınlaşan namazın rəng göstəricisi saxlanılır.
-Əvvəlki yerli 1.0.11 paketindəki parlaq canlı bildiriş zolağı və oxunaqlılıq
-düzəlişləri də daxildir. Paket cari iş qovluğundakı tətbiq dəyişikliklərini ehtiva edir.
+Kod 14 paketində çatışmayan 32 bit `x86` dəstəyi bərpa edilib.
+AAB dörd arxitekturanı ehtiva edir: `armeabi-v7a`, `arm64-v8a`, `x86`, `x86_64`.
+Hər biri üçün 24 native kitabxana yoxlanıb. AAB və APK yoxlayıcıları bundan sonra
+arxitekturalardan biri çatışmayan paketi qəbul etmir. README-dəki yığma əmrləri
+standart dörd arxitekturadan istifadə edir.
+
+1.0.10 / kod 13 ilə müqayisədə arxitekturalar, hər arxitekturanın kitabxana adları,
+minimum/target Android tələbləri, cihaz filtrləri, tələb olunan kitabxanalar,
+icazələr və imza sertifikatı eynidir. Müqayisə
+`../docs/releases/1.0.12/v15/compatibility-vs-v13.json` daxilindədir.
+Console-da xəbərdarlığın aradan qalxması yeni AAB yükləndikdən sonra təsdiqlənməlidir.
 
 ## Yoxlamalar
 
-TypeScript, ESLint, **166 JavaScript testi** (16 suite), imzalanmış release
-yığılması və `lintVitalRelease` uğurla keçib. Mənbə/build/test fayllarının
-250 SHA-256 dəyəri qeydə alınıb və yığmadan sonra uyğunluğu yoxlanıb.
-Native modul mənbələri 1.0.11-dən dəyişməyib; native unit və instrumentation
-testləri bu buraxılışda təkrar icra olunmayıb.
+Release yığılması, `lintVitalRelease`, TypeScript, ESLint, Python yoxlayıcılarının
+sintaksisi, bundletool, AAB/APK imzaları və 16 KB ELF/ZIP düzləndirilməsi keçib.
+Offline baza, dörd bildiriş səsi və bildiriş resursları yoxlanıb.
 
-AAB üçün bundletool yoxlaması, əvvəlki buraxılışla imza açarının uyğunluğu,
-versiya kodunun **14** olması, icazələr, offline verilənlər bazası və
-48 ədəd 64 bit native kitabxananın 16 KB ELF düzləndirilməsi təsdiqlənib.
-AAB-dən çıxarılan APK-nin imzası, 16 KB ZIP düzləndirilməsi, dörd bildiriş
-səsi və bildiriş resursları da yoxlanıb.
+Ayrıca NurVaxt_Store / Android 15 emulyatorunda kod 14-dən 15-ə yenilənmə,
+bütün ayarların qorunması, internetsiz açılış və canlı bildiriş keçib.
+Bazada 6 808 sətir, 61 272 vaxt dəyəri və 74 bölgə mənbə ilə uyğun gəlib.
+Əsas ekran və genişləndirilmiş bildiriş vizual yoxlanıb; fatal xəta qeydə alınmayıb.
 
-Ayrıca **NurVaxt_Store / Android 15** emulyatorunda əvvəlki yerli
-**1.0.11 / kod 14** üzərinə quraşdırma, bütün ayarların qorunması,
-internetsiz açılış və canlı geri sayım bildirişi keçib. Bu, eyni kodlu iki
-yerli paketin quraşdırma yoxlamasıdır; Play vasitəsilə yenilənmə sınanmayıb.
-Quraşdırılmış bazanın 6 808 sətri, 61 272 vaxt dəyəri və 74 bölgəsi
-mənbə bazası ilə tam uyğun gəlib. Namaza 10 dəqiqədən az qaldığı anda
-əsas ekran və genişləndirilmiş bildiriş vizual yoxlanıb; əlavə “Son 15 dəqiqə”
-yazısı göstərilmir. Fatal runtime xətası qeydə alınmayıb.
+JavaScript bundle və baza kod 14 paketindəki ilə bayt səviyyəsində eynidir.
+166 JavaScript testinin əvvəlki nəticələri `../docs/releases/1.0.12/jest.json`
+faylındadır; bu yığmada JavaScript/native unit testləri təkrar icra olunmayıb.
+32 bit x86 cihazında, fiziki cihazda və 16 KB səhifəli cihazda runtime yoxlaması aparılmayıb.
 
-Fiziki cihazda və 16 KB səhifəli cihazda runtime yoxlaması aparılmayıb.
-
-AAB SHA-256:
-`404284640883bae94f1290f762d665616dfee9fc76064582c25cd1804e49a7e1`.
-
-İmza sertifikatının SHA-256 izi:
-`01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e`.
+AAB SHA-256: `852b460862feccccff5030d742915a304aa67968f32dc03fb7bd1c5c30970aa3`.
 
 ## Təkrar yığma
 
 ```bash
-npm run android:bundle -- --offline -PreactNativeArchitectures=arm64-v8a,armeabi-v7a,x86_64
+npm run android:bundle -- --offline
 python3 scripts/verify-release-bundle.py --bundletool /absolute/path/to/bundletool-all-1.18.1.jar
 ```
 
-Mövcud `.signing/` açarı növbəti buraxılışlarda da saxlanılmalıdır.
-AAB və yeni APK faylları git-də saxlanılmır.
+Mövcud `.signing/` açarını saxlayın. AAB və APK faylları git-də saxlanılmır.
+Əvvəlki kod 14 təhvil sənədi `nurvaxt-1.0.12-v14-README-az.md` faylındadır.
