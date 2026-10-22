@@ -4,7 +4,7 @@ Requires the release APK to be installed and launched once, and `adb root`.
 Never operates on an attached physical device or a personal emulator.
 """
 import argparse
-from datetime import datetime, timezone
+from datetime import datetime
 import hashlib
 import json
 import re
@@ -22,8 +22,9 @@ PACKAGE = 'az.nurvaxt.app'
 FIELDS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha']
 DB = f'/data/user/0/{PACKAGE}/databases/RKStorage'
 # Covered date in the bundled official data. Only the disposable guest clock changes.
-EPOCH = int(datetime(2026, 10, 21, 11, 30, tzinfo=timezone.utc).timestamp())
-KERAHAT_EPOCH = int(datetime(2026, 10, 21, 8, 20, tzinfo=timezone.utc).timestamp())
+CAPTURE_DATE = '2026-10-22'
+EPOCH = int(datetime.fromisoformat(f'{CAPTURE_DATE}T11:30:00+00:00').timestamp())
+KERAHAT_EPOCH = int(datetime.fromisoformat(f'{CAPTURE_DATE}T08:20:00+00:00').timestamp())
 REPO = ROOT.parents[2]
 
 
@@ -201,8 +202,14 @@ elif args.action == 'dark':
 elif args.action == 'kerahat':
     preferences('light', kerahat=True)
     demo('1220')
-    route('', KERAHAT_EPOCH)
-    capture('06-kerahet-vaxtlari')
+    # The current app uses its natural-height layout above 110% system font size,
+    # keeping the prayer list and the complete kerahat card visible together.
+    adb('shell', 'settings', 'put', 'system', 'font_scale', '1.15')
+    try:
+        route('', KERAHAT_EPOCH)
+        capture('06-kerahet-vaxtlari')
+    finally:
+        adb('shell', 'settings', 'put', 'system', 'font_scale', '1.0')
 elif args.action == 'kerahat-settings':
     preferences('light', kerahat=True)
     demo()
@@ -235,7 +242,8 @@ if apk.exists():
         'source': f'NurVaxt {package["version"]} current-workspace release APK on a disposable Android 15 emulator',
         'apk': str(apk.relative_to(REPO)), 'version': package['version'],
         'rawSize': [1080, 2160], 'density': 360, 'location': 'Bakı',
-        'date': '2026-10-21', 'timezone': 'Asia/Baku', 'visibleFields': FIELDS,
+        'fontScale': {'default': 1.0, '06-kerahet-vaxtlari': 1.15},
+        'date': CAPTURE_DATE, 'timezone': 'Asia/Baku', 'visibleFields': FIELDS,
         'clock': {'default': '15:30', 'activeKerahat': '12:20'},
         'kerahat': 'Opt-in enabled for screens 06, 07 and 08; default 45/10/45 minute estimates',
         'notifications': 'Real production package and CountdownService; verified bundled timetable, no synthetic test notification',

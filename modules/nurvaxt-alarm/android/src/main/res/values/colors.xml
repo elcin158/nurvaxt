@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Native Live Updates retain their system urgency palette. Custom digits use system text. -->
+    <!-- Native Live Updates keep their system palette. Custom content uses navy/white text. -->
     <color name="countdown_normal">#2D5CE3</color>
     <color name="countdown_soon">#805900</color>
     <color name="countdown_imminent">#A83D2C</color>
@@ -8,11 +8,17 @@
     <color name="countdown_badge">#0F1B1B1F</color>
     <color name="countdown_track">#141B1B1F</color>
     <color name="countdown_ring_track">#E5EAF5</color>
-    <color name="countdown_progress_start">#0065EE</color>
-    <color name="countdown_progress_end">#00B8D4</color>
-    <color name="countdown_progress_track">#FFFFFF</color>
-    <color name="countdown_progress_indicator">#173454</color>
-    <color name="countdown_kerahat">#B42336</color>
-    <color name="countdown_kerahat_track">#D73C50</color>
+    <color name="countdown_primary">#101A30</color>
+    <color name="countdown_secondary">#5B6378</color>
+    <color name="countdown_progress_start">#006AFF</color>
+    <color name="countdown_progress_end">#13C8F5</color>
+    <color name="countdown_progress_track">#DCE2F1</color>
+    <color name="countdown_progress_indicator">#17233B</color>
+    <color name="countdown_progress_indicator_outline">#FCFEFF</color>
+    <color name="countdown_progress_outline">#BFFFFFFF</color>
+    <color name="countdown_progress_glow">#380076FF</color>
+    <color name="countdown_kerahat_glow">#48ED2255</color>
+    <color name="countdown_kerahat">#D41443</color>
+    <color name="countdown_kerahat_track">#EB2852</color>
     <color name="countdown_divider">#1F1B1B1F</color>
 </resources>

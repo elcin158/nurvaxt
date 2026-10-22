@@ -1,0 +1,4 @@
+Canlı bildirişin vaxt zolağı daha aydın, parlaq görünüşlə yeniləndi.
+Namaz adı və geri sayım daha oxunaqlı edildi.
+Kərahət intervalları qırmızı zolaqla göstərilir.
+Kiçik ekranlarda və böyük şriftlərdə bildiriş mətnlərinin yerləşməsi yaxşılaşdırıldı.

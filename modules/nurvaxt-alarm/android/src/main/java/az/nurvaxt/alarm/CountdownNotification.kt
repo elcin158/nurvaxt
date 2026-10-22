@@ -20,6 +20,7 @@ import android.os.Build
 import android.os.SystemClock
 import android.text.SpannableString
 import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.text.style.StyleSpan
 import android.util.Log
@@ -143,7 +144,8 @@ object CountdownNotification {
     remaining: Long, plan: CountdownPlan, now: Long,
   ): RemoteViews = RemoteViews(context.packageName, layout).apply {
     val name = if (prayer.phase == "end") "Günçıxma" else prayer.name
-    setTextViewText(R.id.countdown_prayer, inlineTime(name, clock(prayer.time, plan.timeFormat)))
+    setTextViewText(R.id.countdown_prayer, inlineTime(name, clock(prayer.time, plan.timeFormat),
+      context.getColor(R.color.countdown_secondary)))
     setImageViewBitmap(R.id.countdown_progress,
       progressTrack(context, CountdownTimeline.track(prayer, plan.kerahat, now)))
     setChronometerCountDown(R.id.countdown_timer, true)
@@ -177,49 +179,90 @@ object CountdownNotification {
   }
 
   /** Only the secondary scheduled time is smaller; the live timer stays in its own column. */
-  private fun inlineTime(name: String, time: String): CharSequence {
+  private fun inlineTime(name: String, time: String, secondaryColor: Int? = null): CharSequence {
     return SpannableString("$name · $time").apply {
-      setSpan(RelativeSizeSpan(0.8f), name.length, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+      setSpan(RelativeSizeSpan(0.76f), name.length, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
       setSpan(StyleSpan(Typeface.NORMAL), name.length, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+      secondaryColor?.let {
+        setSpan(ForegroundColorSpan(it), name.length, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+      }
     }
   }
 
   /** Small RemoteViews-compatible artwork with room for the current-position marker. */
   internal fun progressTrack(context: Context, track: CountdownTrack): Bitmap {
-    val density = context.resources.displayMetrics.density
-    val width = (360 * density).roundToInt().coerceIn(1, 1440)
-    val height = (12 * density).roundToInt().coerceAtLeast(1)
+    // Bound both RemoteViews bitmaps together well below the Binder transaction limit.
+    val density = context.resources.displayMetrics.density.coerceAtMost(3f)
+    val width = (360 * density).roundToInt().coerceAtLeast(1)
+    val height = (24 * density).roundToInt().coerceAtLeast(1)
     val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
     val centerY = height / 2f
-    val radius = 2 * density
-    val bounds = RectF(0f, centerY - radius, width.toFloat(), centerY + radius)
-    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-      color = context.getColor(R.color.countdown_progress_track)
+    val radius = 6 * density
+    val bounds = RectF(2 * density, centerY - radius, width - 2 * density, centerY + radius)
+    fun position(fraction: Float) = bounds.left + bounds.width() * fraction.coerceIn(0f, 1f)
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    val progress = track.progress
+    val blue = context.getColor(R.color.countdown_progress_end)
+    val red = context.getColor(R.color.countdown_kerahat_track)
+    val blueGlow = context.getColor(R.color.countdown_progress_glow)
+    val redGlow = context.getColor(R.color.countdown_kerahat_glow)
+    fun glow(area: RectF, color: Int, shadow: Int) {
+      if (area.width() <= 0f) return
+      paint.color = color
+      paint.setShadowLayer(3 * density, 0f, density, shadow)
+      canvas.drawRoundRect(area, radius, radius, paint)
+      paint.clearShadowLayer()
     }
+    if (progress != null) glow(RectF(bounds.left, bounds.top, position(progress), bounds.bottom), blue, blueGlow)
+    for (interval in track.kerahat) {
+      glow(RectF(position(interval.start), bounds.top, position(interval.end), bounds.bottom), red, redGlow)
+    }
+    paint.color = context.getColor(R.color.countdown_progress_track)
     canvas.drawRoundRect(bounds, radius, radius, paint)
     canvas.save()
     canvas.clipPath(Path().apply { addRoundRect(bounds, radius, radius, Path.Direction.CW) })
-    val progress = track.progress
     if (progress != null && progress > 0f) {
-      val right = width * progress.coerceIn(0f, 1f)
-      paint.shader = LinearGradient(0f, 0f, right, 0f,
+      val right = position(progress)
+      paint.shader = LinearGradient(bounds.left, 0f, right, 0f,
         context.getColor(R.color.countdown_progress_start), context.getColor(R.color.countdown_progress_end),
         Shader.TileMode.CLAMP)
-      canvas.drawRoundRect(RectF(0f, bounds.top, right, bounds.bottom), radius, radius, paint)
+      canvas.drawRect(bounds.left, bounds.top, right, bounds.bottom, paint)
       paint.shader = null
     }
-    paint.color = context.getColor(R.color.countdown_kerahat_track)
+    paint.color = red
     for (interval in track.kerahat) {
-      canvas.drawRect(width * interval.start, bounds.top, width * interval.end, bounds.bottom, paint)
+      canvas.drawRect(position(interval.start), bounds.top, position(interval.end), bounds.bottom, paint)
     }
+    // Light across the upper edge and a shaded lower edge give the capsule its glass finish.
+    // Leave the middle clear so the real interval colors remain unambiguous.
+    paint.shader = LinearGradient(0f, bounds.top, 0f, bounds.bottom,
+      intArrayOf(0x70FFFFFF, Color.TRANSPARENT, Color.TRANSPARENT, 0x30101C40),
+      floatArrayOf(0f, 0.45f, 0.55f, 1f), Shader.TileMode.CLAMP)
+    canvas.drawRect(bounds, paint)
+    paint.shader = null
     canvas.restore()
+    paint.style = Paint.Style.STROKE
+    paint.strokeWidth = 0.65f * density
+    paint.color = context.getColor(R.color.countdown_progress_outline)
+    val rim = RectF(bounds).apply { inset(paint.strokeWidth / 2, paint.strokeWidth / 2) }
+    canvas.drawRoundRect(rim, radius, radius, paint)
+    paint.style = Paint.Style.FILL
     if (progress != null) {
-      // One solid dot, without rings or glow, marks the same position on every interval.
-      val markerRadius = 3.5f * density
-      val center = (width * progress.coerceIn(0f, 1f)).coerceIn(markerRadius, width - markerRadius)
-      paint.color = context.getColor(R.color.countdown_progress_indicator)
+      val markerRadius = 8 * density
+      val center = position(progress).coerceIn(bounds.left + markerRadius, bounds.right - markerRadius)
+      val inKerahat = track.kerahat.any { progress >= it.start && progress <= it.end }
+      paint.color = context.getColor(R.color.countdown_progress_indicator_outline)
+      paint.setShadowLayer(2.5f * density, 0f, density, if (inKerahat) redGlow else blueGlow)
       canvas.drawCircle(center, centerY, markerRadius, paint)
+      paint.clearShadowLayer()
+      val coreRadius = markerRadius - 1.25f * density
+      paint.color = context.getColor(R.color.countdown_progress_indicator)
+      canvas.drawCircle(center, centerY, coreRadius, paint)
+      paint.shader = LinearGradient(0f, centerY - coreRadius, 0f, centerY,
+        0x28FFFFFF, Color.TRANSPARENT, Shader.TileMode.CLAMP)
+      canvas.drawCircle(center, centerY, coreRadius, paint)
+      paint.shader = null
     }
     return bitmap
   }

@@ -7,11 +7,14 @@
     <color name="countdown_badge">#14FFFFFF</color>
     <color name="countdown_track">#1FFFFFFF</color>
     <color name="countdown_ring_track">#3D4555</color>
+    <color name="countdown_primary">#F3F6FF</color>
+    <color name="countdown_secondary">#B5BED3</color>
     <color name="countdown_progress_start">#2186FF</color>
     <color name="countdown_progress_end">#16D6EA</color>
-    <color name="countdown_progress_track">#FFFFFF</color>
-    <color name="countdown_progress_indicator">#E7F5FF</color>
-    <color name="countdown_kerahat">#FF9099</color>
-    <color name="countdown_kerahat_track">#F36A7B</color>
+    <color name="countdown_progress_track">#3C475F</color>
+    <color name="countdown_progress_indicator">#1E2C47</color>
+    <color name="countdown_progress_outline">#55FFFFFF</color>
+    <color name="countdown_kerahat">#FF87A0</color>
+    <color name="countdown_kerahat_track">#FA4C71</color>
     <color name="countdown_divider">#2EFFFFFF</color>
 </resources>

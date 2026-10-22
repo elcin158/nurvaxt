@@ -8,6 +8,10 @@ import sharp from 'sharp';
 
 const source = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(source, '..');
+const capture = JSON.parse(await fs.readFile(path.join(source, 'capture-metadata.json'), 'utf8'));
+const captureDate = new Intl.DateTimeFormat('az-AZ', {
+  day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Baku',
+}).format(new Date(`${capture.date}T12:00:00+04:00`));
 const xml = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
 const uri = (bytes, type = 'png') => `data:image/${type};base64,${bytes.toString('base64')}`;
 const campaign = [
@@ -17,8 +21,8 @@ const campaign = [
   { file: '02-canli-bildiris', label: 'CANLI BİLDİRİŞ', title: ['Qalan vaxt,', 'bir baxışda.'],
     subtitle: 'Bildiriş panelində canlı namaz geri sayımı.', light: true, font: 96,
     notification: true, companion: '01-namaz-vaxtlari',
-    alt: 'NurVaxt Android bildirişi: Əsr 16:09, canlı geri sayım və vaxtın irəliləyiş zolağı.' },
-  { file: '03-qible', label: 'QİBLƏ', title: ['Qiblənizi', 'asanlıqla tapın.'],
+    alt: 'NurVaxt Android bildirişi: Əsr 16:08, canlı geri sayım və vaxtın irəliləyiş zolağı.' },
+  { file: '03-qible', label: 'QİBLƏ', title: ['Qibləni', 'asanlıqla tapın.'],
     subtitle: 'Olduğunuz yerdən qiblə istiqaməti.', light: false, font: 96,
     alt: 'NurVaxt qiblə ekranı: kompas, Bakıdan qiblə istiqaməti və Kəbəyə məsafə.' },
   { file: '04-xatirlatmalar', label: 'XATIRLATMALAR', title: ['Vaxtı gəlsin,', 'xəbəriniz olsun.'],
@@ -87,14 +91,15 @@ function panel(id, screenName, x, y, width, { night = false, small = false } = {
 function notificationComposition(item, ink, muted) {
   const screen = screens[item.file];
   const x = 72, y = 548, width = 936, height = width * screen.ratio;
+  const companionLabelY = Math.max(1035, y + height + 54);
   return `
     ${text(74, 502, 'ANDROID BİLDİRİŞ PANELİ', 22, muted, 700, 'letter-spacing="2"')}
     <g filter="url(#shadow)">
       <defs><clipPath id="notificationCard"><rect x="${x}" y="${y}" width="${width}" height="${height}" rx="67"/></clipPath></defs>
       <image x="${x}" y="${y}" width="${width}" height="${height}" href="${screen.uri}" clip-path="url(#notificationCard)"/>
     </g>
-    ${text(540, 1035, item.companion === '01-namaz-vaxtlari' ? 'Tətbiqdə namaz vaxtları' : 'Tətbiqdə kərahət vaxtları', 26, ink, 600, 'text-anchor="middle"')}
-    ${panel('companion', item.companion, 340, 1065, 400, { small: true })}
+    ${text(540, companionLabelY, item.companion === '01-namaz-vaxtlari' ? 'Tətbiqdə namaz vaxtları' : 'Tətbiqdə kərahət vaxtları', 26, ink, 600, 'text-anchor="middle"')}
+    ${panel('companion', item.companion, 340, companionLabelY + 30, 400, { small: true })}
   `;
 }
 
@@ -152,7 +157,7 @@ const thumbs = await Promise.all(campaign.map(async (item, index) => ({
   left: 30 + index % 4 * 288, top: 48 + Math.floor(index / 4) * 510,
 })));
 const banner = await sharp(path.join(root, 'feature-graphic-1024x500.png')).resize(768, 375).png().toBuffer();
-const overviewTitle = Buffer.from(`<svg width="1194" height="1470"><g font-family="Noto Sans, sans-serif">${text(30, 29, 'NurVaxt · Cari görünüş · 21 oktyabr 2026', 20, '#203556', 700)}${text(213, 1080, 'Tanıtım banneri · 1024 × 500', 18, '#203556', 700)}</g></svg>`);
+const overviewTitle = Buffer.from(`<svg width="1194" height="1470"><g font-family="Noto Sans, sans-serif">${text(30, 29, `NurVaxt ${capture.version} · ${captureDate}`, 20, '#203556', 700)}${text(213, 1080, 'Tanıtım banneri · 1024 × 500', 18, '#203556', 700)}</g></svg>`);
 await sharp({ create: { width: 1194, height: 1470, channels: 3, background: '#E8EFF8' } })
   .composite([...thumbs, { input: banner, left: 213, top: 1095 }, { input: overviewTitle, left: 0, top: 0 }])
   .jpeg({ quality: 94 }).toFile(path.join(root, 'phone-preview.jpg'));
@@ -199,7 +204,7 @@ for (const folder of ['phone', 'tablet-7', 'tablet-10', '']) {
 await fs.writeFile(path.join(root, 'validation.json'), JSON.stringify({
   checkedAt: new Date().toISOString(),
   source: 'Current-workspace NurVaxt release: real Android 15 app screens and production notifications, with existing five-prayer visibility and opt-in kerahat settings; existing background, vector typography and framing.',
-  capture: JSON.parse(await fs.readFile(path.join(source, 'capture-metadata.json'), 'utf8')),
+  capture,
   composition: { outputSize: [1080, 1920], appCrop: { left: 0, top: 108, width: 1080, height: 1980 },
     notificationCrops: Object.fromEntries(campaign.filter(item => item.notification).map(item => [item.file, screens[item.file].crop])),
     appPixelsRetouched: false, marketingCopyOutsideApp: true, appScreenshotAspectRatioPreserved: true },

@@ -1,18 +1,22 @@
 {
-  "checkedAt": "2026-10-21T08:50:22.656Z",
+  "checkedAt": "2026-10-22T07:59:40.410Z",
   "source": "Current-workspace NurVaxt release: real Android 15 app screens and production notifications, with existing five-prayer visibility and opt-in kerahat settings; existing background, vector typography and framing.",
   "capture": {
-    "apkSha256": "220d6cc366f976f2571058a78f6d4d179215ed054bdc6084867bd641c8617d34",
-    "source": "NurVaxt 1.0.9 current-workspace release APK on a disposable Android 15 emulator",
+    "apkSha256": "f1a798a842ee05fb121230c475cf98c32455e5bb746bb72916d116af052c927a",
+    "source": "NurVaxt 1.0.10 current-workspace release APK on a disposable Android 15 emulator",
     "apk": "android/app/build/outputs/apk/release/app-release.apk",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "rawSize": [
       1080,
       2160
     ],
     "density": 360,
     "location": "Bakı",
-    "date": "2026-10-21",
+    "fontScale": {
+      "default": 1,
+      "06-kerahet-vaxtlari": 1.15
+    },
+    "date": "2026-10-22",
     "timezone": "Asia/Baku",
     "visibleFields": [
       "fajr",
@@ -43,15 +47,15 @@
     "notificationCrops": {
       "02-canli-bildiris": {
         "left": 36,
-        "top": 509,
+        "top": 514,
         "width": 1008,
-        "height": 320
+        "height": 375
       },
       "07-kerahet-bildirisi": {
         "left": 36,
-        "top": 509,
+        "top": 514,
         "width": 1008,
-        "height": 466
+        "height": 521
       }
     },
     "appPixelsRetouched": false,
@@ -69,73 +73,73 @@
       "file": "phone/01-namaz-vaxtlari.png",
       "width": 1080,
       "height": 1920,
-      "bytes": 949681,
+      "bytes": 947749,
       "channels": 3,
       "hasAlpha": false,
-      "sha256": "88a7aac10168035ee6cfdce03b3eea88b1b710f715e77b620995d39864e623ae"
+      "sha256": "bd504b76eafd19fb9bc87117e728b3fa9377db0003bcae83d34b931019dc9e70"
     },
     {
       "file": "phone/02-canli-bildiris.png",
       "width": 1080,
       "height": 1920,
-      "bytes": 428755,
+      "bytes": 425640,
       "channels": 3,
       "hasAlpha": false,
-      "sha256": "3b4df2129bbd88e8774e21765a79315be7b754dc27a62639571b291209babb4c"
+      "sha256": "384acad865df916c178254a64523d55bda0e0733939117a8d0dc59024132d91e"
     },
     {
       "file": "phone/03-qible.png",
       "width": 1080,
       "height": 1920,
-      "bytes": 1007963,
+      "bytes": 1006421,
       "channels": 3,
       "hasAlpha": false,
-      "sha256": "237865c21a19b1e9a6af79693cbc767676de8a2eb578290ea7964bdd3641b139"
+      "sha256": "e15171d4276ea004c2fe83acf42441d636db09e37368dc990f8ae6e574edbd47"
     },
     {
       "file": "phone/04-xatirlatmalar.png",
       "width": 1080,
       "height": 1920,
-      "bytes": 363735,
+      "bytes": 364218,
       "channels": 3,
       "hasAlpha": false,
-      "sha256": "d9e5fadb243f21ddf8d5b7ff1369e1b2cde8231ec97ff28cf7d12109f8341002"
+      "sha256": "821912e314919c7a972947ef534a3f3191017e1e97daad034fa92f861821ad50"
     },
     {
       "file": "phone/05-tund-gorunus.png",
       "width": 1080,
       "height": 1920,
-      "bytes": 650534,
+      "bytes": 648883,
       "channels": 3,
       "hasAlpha": false,
-      "sha256": "a69157683b54905cb8f086dc681c8c9da2bca5d663a551dbf9889ad93e825b82"
+      "sha256": "45707f22cef0c86d44e64862ddc79c375bce345cacc3cf0eeb83aa36d8ff9481"
     },
     {
       "file": "phone/06-kerahet-vaxtlari.png",
       "width": 1080,
       "height": 1920,
-      "bytes": 391741,
+      "bytes": 397853,
       "channels": 3,
       "hasAlpha": false,
-      "sha256": "ded7a7a3aa8c88abe18de1e83169e0c772e3bb26db50956760e060c75b173f83"
+      "sha256": "670a3bd59e096cd0d8176285f3fd242072cefadac86ed33c3c440ae743a7910d"
     },
     {
       "file": "phone/07-kerahet-bildirisi.png",
       "width": 1080,
       "height": 1920,
-      "bytes": 1313662,
+      "bytes": 1269710,
       "channels": 3,
       "hasAlpha": false,
-      "sha256": "d79d4d208707604de3d26972cbe6d48431a188af08d0c8a916d97a9ad4e2b777"
+      "sha256": "2d25e94b2a52cb19c0034ad4694315c407c6a5831ed0f8ae548d039855ac5790"
     },
     {
       "file": "phone/08-kerahet-ayarlari.png",
       "width": 1080,
       "height": 1920,
-      "bytes": 366382,
+      "bytes": 365138,
       "channels": 3,
       "hasAlpha": false,
-      "sha256": "76f2ba1220ee59772c54268214bb6c5d67d83bf5b7c4a5faacd0d5bb1e0e1038"
+      "sha256": "8afbe4dd82c86a93814de10e3798ae0e389bb22e8c67314c2c6da739ebb4a327"
     },
     {
       "file": "tablet-7/01-namaz-vaxtlari.png",
@@ -222,10 +226,10 @@
       "file": "feature-graphic-1024x500.png",
       "width": 1024,
       "height": 500,
-      "bytes": 390979,
+      "bytes": 390645,
       "channels": 3,
       "hasAlpha": false,
-      "sha256": "733e2a787d566e364d8ec06d7f640f1b14a4e644016270865e4e323c2df7f355"
+      "sha256": "0b7e650dde237d4a2f474a39704fdbdb092f24bc746b5db1d246221961a8a8f5"
     }
   ]
 }

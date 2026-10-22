@@ -1,4 +1,4 @@
-# Minimal progress notification
+# Progress notification
 
 The ordinary Android countdown contains a horizontal time track in both sizes. Compact
 content shows only the prayer name, scheduled time and native per-second prayer countdown;
@@ -10,18 +10,36 @@ when they differ from the prayer timer's ticks.
 The kərahət label and clock stay on one line, including at large font sizes. The narrower
 minute column leaves room for that inline clock. The clock matches the phase: `Kərahət girməsinə` shows the start, while
 `Kərahət bitməsinə` shows the end. Scheduled times honor the saved 12/24-hour format;
-kərahət endpoints are formatted in Asia/Baku. Prayer digits inherit Android notification
-text colors, and kərahət labels/digits use crimson/coral. Screen-reader descriptions retain
+kərahət endpoints are formatted in Asia/Baku. Prayer digits use navy in light mode and
+white in dark mode; scheduled prayer times use a softer secondary color. Kərahət labels/digits
+use crimson/coral. Screen-reader descriptions retain
 the event meaning, minute unit and estimated nature of kərahət, without reintroducing seconds.
 During the sunrise end phase, `Günçıxma` distinguishes an end countdown from a prayer start.
 
-The empty track is white in both themes, filling blue/cyan as time elapses. Actual previous/next
+The empty track is pale lavender in light mode and slate in dark mode, filling blue/cyan as time elapses. Actual previous/next
 prayer timestamps define the shared scale. Real kərahət intervals are clipped to that range,
-merged when they overlap, and shown in red, including upcoming portions. A small, solid circular
-marker shows the current position: dark blue in light mode and pale blue in dark mode,
-without rings, outlines or glow. The artwork scales uniformly so the marker stays circular
+merged when they overlap, and shown in red, including upcoming portions. The capsule has a
+glossy upper edge, shaded lower edge and soft blue/red glow, following the supplied visual reference.
+A dark navy circular marker with a white border shows the current position in both themes.
+The artwork scales uniformly so the marker stays circular
 in compact and expanded content. Without a valid previous prayer, the track stays
 neutral and the position marker is omitted.
+
+The artwork contains a 12 dp track and 16 dp outlined marker in a 24 dp slot. Expanded content
+uses that full slot; compact content fits it uniformly into 20 dp to retain room for its timer.
+The bitmap density is capped at 3, keeping each bitmap below 384 KB even on high-density devices.
+Expanded content uses a bold prayer name and countdown, with a larger kərahət row.
+Compact prayer names may autosize down to 8 sp to fit narrow cards at 200% system font size.
+Chronometers use a single maximum line with horizontal scrolling disabled so autosizing considers
+the available width for longer durations and large fonts. Android's [TextView implementation](https://github.com/aosp-mirror/platform_frameworks_base/blob/android15-release/core/java/android/widget/TextView.java#L10646)
+uses an unrestricted width when horizontal scrolling is enabled.
+
+The earlier flat-track sizing is shown in the [previous preview](thicker-track/expanded-light.png),
+with its checks recorded in [verification.json](thicker-track/verification.json).
+The glossy design APK is `artifacts/nurvaxt-glossy-notification.apk`; build, signature, packaged
+resource and test results are recorded in [glossy-track/verification.json](glossy-track/verification.json).
+The final sizing fix was compiled and checked in the packaged APK. Device tests were not rerun
+after the user instructed us not to connect to the Lenovo emulator.
 
 Expanded content shows an approaching interval only when its start is at or before the
 displayed prayer boundary; expired and unrelated future rows are hidden. The compact body
@@ -31,7 +49,7 @@ control. Public Live Updates retain their native template and promotion behavior
 layout serves ordinary expandable notifications, including Samsung SDK 36.0. The shared
 countdown/reminder group and single status-bar icon behavior are preserved.
 
-The latest signed APK is `artifacts/nurvaxt-progress-minutes.apk`. Current checks and screenshots
+The earlier minute-countdown APK is `artifacts/nurvaxt-progress-minutes.apk`. Its checks and screenshots
 are recorded in [minute-update/verification.json](minute-update/verification.json). Preview
 screenshots use the isolated `Önizləmə` test package with synthetic times.
 

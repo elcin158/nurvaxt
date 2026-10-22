@@ -236,7 +236,7 @@ class CountdownNotificationTest {
     }
   }
 
-  @Test fun solidIndicatorKeepsTheRealRedIntervalAndNeutralTailWithoutRingsOrGlowInBothThemes() {
+  @Test fun glossyTrackKeepsTheRealRedIntervalAndNeutralTailWithOutlinedIndicatorInBothThemes() {
     for (night in listOf(Configuration.UI_MODE_NIGHT_NO, Configuration.UI_MODE_NIGHT_YES)) {
       val configured = context.createConfigurationContext(Configuration(context.resources.configuration).apply {
         uiMode = uiMode and Configuration.UI_MODE_NIGHT_MASK.inv() or night
@@ -249,16 +249,22 @@ class CountdownNotificationTest {
       assertEquals(configured.getColor(R.color.countdown_progress_track), bitmap.getPixel((bitmap.width * 0.95).toInt(), y))
       assertEquals(configured.getColor(R.color.countdown_progress_indicator), bitmap.getPixel((bitmap.width * 0.7).toInt(), y))
       val center = (bitmap.width * 0.7).toInt()
-      val density = configured.resources.displayMetrics.density
+      val density = bitmap.width / 360f
       assertEquals(configured.getColor(R.color.countdown_progress_indicator),
-        bitmap.getPixel(center, y + (2.5f * density).toInt()))
-      assertEquals(0, android.graphics.Color.alpha(bitmap.getPixel(center, y + (4 * density).toInt())))
-      assertEquals(0, android.graphics.Color.alpha(bitmap.getPixel(center, y + (5.5f * density).toInt())))
+        bitmap.getPixel(center, y + (4.5f * density).toInt()))
+      assertEquals(configured.getColor(R.color.countdown_progress_indicator_outline),
+        bitmap.getPixel(center, y + (7 * density).toInt()))
+      val intervalX = (bitmap.width * 0.6f).toInt()
+      assertTrue("Capsule highlight is missing",
+        android.graphics.Color.red(bitmap.getPixel(intervalX, y - (3 * density).toInt())) >
+          android.graphics.Color.red(bitmap.getPixel(intervalX, y + (3 * density).toInt())))
       val ordinary = CountdownNotification.progressTrack(configured, track.copy(kerahat = emptyList()))
       assertEquals(configured.getColor(R.color.countdown_progress_indicator),
-        ordinary.getPixel(center, y + (2.5f * density).toInt()))
+        ordinary.getPixel(center, y + (4.5f * density).toInt()))
       val unknown = CountdownNotification.progressTrack(configured, CountdownTrack(null, emptyList()))
-      assertEquals(0, android.graphics.Color.alpha(unknown.getPixel(center, y + (4 * density).toInt())))
+      assertEquals(configured.getColor(R.color.countdown_progress_track),
+        unknown.getPixel(center, y))
+      assertEquals(0, android.graphics.Color.alpha(unknown.getPixel(center, 0)))
       assertTrue(bitmap.width * bitmap.height * 4 < 384_000)
     }
   }

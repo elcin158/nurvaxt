@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Platform, useWindowDimensions, View } from 'react-native';
 import { PrayerCardBackdrop } from '../../components/brand/PrayerCardBackdrop';
-import { AppText, Icon } from '../../components/ui';
+import { AppText } from '../../components/ui';
 import { useActiveClock } from '../../hooks/useActiveClock';
 import { usePrayerDays } from '../../hooks/usePrayerDays';
 import { useToday } from '../../hooks/useToday';
@@ -173,24 +173,6 @@ export function NextPrayerCard({
                 </AppText>
               </View>
             </View>
-            {urgency !== 'normal' && (
-              <View
-                accessibilityLiveRegion="polite"
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}
-              >
-                <Icon
-                  name={urgency === 'imminent' ? 'notifications-outline' : 'time-outline'}
-                  color={statusColor}
-                  size={14}
-                />
-                <AppText
-                  variant="caption"
-                  style={{ color: statusColor, fontSize: 11, lineHeight: 17 }}
-                >
-                  {urgency === 'imminent' ? 'Son 15 dəqiqə' : 'Son 30 dəqiqə'}
-                </AppText>
-              </View>
-            )}
             <View
               accessible
               accessibilityRole="progressbar"

@@ -1,15 +1,19 @@
 {
-  "apkSha256": "220d6cc366f976f2571058a78f6d4d179215ed054bdc6084867bd641c8617d34",
-  "source": "NurVaxt 1.0.9 current-workspace release APK on a disposable Android 15 emulator",
+  "apkSha256": "f1a798a842ee05fb121230c475cf98c32455e5bb746bb72916d116af052c927a",
+  "source": "NurVaxt 1.0.10 current-workspace release APK on a disposable Android 15 emulator",
   "apk": "android/app/build/outputs/apk/release/app-release.apk",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "rawSize": [
     1080,
     2160
   ],
   "density": 360,
   "location": "Bakı",
-  "date": "2026-10-21",
+  "fontScale": {
+    "default": 1.0,
+    "06-kerahet-vaxtlari": 1.15
+  },
+  "date": "2026-10-22",
   "timezone": "Asia/Baku",
   "visibleFields": [
     "fajr",

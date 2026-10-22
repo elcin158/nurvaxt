@@ -1,13 +1,13 @@
 # NurVaxt — Google Play şəkilləri
 
-## 21 oktyabr 2026 — cari telefon görüntüləri
+## 22 oktyabr 2026 — cari telefon görüntüləri
 
-`phone/` qovluğundakı səkkiz PNG cari iş qovluğundan yığılmış **NurVaxt 1.0.9** release tətbiqindən hazırlanıb. Şəkillər 1080 × 1920, 24-bit RGB PNG formatındadır; adındakı nömrə sırası ilə əlavə edilir.
+`phone/` qovluğundakı səkkiz PNG cari iş qovluğundan yığılmış **NurVaxt 1.0.10 (versionCode 13)** release tətbiqindən hazırlanıb. Şəkillər 1080 × 1920, 24-bit RGB PNG formatındadır; adındakı nömrə sırası ilə əlavə edilir.
 
 | Sıra | Fayl | Görüntü |
 | --- | --- | --- |
 | 01 | `phone/01-namaz-vaxtlari.png` | Beş gündəlik namaz və cari geri sayım |
-| 02 | `phone/02-canli-bildiris.png` | Genişləndirilmiş Android bildirişi və vaxt zolağı |
+| 02 | `phone/02-canli-bildiris.png` | Genişləndirilmiş Android bildirişi və yeni parlaq vaxt zolağı |
 | 03 | `phone/03-qible.png` | Cari qiblə kompası və istiqamət məlumatları |
 | 04 | `phone/04-xatirlatmalar.png` | Namazdan əvvəl xatırlatma seçimləri |
 | 05 | `phone/05-tund-gorunus.png` | Cari əsas ekranın tünd görünüşü |
@@ -17,9 +17,9 @@
 
 Cari tətbiqdə ayrıca təqvim bölməsi olmadığı üçün əvvəlki `02-teqvim.png` çıxarılıb. Telefon şəkilləri və tanıtım banneri cari üç bölməli interfeysi göstərir.
 
-Çəkilişlər ayrıca **NurVaxt_Store / Android 15** emulyatorunda, **Bakı · 21 oktyabr 2026** üçün aparılıb. Əsas çəkiliş vaxtı 15:30, aktiv zəval çəkilişləri 12:20-dir. Tətbiqin mövcud `visibleFields` ayarı ilə beş namaz göstərilib. Kərahət 06–08 şəkillərində aktivdir; müddətlər 45/10/45 dəqiqədir. İntervallar təxminidir.
+Çəkilişlər ayrıca **NurVaxt_Store / Android 15** emulyatorunda, **Bakı · 22 oktyabr 2026** üçün aparılıb. Əsas çəkiliş vaxtı 15:30, aktiv zəval çəkilişləri 12:20-dir. Tətbiqin mövcud `visibleFields` ayarı ilə beş namaz göstərilib. Kərahət 06–08 şəkillərində aktivdir; müddətlər 45/10/45 dəqiqədir. 06 şəklində namaz siyahısı ilə kərahət kartını birlikdə göstərmək üçün sistem şrifti 115%, digər şəkillərdə 100% seçilib. İntervallar təxminidir.
 
-Bildirişlər `az.nurvaxt.app` release paketinin həqiqi `CountdownService` xidmətindən və tətbiqin yoxlanmış Bakı məlumatlarından yaranıb. Test paketi və uydurma namaz cədvəli istifadə edilməyib. Hər bildiriş kartı UIAutomator sərhədləri ilə kəsilib, yanında tətbiq ekranı göstərilib. Tətbiq və bildiriş pikselləri dəyişdirilməyib; nisbətlər qorunub. Marketinq mətnləri və çərçivələr ekranın xaricindədir. Əvvəlki fon və seriyanın göy/açıq üslubu saxlanılıb.
+Bildirişlər `az.nurvaxt.app` release paketinin həqiqi `CountdownService` xidmətindən və tətbiqin yoxlanmış Bakı məlumatlarından yaranıb. Test paketi və uydurma namaz cədvəli istifadə edilməyib. Hər bildiriş kartı UIAutomator sərhədləri ilə kəsilib, yanında tətbiq ekranı göstərilib. Tətbiq və bildiriş pikselləri dəyişdirilməyib; nisbətlər qorunub. Marketinq mətnləri və çərçivələr ekranın xaricindədir. Bildirişlər son APK-dakı parlaq, 12 dp qalınlıqlı zolağı və dairəvi göstəricini əks etdirir. Qiblə tanıtım başlığı “Qibləni asanlıqla tapın.” kimi yenilənib. Əvvəlki fon və seriyanın göy/açıq üslubu saxlanılıb.
 
 ## Hazır fayllar
 

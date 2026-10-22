@@ -1,0 +1,2 @@
+Əsas ekranda “Son 15 dəqiqə” və “Son 30 dəqiqə” yazıları çıxarıldı; namaza qalan vaxt geri sayımda göstərilir.
+Canlı bildirişdə parlaq vaxt zolağı, daha oxunaqlı namaz adı və geri sayım saxlanılır.

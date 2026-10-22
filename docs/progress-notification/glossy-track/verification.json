@@ -1,0 +1,44 @@
+{
+  "checkedAt": "2026-10-22T11:08:07.781653+04:00",
+  "apk": "artifacts/nurvaxt-glossy-notification.apk",
+  "applicationId": "az.nurvaxt.app",
+  "versionName": "1.0.10",
+  "versionCode": 13,
+  "bytes": 106112543,
+  "sha256": "f1a798a842ee05fb121230c475cf98c32455e5bb746bb72916d116af052c927a",
+  "signatureVerified": true,
+  "certificateSha256": "01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e",
+  "signing": "repository local release certificate",
+  "releaseBuildPassed": true,
+  "releaseVitalLintPassed": true,
+  "nativeUnitTestsPassed": 24,
+  "androidInstrumentationApkBuildPassed": true,
+  "preFinalSizingFixInstrumentation": {
+    "passed": 13,
+    "failed": 1,
+    "failure": "Long bold countdown clipped at 200% font. Replaced singleLine with maxLines=1 and scrollHorizontally=false in both layouts."
+  },
+  "finalDeviceVerification": "Not run after user instructed not to connect to the Lenovo emulator.",
+  "physicalDeviceTested": false,
+  "installedOnDevice": false,
+  "packagedLayouts": {
+    "nurvaxt_countdown_compact": "res/k2.xml",
+    "nurvaxt_countdown_expanded": "res/Nr.xml"
+  },
+  "design": {
+    "trackThicknessDp": 12,
+    "markerDiameterDp": 16,
+    "markerBorderDp": 1.25,
+    "artworkHeightDp": 24,
+    "compactSlotHeightDp": 20,
+    "compactHeightDp": 48,
+    "bitmapMaxBytes": 311040,
+    "gradient": "blue/cyan with red real kerahat intervals",
+    "finish": "gloss highlight, lower-edge shade, soft blue/red glow",
+    "indicator": "navy core with white outline",
+    "typography": "bold prayer name and countdown, muted prayer time"
+  },
+  "screenshots": [],
+  "sameCertificateAsPreviousRelease": true,
+  "packagedTimerSizingVerified": true
+}

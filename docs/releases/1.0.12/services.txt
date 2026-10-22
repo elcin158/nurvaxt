@@ -1,0 +1,36 @@
+ACTIVITY MANAGER SERVICES (dumpsys activity services)
+  User 0 active services:
+  * ServiceRecord{58da37e u0 az.nurvaxt.app/az.nurvaxt.alarm.CountdownService c:az.nurvaxt.app}
+    intent={cmp=az.nurvaxt.app/az.nurvaxt.alarm.CountdownService}
+    packageName=az.nurvaxt.app
+    processName=az.nurvaxt.app
+    targetSdkVersion=36
+    baseDir=/data/app/~~IvattbGUkTsUUKaNOKz1TA==/az.nurvaxt.app-OpiTgmuxMARXAxmRagSlCQ==/base.apk
+    dataDir=/data/user/0/az.nurvaxt.app
+    app=ProcessRecord{1457447 2915:az.nurvaxt.app/u0a209}
+    useNewWiuLogic_forCapabilities()=true
+    useNewWiuLogic_forStart()=true
+    useNewBfslLogic()=true
+    mAllowWiu_noBinding=PROC_STATE_TOP
+    mAllowWiu_inBindService=DENIED
+    mAllowWiu_byBindings=DENIED
+    getFgsAllowWiu_legacy=PROC_STATE_TOP
+    getFgsAllowWiu_new=PROC_STATE_TOP
+    getFgsAllowWiu_forStart=PROC_STATE_TOP
+    getFgsAllowWiu_forCapabilities=PROC_STATE_TOP
+    allowUiJobScheduling=true
+    recentCallingPackage=az.nurvaxt.app
+    recentCallingUid=10209
+    mAllowStart_noBinding=PROC_STATE_TOP
+    mAllowStart_inBindService=DENIED
+    mAllowStart_byBindings=DENIED
+    getFgsAllowStart_legacy=PROC_STATE_TOP
+    getFgsAllowStart_new=PROC_STATE_TOP
+    getFgsAllowStart=PROC_STATE_TOP
+    startForegroundCount=1
+    infoAllowStartForeground=[callingPackage: az.nurvaxt.app; callingUid: 10209; uidState: TOP ; uidBFSL: [BFSL]; intent: Intent { cmp=az.nurvaxt.app/az.nurvaxt.alarm.CountdownService }; code:PROC_STATE_TOP; tempAllowListReason:<null>; targetSdkVersion:36; callerTargetSdkVersion:36; startForegroundCount:0; bindFromPackage:null: isBindService:false]
+    isForeground=true foregroundId=7401 types=0x40000000 foregroundNoti=Notification(channel=nurvaxt-countdown-v2 shortcut=null contentView=az.nurvaxt.app/0x7f0d0088 vibrate=null sound=null defaults=0 flags=ONGOING_EVENT|ONLY_ALERT_ONCE|NO_CLEAR|FOREGROUND_SERVICE color=0xffc45a45 category=service groupKey=nurvaxt-countdown vis=PUBLIC)
+    createTime=-9s717ms startingBgTimeout=--
+    lastActivity=-7s927ms restartTime=-9s716ms createdFromFg=true
+    startRequested=true delayedStop=false stopIfKilled=false callStart=true lastStartId=2
+ startCommandResult=1
