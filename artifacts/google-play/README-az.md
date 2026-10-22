@@ -1,5 +1,16 @@
 # NurVaxt — Google Play şəkilləri
 
+## 22 oktyabr 2026 — premium tanıtım videosu
+
+Cari **NurVaxt 1.0.12 (kod 15)** tətbiqindən çəkilmiş yeni 30 saniyəlik video
+`premium-video/` qovluğundadır. 1920 × 1080 üfüqi və 1080 × 1920 şaquli
+MP4 versiyaları, örtük şəkilləri, Azərbaycan dilində altyazı və yoxlama hesabatı hazırlanıb.
+Yükləmə təlimatı: `premium-video/README-az.md`. Hazır təhvil paketi:
+`../nurvaxt-premium-video.zip`.
+
+Play Store tanıtımı üçün bu yeni videodan istifadə edin. Aşağıda qeyd olunan
+`nurvaxt-preview-30s.mp4` əvvəlki versiyanın videosudur.
+
 ## 22 oktyabr 2026 — cari telefon görüntüləri
 
 `phone/` qovluğundakı səkkiz PNG cari iş qovluğundan yığılmış **NurVaxt 1.0.10 (versionCode 13)** release tətbiqindən hazırlanıb. Şəkillər 1080 × 1920, 24-bit RGB PNG formatındadır; adındakı nömrə sırası ilə əlavə edilir.

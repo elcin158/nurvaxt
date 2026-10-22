@@ -1,0 +1,2 @@
+Canlı bildirişdə vaxt zolağının və cari mövqe göstəricisinin kölgəsi silindi.
+Namaza qalan vaxt, parlaq vaxt zolağı və kərahət intervalları saxlanılır.

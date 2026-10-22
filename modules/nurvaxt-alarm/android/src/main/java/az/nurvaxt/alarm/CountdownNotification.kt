@@ -203,21 +203,7 @@ object CountdownNotification {
     fun position(fraction: Float) = bounds.left + bounds.width() * fraction.coerceIn(0f, 1f)
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     val progress = track.progress
-    val blue = context.getColor(R.color.countdown_progress_end)
     val red = context.getColor(R.color.countdown_kerahat_track)
-    val blueGlow = context.getColor(R.color.countdown_progress_glow)
-    val redGlow = context.getColor(R.color.countdown_kerahat_glow)
-    fun glow(area: RectF, color: Int, shadow: Int) {
-      if (area.width() <= 0f) return
-      paint.color = color
-      paint.setShadowLayer(3 * density, 0f, density, shadow)
-      canvas.drawRoundRect(area, radius, radius, paint)
-      paint.clearShadowLayer()
-    }
-    if (progress != null) glow(RectF(bounds.left, bounds.top, position(progress), bounds.bottom), blue, blueGlow)
-    for (interval in track.kerahat) {
-      glow(RectF(position(interval.start), bounds.top, position(interval.end), bounds.bottom), red, redGlow)
-    }
     paint.color = context.getColor(R.color.countdown_progress_track)
     canvas.drawRoundRect(bounds, radius, radius, paint)
     canvas.save()
@@ -251,11 +237,8 @@ object CountdownNotification {
     if (progress != null) {
       val markerRadius = 8 * density
       val center = position(progress).coerceIn(bounds.left + markerRadius, bounds.right - markerRadius)
-      val inKerahat = track.kerahat.any { progress >= it.start && progress <= it.end }
       paint.color = context.getColor(R.color.countdown_progress_indicator_outline)
-      paint.setShadowLayer(2.5f * density, 0f, density, if (inKerahat) redGlow else blueGlow)
       canvas.drawCircle(center, centerY, markerRadius, paint)
-      paint.clearShadowLayer()
       val coreRadius = markerRadius - 1.25f * density
       paint.color = context.getColor(R.color.countdown_progress_indicator)
       canvas.drawCircle(center, centerY, coreRadius, paint)

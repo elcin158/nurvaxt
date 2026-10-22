@@ -1,0 +1,81 @@
+{
+  "application": "NurVaxt",
+  "version": "1.0.12",
+  "versionCode": 15,
+  "package": "az.nurvaxt.app",
+  "captureDate": "2026-10-22",
+  "timezone": "Asia/Baku",
+  "location": "Bakı",
+  "apk": "artifacts/nurvaxt-1.0.12-v15-release.apk",
+  "apkSha256": "a01cbb14936e4da09d3cf5e2ed5b3f4c1edf0da88f1990c6a2aaa04a6dac50d1",
+  "captureDevice": "Dedicated disposable NurVaxt_Store, Android 15, emulator-5558",
+  "sourceSize": [
+    1080,
+    2160
+  ],
+  "appCrop": {
+    "left": 0,
+    "top": 108,
+    "width": 1080,
+    "height": 1980
+  },
+  "notificationCrop": {
+    "left": 36,
+    "top": 514,
+    "width": 1008,
+    "height": 375
+  },
+  "content": "Real release app with bundled prayer timetable. UI pixels, dates and values are not generated or replaced. Static screens hold their recorded frame. Reminder choices are tapped in the actual app.",
+  "assets": [
+    {
+      "file": "source/captures/01-namaz-vaxtlari.mp4",
+      "bytes": 188583,
+      "sha256": "33161ddd5647427abde4c3a53f86d9e5bd2e6c5aa8366896a047579ffdfa1523"
+    },
+    {
+      "file": "source/captures/01-namaz-vaxtlari.png",
+      "bytes": 172686,
+      "sha256": "ac2928e0624270c0d09a83aa37a21e424b2e883ace6770236cdb03ad24017de4"
+    },
+    {
+      "file": "source/captures/02-canli-bildiris.mp4",
+      "bytes": 135842,
+      "sha256": "a16127fce3af9877102e01170ce5eda4dc15ec7bd4b9d02ba6ed8763ac479f4a"
+    },
+    {
+      "file": "source/captures/02-canli-bildiris.png",
+      "bytes": 130093,
+      "sha256": "43a5671cd7d821ba02fde9b38a763945efaf2b639f6034171cc4cdc90f6e1d98"
+    },
+    {
+      "file": "source/captures/03-qible.mp4",
+      "bytes": 85570,
+      "sha256": "574d7bef28794605453af6d32a23fbeea3cfae77ea3ce5978697845e00fc8dc1"
+    },
+    {
+      "file": "source/captures/03-qible.png",
+      "bytes": 265772,
+      "sha256": "79cf415b74891ad19709f93fa235520009388741dfd39968edbdc99886cf4e33"
+    },
+    {
+      "file": "source/captures/04-xatirlatmalar.mp4",
+      "bytes": 189610,
+      "sha256": "f0c1630ba04fe1e5337f23c128b6251c18c50627c809a8319df58d39c67bbc4b"
+    },
+    {
+      "file": "source/captures/04-xatirlatmalar.png",
+      "bytes": 146992,
+      "sha256": "13364ade206f6c32dd8b42569821f57818a31fb5c662e94f83339be5e423e695"
+    },
+    {
+      "file": "source/captures/05-tund-gorunus.mp4",
+      "bytes": 166788,
+      "sha256": "3f735a180d0e0161d9993cfe2e8d9b19a59c43544d8503b234a67f894b2e2e9a"
+    },
+    {
+      "file": "source/captures/05-tund-gorunus.png",
+      "bytes": 171487,
+      "sha256": "64301aa774788fc59831b89414ea6c53a18b6a8db797a06fc5944e393a89a939"
+    }
+  ]
+}

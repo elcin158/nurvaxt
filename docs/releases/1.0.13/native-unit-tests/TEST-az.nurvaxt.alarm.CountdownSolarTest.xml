@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="az.nurvaxt.alarm.CountdownSolarTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-22T12:35:24.824Z" hostname="egpc047" time="0.007">
+  <properties/>
+  <testcase name="theRunningIntervalIsChosenWhileALaterOneWaits" classname="az.nurvaxt.alarm.CountdownSolarTest" time="0.001"/>
+  <testcase name="entryCountdownSwitchesToExitAtTheStartAndDisappearsAtTheEnd" classname="az.nurvaxt.alarm.CountdownSolarTest" time="0.0"/>
+  <testcase name="activeIntervalTakesPriorityAndCanContinueBeyondThePrayerBoundary" classname="az.nurvaxt.alarm.CountdownSolarTest" time="0.0"/>
+  <testcase name="minuteRefreshTracksTheSolarTargetBetweenPrayerTicks" classname="az.nurvaxt.alarm.CountdownSolarTest" time="0.005"/>
+  <testcase name="earliestRelevantFutureIntervalIsSelectedAndEmptyOrInvalidPlansStayHidden" classname="az.nurvaxt.alarm.CountdownSolarTest" time="0.001"/>
+  <testcase name="activeKerahatCoversItsOwnInterval" classname="az.nurvaxt.alarm.CountdownSolarTest" time="0.0"/>
+  <testcase name="visualAlarmSelectsOnlyTheNextFutureSolarBoundary" classname="az.nurvaxt.alarm.CountdownSolarTest" time="0.0"/>
+  <testcase name="approachingKerahatIsLimitedToTheDisplayedPrayer" classname="az.nurvaxt.alarm.CountdownSolarTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

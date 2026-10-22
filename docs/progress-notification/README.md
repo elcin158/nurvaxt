@@ -19,7 +19,8 @@ During the sunrise end phase, `Günçıxma` distinguishes an end countdown from 
 The empty track is pale lavender in light mode and slate in dark mode, filling blue/cyan as time elapses. Actual previous/next
 prayer timestamps define the shared scale. Real kərahət intervals are clipped to that range,
 merged when they overlap, and shown in red, including upcoming portions. The capsule has a
-glossy upper edge, shaded lower edge and soft blue/red glow, following the supplied visual reference.
+glossy upper edge and shaded lower edge. The track and marker have no outer shadow or glow,
+matching the approved [shadow-free design preview](no-shadow-preview/expanded-light.png).
 A dark navy circular marker with a white border shows the current position in both themes.
 The artwork scales uniformly so the marker stays circular
 in compact and expanded content. Without a valid previous prayer, the track stays

@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-22",
+  "files": [
+    {
+      "file": "nurvaxt-premium-1920x1080-30s.mp4",
+      "width": 1920,
+      "height": 1080,
+      "durationSeconds": 30,
+      "frames": 900,
+      "fps": 30,
+      "videoCodec": "h264",
+      "pixelFormat": "yuv420p",
+      "colorSpace": "bt709",
+      "audioCodec": "aac",
+      "audioChannels": 2,
+      "audioSampleRate": 48000,
+      "loudnessLUFS": -20.01,
+      "truePeakDbTP": -9.18,
+      "faststart": true,
+      "fullDecodePassed": true,
+      "bytes": 8612106,
+      "sha256": "7ad359202b7e5a511176da164929fb64a7029cbaa3533f6520f4241c726843cc"
+    },
+    {
+      "file": "nurvaxt-premium-1080x1920-30s.mp4",
+      "width": 1080,
+      "height": 1920,
+      "durationSeconds": 30,
+      "frames": 900,
+      "fps": 30,
+      "videoCodec": "h264",
+      "pixelFormat": "yuv420p",
+      "colorSpace": "bt709",
+      "audioCodec": "aac",
+      "audioChannels": 2,
+      "audioSampleRate": 48000,
+      "loudnessLUFS": -20.01,
+      "truePeakDbTP": -9.18,
+      "faststart": true,
+      "fullDecodePassed": true,
+      "bytes": 8304527,
+      "sha256": "f78874862c5de8c5ff006def90e681917dadbbc5290d2472845b60c61bf308fe"
+    }
+  ],
+  "visualReview": "Passed: inspected encoded frames in both orientations, including first/last frames, transitions and actual reminder-selection changes. Text remains inside the frame; no overlapping headlines during transitions."
+}

@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-22T12:43:18.572015+00:00",
+  "previousAab": "artifacts/nurvaxt-1.0.12-v15.aab",
+  "currentAab": "artifacts/nurvaxt-1.0.13-v16.aab",
+  "sameApplicationId": true,
+  "sameSigningCertificate": true,
+  "sameSdkRequirements": true,
+  "sameManifestDeviceFilters": true,
+  "samePermissions": true,
+  "sameRequiredLibraries": true,
+  "sameNativeLibraryNamesForEveryAbi": true,
+  "versionCodeIncreased": true,
+  "playDeviceCatalogVerified": false
+}

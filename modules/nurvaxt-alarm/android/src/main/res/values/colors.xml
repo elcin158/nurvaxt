@@ -16,8 +16,6 @@
     <color name="countdown_progress_indicator">#17233B</color>
     <color name="countdown_progress_indicator_outline">#FCFEFF</color>
     <color name="countdown_progress_outline">#BFFFFFFF</color>
-    <color name="countdown_progress_glow">#380076FF</color>
-    <color name="countdown_kerahat_glow">#48ED2255</color>
     <color name="countdown_kerahat">#D41443</color>
     <color name="countdown_kerahat_track">#EB2852</color>
     <color name="countdown_divider">#1F1B1B1F</color>
