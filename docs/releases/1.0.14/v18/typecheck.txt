@@ -1,0 +1,2 @@
+npm notice run nurvaxt-mobile@1.0.14 typecheck
+npm notice run tsc --noEmit

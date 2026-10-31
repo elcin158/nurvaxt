@@ -1,0 +1,7 @@
+npm notice run nurvaxt-mobile@1.0.14 lint
+npm notice run eslint .
+
+/home/elchin-aghali/Projects/Own/nurvaxt/artifacts/google-play/premium-video/source/render.mjs
+  45:7  warning  'mix' is assigned a value but never used  no-unused-vars
+
+✖ 1 problem (0 errors, 1 warning)

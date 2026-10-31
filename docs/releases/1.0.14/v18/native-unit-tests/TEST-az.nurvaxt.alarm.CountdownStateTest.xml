@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="az.nurvaxt.alarm.CountdownStateTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-31T06:04:00.366Z" hostname="egnb093" time="0.05">
+  <properties/>
+  <testcase name="ishaAdvancesToImsakAcrossMidnightThenFajr" classname="az.nurvaxt.alarm.CountdownStateTest" time="0.045"/>
+  <testcase name="fajrContinuesUntilSunriseThenAdvancesToDhuhr" classname="az.nurvaxt.alarm.CountdownStateTest" time="0.003"/>
+  <testcase name="legacyPrayerDefaultsToStartAndMissingTomorrowIsNotSkipped" classname="az.nurvaxt.alarm.CountdownStateTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

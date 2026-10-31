@@ -1,14 +1,17 @@
 # NurVaxt 1.0.14 — Play Store test versiyası
 
-31 oktyabr 2026. Paket: `az.nurvaxt.app`; versiya: **1.0.14**; `versionCode`: **17**.
+31 oktyabr 2026. Paket: `az.nurvaxt.app`; versiya: **1.0.14**; `versionCode`: **18**.
+
+Kod 17 artıq Play Console-da istifadə olunduğu üçün bu buraxılış kod 18 ilə yenidən
+yığılıb. Play Console-a yükləmək üçün aşağıdakı **v18** faylını seçin.
 
 ## Hazır fayllar
 
-- **Play Console üçün imzalı AAB:** `nurvaxt-1.0.14-v17.aab`.
-- **Birbaşa sınaq üçün imzalı APK:** `nurvaxt-1.0.14-v17-release.apk`; həmin AAB-dən yaradılıb.
-- **Release name:** `1.0.14 (17)`.
+- **Play Console üçün imzalı AAB:** `nurvaxt-1.0.14-v18.aab`.
+- **Birbaşa sınaq üçün imzalı APK:** `nurvaxt-1.0.14-v18-release.apk`; həmin AAB-dən yaradılıb.
+- **Release name:** `1.0.14 (18)`.
 - **Azərbaycan dilində yenilik mətni:** `google-play/release-notes-1.0.14-az.txt`.
-- **Ümumi yoxlama hesabatı:** `../docs/releases/1.0.14/verification.json`.
+- **Ümumi yoxlama hesabatı:** `../docs/releases/1.0.14/v18/verification.json`.
 
 AAB-ni Play Console-dakı mövcud test buraxılışına əlavə edin. Bu işdə Play Console-a
 yükləmə və yayım edilməyib.
@@ -47,7 +50,7 @@ avtomatik yoxlanır. Gələcək buraxılışlarda mətni əsas mənbədə dəyi�
 
 - İmzalı release yığılması və `lintVitalRelease` uğurludur.
 - TypeScript və **18 test dəstində 190 JavaScript testi** keçib.
-- **24 native unit test** bu yığılmada icra edilib və keçib.
+- **24 native unit testin** uğurlu nəticəsi Gradle keşindən qəbul edilib.
 - ESLint xətası yoxdur; əvvəlki video skriptində istifadə olunmayan `mix` xəbərdarlığı qalır.
 - AAB bundletool ilə yoxlanıb; AAB/APK mövcud release açarı və əvvəlki buraxılışla uyğun imzalanıb.
 - Dörd arxitektura, 16 KB düzləndirilməsi, offline baza, dörd xatırlatma səsi və bildiriş
@@ -65,5 +68,5 @@ python3 scripts/verify-release-bundle.py --bundletool /absolute/path/to/bundleto
 ```
 
 Mövcud `.signing/` açarını saxlayın. APK və AAB git-də saxlanılmır; checksum və imza
-məlumatları `nurvaxt-1.0.14-v17.validation.json`, `nurvaxt-1.0.14-v17-release.json`
+məlumatları `nurvaxt-1.0.14-v18.validation.json`, `nurvaxt-1.0.14-v18-release.json`
 və ümumi yoxlama hesabatındadır.

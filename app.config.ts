@@ -14,7 +14,7 @@ const config: ExpoConfig = {
   },
   android: {
     package: 'az.nurvaxt.app',
-    versionCode: 17,
+    versionCode: 18,
     allowBackup: false,
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',

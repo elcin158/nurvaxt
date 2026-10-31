@@ -17,7 +17,7 @@ export type ReleaseNotes = {
 // Never substitute these installed-release notes for an unknown future Play update.
 export const releases: readonly ReleaseNotes[] = [
   {
-    versionCode: 17,
+    versionCode: 18,
     version: '1.0.14',
     date: '2026-10-31',
     important: true,
