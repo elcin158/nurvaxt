@@ -1,13 +1,15 @@
-import { ActivityIndicator, Alert, Linking, Platform, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform } from 'react-native';
+import { router } from 'expo-router';
 import { SettingsRow } from '../settings/SettingsRow';
-import { useTheme } from '../../theme';
-import { appUpdates, useAppUpdates } from './service';
-import { UpdateBanner } from './UpdateBanner';
+import { AppText } from '../../components/ui';
+import { tokens, useTheme } from '../../theme';
+import { appUpdates, downloadProgress, useAppUpdates } from './service';
+import { openPlayStore } from './store-page';
 
 export function UpdateSettings() {
-  const checking = useAppUpdates((state) => state.checking);
+  const update = useAppUpdates();
+  const checking = update.checking;
   const { colors } = useTheme();
-  if (Platform.OS !== 'android' || !appUpdates.supported) return null;
   async function check() {
     const result = await appUpdates.check(true);
     if (result === 'current')
@@ -20,27 +22,64 @@ export function UpdateSettings() {
           { text: 'Bağla', style: 'cancel' },
           {
             text: 'Play Store-u aç',
-            onPress: () => {
-              void Linking.openURL(
-                'https://play.google.com/store/apps/details?id=az.nurvaxt.app',
-              ).catch(() =>
-                Alert.alert('Play Store açıla bilmədi', 'İnternet bağlantısını yoxlayın.'),
-              );
-            },
+            onPress: openPlayStore,
           },
         ],
       );
   }
+  const active = update.status !== 'idle';
+  const downloading = update.status === 'pending' || update.status === 'downloading';
+  const progress = downloadProgress(update);
+  const title =
+    update.status === 'downloaded'
+      ? 'Yeniləmə hazırdır'
+      : update.status === 'installing'
+        ? 'Yeniləmə quraşdırılır'
+        : downloading
+          ? 'Yeniləmə yüklənir'
+          : active
+            ? 'Yeniləmə mövcuddur'
+            : 'Yeniləməni yoxla';
   return (
-    <View style={{ gap: 8 }}>
+    <>
       <SettingsRow
-        title="Yeniləməni yoxla"
-        subtitle={checking ? 'Play Store yoxlanılır…' : 'Google Play vasitəsilə'}
-        onPress={checking ? undefined : () => void check()}
+        title="Yeniliklər"
+        subtitle="Versiyalarda nələr dəyişib?"
+        onPress={() => router.push('/whats-new')}
       >
-        {checking ? <ActivityIndicator color={colors.primary} /> : undefined}
+        {update.announcement ? (
+          <AppText
+            variant="caption"
+            style={{
+              color: colors.primary,
+              backgroundColor: colors.selected,
+              paddingHorizontal: 8,
+              paddingVertical: 3,
+              borderRadius: 7,
+              fontFamily: tokens.font.semibold,
+            }}
+          >
+            Yeni
+          </AppText>
+        ) : undefined}
       </SettingsRow>
-      <UpdateBanner />
-    </View>
+      {Platform.OS === 'android' && appUpdates.supported && (
+        <SettingsRow
+          title={title}
+          subtitle={
+            checking
+              ? 'Play Store yoxlanılır…'
+              : downloading && progress !== undefined
+                ? `${progress}% · Arxa planda yüklənir`
+                : update.status === 'downloaded'
+                  ? 'Quraşdırmaq üçün toxunun'
+                  : 'Google Play vasitəsilə'
+          }
+          onPress={checking ? undefined : active ? appUpdates.open : () => void check()}
+        >
+          {checking ? <ActivityIndicator color={colors.primary} /> : undefined}
+        </SettingsRow>
+      )}
+    </>
   );
 }

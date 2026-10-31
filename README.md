@@ -138,9 +138,10 @@ mode and azan recordings are deliberately deferred. No guessed dates or sunset/M
 
 ## Builds and checks
 
-Google Play test bundle (version 1.0.13, Android versionCode 16):
+Google Play test bundle (version 1.0.14, Android versionCode 17):
 
 ```bash
+npm run release:notes
 npm run android:bundle
 python3 scripts/verify-release-bundle.py --bundletool /absolute/path/to/bundletool-all-1.18.1.jar
 ```
@@ -149,12 +150,14 @@ Keep all four default architectures (`armeabi-v7a`, `arm64-v8a`, `x86`, `x86_64`
 to preserve the CPU coverage of the previous Play release. The verifier rejects
 bundles with missing architectures.
 
-The signed upload file is written to `artifacts/nurvaxt-1.0.13-v16.aab`. Release
+The signed upload file is written to `artifacts/nurvaxt-1.0.14-v17.aab`. Release
 binaries are not tracked in git; rebuild it with the commands above and compare
-the recorded checksum. See `artifacts/nurvaxt-1.0.13-v16.validation.json` for its
+the recorded checksum. See `artifacts/nurvaxt-1.0.14-v17.validation.json` for its
 signature, checksum, packaged permissions and 16 KB alignment checks. Azerbaijani release notes are in
-`artifacts/google-play/release-notes-1.0.13-az.txt`; handover details are in
-`artifacts/nurvaxt-1.0.13-README-az.md`. The user uploads the bundle to the existing
+`artifacts/google-play/release-notes-1.0.14-az.txt`, generated from the same release
+items shown in the app. Release builds check that these texts match and fit Play's
+500-character limit. Handover details are in
+`artifacts/nurvaxt-1.0.14-README-az.md`. The user uploads the bundle to the existing
 Play test track; no Play Console submission was performed by this task.
 
 Local signed release APK (uses the current configured version):

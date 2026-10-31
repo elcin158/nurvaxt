@@ -1,0 +1,8 @@
+Vahid yeniləmə paneli
+Yeniliklər, yüklənmə gedişi və yenidən başlatma eyni paneldə göstərilir.
+
+Daimi “Yenilə” nişanı
+“Sonra” seçildikdə nişan qalır və yeniləmə panelini yenidən açır.
+
+Yeniliklər tarixçəsi
+Ayarlar → Yeniliklər bölməsi əlavə olundu. Vacib yeniliklər bir dəfə göstərilir.

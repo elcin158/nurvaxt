@@ -16,8 +16,7 @@ import { usePreferences } from '../../src/store/preferences';
 import { tokens, useTheme } from '../../src/theme';
 import type { PrayerField } from '../../src/constants/prayers';
 import type { PrayerOccurrence } from '../../src/features/prayer-times/domain';
-import { UpdateBanner } from '../../src/features/app-updates/UpdateBanner';
-import { useAppUpdates } from '../../src/features/app-updates/service';
+import { UpdateBadge } from '../../src/features/app-updates/UpdateBadge';
 
 export default function Home() {
   const today = useToday();
@@ -43,9 +42,8 @@ export default function Home() {
   const showHijri = usePreferences((s) => s.showHijri);
   const showKerahat = usePreferences((s) => s.showKerahat);
   const adjustment = usePreferences((s) => s.hijriAdjustment);
-  const updateVisible = useAppUpdates((s) => s.visible);
   const availableHeight = height - insets.top - tabBarHeight;
-  const fitOnScreen = fontScale <= 1.1 && !updateVisible && availableHeight >= 540;
+  const fitOnScreen = fontScale <= 1.1 && availableHeight >= 540;
   const contentHeight = availableHeight - (compact ? 6 : 10) - 16;
   const navigate = (offset: number) => {
     setSelectedDate(shiftDate(date, offset));
@@ -80,7 +78,18 @@ export default function Home() {
             rowGap: 6,
           }}
         >
-          <BrandLockup compact />
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              gap: 6,
+              flexShrink: 1,
+            }}
+          >
+            <BrandLockup compact />
+            <UpdateBadge />
+          </View>
           <View
             style={{
               flexDirection: 'row',
@@ -94,7 +103,6 @@ export default function Home() {
             {day && <PrayerTimesShareButton day={day} compact />}
           </View>
         </View>
-        <UpdateBanner />
         <NextPrayerCard compact={compact} onPrayerChange={onChange} />
         <View
           style={{

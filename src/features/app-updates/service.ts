@@ -2,6 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import { create } from 'zustand';
 import Updates, { type PlayUpdateInfo } from '../../../modules/nurvaxt-updates/src';
+import { createReleaseHistory } from './release-history';
+import { findRelease, releases, type ReleaseNotes } from './releases';
+import { installedVersionCode } from './version';
 
 const DISMISSAL_KEY = 'nurvaxt-update-dismissal';
 const DAY = 24 * 60 * 60 * 1000;
@@ -13,7 +16,8 @@ type UpdateState = {
   versionCode: number;
   bytesDownloaded: number;
   totalBytes: number;
-  visible: boolean;
+  panel: 'update' | 'whats-new' | null;
+  announcement: ReleaseNotes | null;
   checking: boolean;
   busy: boolean;
   error: string | null;
@@ -25,19 +29,28 @@ type NativeUpdates = Pick<
   'checkForUpdate' | 'startUpdate' | 'completeUpdate' | 'addListener'
 >;
 type Storage = Pick<typeof AsyncStorage, 'getItem' | 'setItem' | 'removeItem'>;
+type Options = { installedVersionCode?: number; releases?: readonly ReleaseNotes[] };
+
+export function downloadProgress(update: Pick<UpdateState, 'bytesDownloaded' | 'totalBytes'>) {
+  return update.totalBytes > 0
+    ? Math.max(0, Math.min(100, Math.round((update.bytesDownloaded / update.totalBytes) * 100)))
+    : undefined;
+}
 
 // Isolated controller keeps the native events, storage and UI on one shared state machine.
 export function createUpdateController(
   native: NativeUpdates | null,
   storage: Storage = AsyncStorage,
   now = Date.now,
+  options: Options = {},
 ) {
   const useStore = create<UpdateState>(() => ({
     status: 'idle',
     versionCode: 0,
     bytesDownloaded: 0,
     totalBytes: 0,
-    visible: false,
+    panel: null,
+    announcement: null,
     checking: false,
     busy: false,
     error: null,
@@ -48,17 +61,29 @@ export function createUpdateController(
   let revision = 0;
   let request: Promise<CheckResult> | null = null;
   let manualRequested = false;
+  let dismissedPanel: Dismissal | null = null;
+  const catalog = options.releases ?? releases;
+  const history = createReleaseHistory(storage, options.installedVersionCode ?? 0, catalog);
 
-  function load() {
-    return (loaded ??= storage
-      .getItem(DISMISSAL_KEY)
-      .then((raw) => {
-        if (!raw) return;
-        const value = JSON.parse(raw) as Partial<Dismissal> | null;
-        if (value && Number.isInteger(value.versionCode) && Number.isFinite(value.until))
-          dismissal = value as Dismissal;
-      })
-      .catch(() => {}));
+  function load(existingInstall = false) {
+    return (loaded ??= Promise.all([
+      storage
+        .getItem(DISMISSAL_KEY)
+        .then((raw) => {
+          if (!raw) return;
+          const value = JSON.parse(raw) as Partial<Dismissal> | null;
+          if (value && Number.isInteger(value.versionCode) && Number.isFinite(value.until))
+            dismissal = value as Dismissal;
+        })
+        .catch(() => {}),
+      history.load(existingInstall),
+    ]).then(([, announcement]) => {
+      if (announcement)
+        useStore.setState((state) => ({
+          announcement,
+          panel: state.panel ?? 'whats-new',
+        }));
+    }));
   }
   function apply(info: PlayUpdateInfo, manual = false): CheckResult {
     const active = ['pending', 'downloading', 'downloaded', 'installing'].includes(info.status);
@@ -70,22 +95,50 @@ export function createUpdateController(
         ? 'available'
         : 'idle';
     const deferred = dismissal?.versionCode === info.versionCode && dismissal.until > now();
+    const previous = useStore.getState();
+    if (manual) dismissedPanel = null;
+    const hidden = dismissedPanel?.versionCode === info.versionCode && dismissedPanel.until > now();
+    const alreadyOpen = previous.panel === 'update' && previous.versionCode === info.versionCode;
+    const show = active
+      ? !hidden
+      : status === 'available' && (alreadyOpen || manual || (!deferred && !hidden));
     useStore.setState({
       status,
       versionCode: info.versionCode,
       bytesDownloaded: info.bytesDownloaded,
       totalBytes: info.totalBytes,
-      visible: active || (status === 'available' && (manual || !deferred)),
+      panel: show ? 'update' : previous.panel === 'update' ? null : previous.panel,
       error: info.status === 'failed' ? 'Yeniləmə yüklənə bilmədi. Yenidən cəhd edin.' : null,
     });
     return status === 'idle' ? 'current' : status === 'pending' ? 'downloading' : status;
   }
+  async function markRead(versionCode: number) {
+    await history.markRead(versionCode);
+    useStore.setState((state) => {
+      if (!state.announcement || state.announcement.versionCode > versionCode) return {};
+      return { announcement: null, panel: state.panel === 'whats-new' ? null : state.panel };
+    });
+  }
+  function open() {
+    if (useStore.getState().status === 'idle') return;
+    dismissedPanel = null;
+    useStore.setState({ panel: 'update' });
+  }
   async function dismiss() {
-    await load();
     const state = useStore.getState();
-    useStore.setState({ visible: false, error: null });
-    // Downloaded updates are offered again on the next foreground entry.
-    if (state.status !== 'available') return;
+    if (state.panel === 'update')
+      dismissedPanel = {
+        versionCode: state.versionCode,
+        until: state.status === 'available' ? now() + DAY : Infinity,
+      };
+    useStore.setState({ panel: null, error: null });
+    await load();
+    if (state.panel === 'whats-new' && state.announcement)
+      await markRead(state.announcement.versionCode);
+    else if (state.panel === 'update' && findRelease(state.versionCode, catalog))
+      await markRead(state.versionCode);
+    // Active downloads stay in the background; ready updates return on foreground.
+    if (state.panel !== 'update' || state.status !== 'available') return;
     dismissal = { versionCode: state.versionCode, until: now() + DAY };
     await storage.setItem(DISMISSAL_KEY, JSON.stringify(dismissal)).catch(() => {});
   }
@@ -119,6 +172,10 @@ export function createUpdateController(
     if (!native || useStore.getState().busy) return;
     useStore.setState({ busy: true, error: null });
     try {
+      if (findRelease(useStore.getState().versionCode, catalog)) {
+        await load();
+        await markRead(useStore.getState().versionCode);
+      }
       const result = await native.startUpdate();
       if (result === 'cancelled') await dismiss();
       else if (result === 'unavailable') await check(true);
@@ -127,14 +184,14 @@ export function createUpdateController(
         dismissal = null;
         await storage.removeItem(DISMISSAL_KEY).catch(() => {});
         const state = useStore.getState();
-        if (result === 'downloaded') useStore.setState({ status: 'downloaded', visible: true });
+        if (result === 'downloaded') useStore.setState({ status: 'downloaded', panel: 'update' });
         else if (state.status === 'available')
-          useStore.setState({ status: 'pending', visible: true });
+          useStore.setState({ status: 'pending', panel: 'update' });
       }
     } catch {
       useStore.setState({
         error: 'Yeniləmə başlaya bilmədi. İnternet bağlantısını yoxlayıb yenidən cəhd edin.',
-        visible: true,
+        panel: 'update',
       });
     } finally {
       useStore.setState({ busy: false });
@@ -146,11 +203,12 @@ export function createUpdateController(
     try {
       await native.completeUpdate();
       revision++;
-      useStore.setState({ status: 'installing' });
+      // A newer installed/failed event may have arrived before this promise resolved.
+      if (useStore.getState().status === 'downloaded') useStore.setState({ status: 'installing' });
     } catch {
       useStore.setState({
         error: 'Yeniləmə quraşdırıla bilmədi. Yenidən cəhd edin.',
-        visible: true,
+        panel: 'update',
       });
     } finally {
       useStore.setState({ busy: false });
@@ -175,6 +233,7 @@ export function createUpdateController(
   }
   function foreground() {
     const status = useStore.getState().status;
+    dismissedPanel = null;
     if ((status !== 'idle' && status !== 'available') || now() - lastCheck >= CHECK_INTERVAL)
       void check();
   }
@@ -184,11 +243,22 @@ export function createUpdateController(
     start,
     install,
     dismiss,
+    open,
+    prepare: load,
+    async readWhatsNew() {
+      await load();
+      await markRead(options.installedVersionCode ?? 0);
+    },
     connect,
     foreground,
     supported: native !== null,
   };
 }
 
-export const appUpdates = createUpdateController(Platform.OS === 'android' ? Updates : null);
+export const appUpdates = createUpdateController(
+  Platform.OS === 'android' ? Updates : null,
+  AsyncStorage,
+  Date.now,
+  { installedVersionCode },
+);
 export const useAppUpdates = appUpdates.useStore;

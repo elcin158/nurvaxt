@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="az.nurvaxt.alarm.CountdownStatusTimeTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-31T06:04:00.419Z" hostname="egnb093" time="0.024">
+  <properties/>
+  <testcase name="switchesToLiveMinuteSecondFormatBelowOneHour" classname="az.nurvaxt.alarm.CountdownStatusTimeTest" time="0.023"/>
+  <testcase name="hoursOmitSecondsWithoutRoundingIntoTheNextMinute" classname="az.nurvaxt.alarm.CountdownStatusTimeTest" time="0.0"/>
+  <testcase name="finalSecondsAndExpiredValuesRemainValidDurations" classname="az.nurvaxt.alarm.CountdownStatusTimeTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

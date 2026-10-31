@@ -19,6 +19,7 @@ import {
 } from '../src/features/notifications/service';
 import { AppText, Button } from '../src/components/ui';
 import { useAppUpdateLifecycle } from '../src/features/app-updates/useAppUpdateLifecycle';
+import { UpdatePanel } from '../src/features/app-updates/UpdatePanel';
 void SplashScreen.preventAutoHideAsync();
 const client = new QueryClient({ defaultOptions: { queries: { retry: 1 } } });
 function Shell() {
@@ -33,7 +34,7 @@ function Shell() {
   const [error, setError] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const onboarded = usePreferences((s) => s.onboardingComplete);
-  useAppUpdateLifecycle(ready && hydrated && onboarded);
+  useAppUpdateLifecycle(ready && hydrated, onboarded);
   useEffect(() => {
     let alive = true;
     getDatabase()
@@ -95,8 +96,10 @@ function Shell() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="cities" options={{ presentation: 'modal' }} />
           <Stack.Screen name="reminders" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="whats-new" />
         </Stack>
       )}
+      {ready && hydrated && onboarded && <UpdatePanel />}
     </View>
   );
 }
