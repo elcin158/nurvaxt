@@ -1,5 +1,5 @@
-import { createContext, useContext, type PropsWithChildren } from 'react';
-import { useColorScheme } from 'react-native';
+import { createContext, useContext, useEffect, useState, type PropsWithChildren } from 'react';
+import { Appearance, AppState, Platform } from 'react-native';
 import { usePreferences } from '../store/preferences';
 const light = {
   background: '#F8FAFC',
@@ -69,7 +69,31 @@ export type Theme = { colors: typeof light; dark: boolean };
 const ThemeContext = createContext<Theme>({ colors: light, dark: false });
 export function ThemeProvider({ children }: PropsWithChildren) {
   const preference = usePreferences((s) => s.theme);
-  const system = useColorScheme();
+  const [system, setSystem] = useState(Appearance.getColorScheme);
+  useEffect(() => {
+    if (preference !== 'system') return;
+    const refresh = () => {
+      if (Platform.OS === 'android') {
+        // RN 0.83 caches getColorScheme until an appearance event arrives.
+        // Following the system again refreshes that cache from the current Activity.
+        Appearance.setColorScheme('unspecified');
+      }
+      setSystem(Appearance.getColorScheme());
+    };
+    const appearance = Appearance.addChangeListener(({ colorScheme }) => setSystem(colorScheme));
+    const appState = AppState.addEventListener('change', (state) => {
+      if (state === 'active') refresh();
+    });
+    // Android's notification shade can hide the app without changing AppState.
+    const focus =
+      Platform.OS === 'android' ? AppState.addEventListener('focus', refresh) : undefined;
+    refresh();
+    return () => {
+      appearance.remove();
+      appState.remove();
+      focus?.remove();
+    };
+  }, [preference]);
   const isDark = preference === 'dark' || (preference === 'system' && system === 'dark');
   return (
     <ThemeContext.Provider value={{ colors: isDark ? dark : light, dark: isDark }}>
