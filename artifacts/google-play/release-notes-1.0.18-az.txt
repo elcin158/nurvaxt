@@ -1,0 +1,5 @@
+Yenilik mətnləri vaxtında göstərilir
+Yeni versiyanın dəyişiklikləri əvvəlki keşdən asılı olmadan yüklənir. Müvəqqəti əlçatmaz olduqda yenidən yoxlanılır.
+
+Daha yığcam yeniləmə paneli
+Dəyişiklik məlumatı olmadıqda əlavə mağaza keçidi çıxarılıb, məlumat mesajı saxlanılıb.

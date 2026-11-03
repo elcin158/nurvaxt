@@ -1,0 +1,13 @@
+{
+  "allReleaseTextEmbedded": true,
+  "characters": 271,
+  "checkedTextLines": {
+    "Yenilik mətnləri vaxtında göstərilir": true,
+    "Yeni versiyanın dəyişiklikləri əvvəlki keşdən asılı olmadan yüklənir. Müvəqqəti əlçatmaz olduqda yenidən yoxlanılır.": true,
+    "Daha yığcam yeniləmə paneli": true,
+    "Dəyişiklik məlumatı olmadıqda əlavə mağaza keçidi çıxarılıb, məlumat mesajı saxlanılıb.": true
+  },
+  "playTextSha256": "f4d357b009a685d84e52c3088c6ec05876eaf5d4ba1fe79ab366b29eef806f9c",
+  "gitHubFeedUrlEmbedded": true,
+  "removedStoreLinkTextAbsentFromAab": true
+}

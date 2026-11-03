@@ -55,7 +55,7 @@ export function createReleaseFeed(storage: Storage, fetchFeed: FetchFeed = fetch
   let cached: CachedFeed | undefined;
   let loaded: Promise<void> | undefined;
   let pending: Promise<void> | null = null;
-  let lastAttempt = -Infinity;
+  const lastAttempts = new Map<number, number>();
   const fresh = (timestamp: number, ttl: number) => {
     const elapsed = now() - timestamp;
     return elapsed >= 0 && elapsed < ttl;
@@ -75,7 +75,6 @@ export function createReleaseFeed(storage: Storage, fetchFeed: FetchFeed = fetch
   async function refresh() {
     if (pending) return pending;
     pending = (async () => {
-      lastAttempt = now();
       const controller = new AbortController();
       let timer: ReturnType<typeof setTimeout> | undefined;
       try {
@@ -83,7 +82,7 @@ export function createReleaseFeed(storage: Storage, fetchFeed: FetchFeed = fetch
           (async () => {
             const response = await fetchFeed(RELEASE_FEED_URL, {
               signal: controller.signal,
-              headers: { Accept: 'application/json' },
+              headers: { Accept: 'application/json', 'Cache-Control': 'no-cache' },
             });
             if (!response.ok) throw new Error('Release feed is unavailable.');
             const text = await response.text();
@@ -114,12 +113,16 @@ export function createReleaseFeed(storage: Storage, fetchFeed: FetchFeed = fetch
     async get(versionCode: number, force = false): Promise<ReleaseNotes | undefined> {
       if (!Number.isSafeInteger(versionCode) || versionCode <= 0) return;
       await loadCache();
+      const release = findRelease(versionCode, cached?.feed.releases ?? []);
+      const retryAllowed = !fresh(lastAttempts.get(versionCode) ?? -Infinity, RETRY_INTERVAL);
       if (
         pending ||
         force ||
-        ((!cached || !fresh(cached.fetchedAt, CACHE_TTL)) && !fresh(lastAttempt, RETRY_INTERVAL))
-      )
+        ((!release || !cached || !fresh(cached.fetchedAt, CACHE_TTL)) && retryAllowed)
+      ) {
+        lastAttempts.set(versionCode, now());
         await refresh();
+      }
       return findRelease(versionCode, cached?.feed.releases ?? []);
     },
   };

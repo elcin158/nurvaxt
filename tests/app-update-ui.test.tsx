@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react-native';
-import { Alert, Linking, Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { ThemeProvider } from '../src/theme';
 import { UpdatePanel } from '../src/features/app-updates/UpdatePanel';
@@ -98,15 +98,13 @@ test('the panel uses notes for the exact offered version only', async () => {
   expect(screen.queryByText('Daha sadə canlı bildiriş')).not.toBeOnTheScreen();
 });
 
-test('unknown future versions offer the store details instead of invented release notes', async () => {
-  const link = jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
+test('unknown future versions explain missing release notes without a store link', async () => {
   await show();
   expect(
     screen.getByText('Bu versiyanın dəyişiklik məlumatı hazırda əlçatan deyil.'),
   ).toBeOnTheScreen();
   expect(screen.queryByText('1.0.14')).not.toBeOnTheScreen();
-  await fireEvent.press(screen.getByRole('button', { name: 'Play Store-da bax' }));
-  expect(link).toHaveBeenCalledWith('https://play.google.com/store/apps/details?id=az.nurvaxt.app');
+  expect(screen.queryByRole('button', { name: 'Play Store-da bax' })).not.toBeOnTheScreen();
 });
 
 test('GitHub notes show the exact future version and its changes before installation', async () => {
@@ -142,7 +140,9 @@ test('notes belonging to another future build cannot appear in the update panel'
   await show();
   expect(screen.queryByText('9.9.9')).not.toBeOnTheScreen();
   expect(screen.queryByText('Daha aydın canlı bildiriş')).not.toBeOnTheScreen();
-  expect(screen.getByText('Play Store-da bax')).toBeOnTheScreen();
+  expect(
+    screen.getByText('Bu versiyanın dəyişiklik məlumatı hazırda əlçatan deyil.'),
+  ).toBeOnTheScreen();
 });
 
 test('a downloaded update only installs after pressing Restart', async () => {

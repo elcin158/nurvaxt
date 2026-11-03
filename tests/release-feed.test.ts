@@ -35,10 +35,10 @@ test('only the exact offered build is returned, using the public GitHub feed wit
   const notes = source();
   expect(await notes.get(99)).toEqual(release);
   expect(await notes.get(98)).toBeUndefined();
-  expect(fetchFeed).toHaveBeenCalledTimes(1);
+  expect(fetchFeed).toHaveBeenCalledTimes(2);
   expect(fetchFeed).toHaveBeenCalledWith(RELEASE_FEED_URL, {
     signal: expect.any(AbortSignal),
-    headers: { Accept: 'application/json' },
+    headers: { Accept: 'application/json', 'Cache-Control': 'no-cache' },
   });
 });
 
@@ -48,6 +48,40 @@ test('a validated feed survives restart and is refreshed after its cache expires
   expect(fetchFeed).toHaveBeenCalledTimes(1);
   now += 15 * 60 * 1000;
   await source().get(99);
+  expect(fetchFeed).toHaveBeenCalledTimes(2);
+});
+
+test.each(['memory', 'persisted'])(
+  'a newly offered build missing from a fresh %s cache is fetched immediately',
+  async (cache) => {
+    const previousRelease = { ...release, versionCode: 98, version: '1.9.0' };
+    const previousFeed = { ...feed, releases: [previousRelease] };
+    if (cache === 'persisted') {
+      values.set('nurvaxt-release-feed-v1', JSON.stringify({ fetchedAt: now, feed: previousFeed }));
+    }
+    const notes = source();
+    if (cache === 'memory') {
+      fetchFeed.mockResolvedValueOnce({ ok: true, text: async () => JSON.stringify(previousFeed) });
+      expect(await notes.get(98)).toEqual(previousRelease);
+    }
+    now += 1000;
+    expect(await notes.get(99)).toEqual(release);
+    expect(fetchFeed).toHaveBeenCalledTimes(cache === 'memory' ? 2 : 1);
+  },
+);
+
+test('notes missing from a successful response can be retried after a minute without waiting for the cache to expire', async () => {
+  const notes = source();
+  fetchFeed.mockResolvedValueOnce({
+    ok: true,
+    text: async () => JSON.stringify({ ...feed, releases: [] }),
+  });
+  expect(await notes.get(99)).toBeUndefined();
+  now += 59_000;
+  expect(await notes.get(99)).toBeUndefined();
+  expect(fetchFeed).toHaveBeenCalledTimes(1);
+  now += 1000;
+  expect(await notes.get(99)).toEqual(release);
   expect(fetchFeed).toHaveBeenCalledTimes(2);
 });
 

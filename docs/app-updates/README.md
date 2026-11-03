@@ -54,12 +54,14 @@ This works for testing tracks too, provided that build's metadata is in the publ
 Do not include private tester information in release text.
 
 Validated metadata is cached in AsyncStorage for 15 minutes and remains usable offline.
+An offered build missing from that cache is fetched immediately, even if another build was
+just checked. Requests revalidate the HTTP cache; repeated misses or failures for the same
+build retry after a minute. Manual checks can bypass that retry interval.
 Requests share one in-flight fetch and have a five-second timeout, including the response body.
-Failed requests retry after a minute; manual checks can bypass the cache. Invalid metadata,
-unknown schema versions, duplicate build codes, oversized responses and missing files fail
+Invalid metadata, unknown schema versions, duplicate build codes, oversized responses and missing files fail
 quietly. Loading text does not delay the Play offer, download or install. Late responses cannot
 replace a different build's notes or reopen a dismissed panel. If no matching text is available,
-the panel says so and retains **Play Store-da bax**. Reading remote notes also prevents a repeat
+the panel only shows an informational message. Reading remote notes also prevents a repeat
 post-install announcement for the same build.
 
 ### Publishing release text

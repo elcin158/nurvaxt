@@ -1,0 +1,5 @@
+
+> nurvaxt-mobile@1.0.18 release:notes:check
+> node --import tsx scripts/generate-release-notes.ts --check
+
+Release notes match: 1.0.18 (22), 271/500 characters.

@@ -14,7 +14,6 @@ import { tokens, useTheme } from '../../theme';
 import { findRelease } from './releases';
 import { ReleaseHighlights } from './ReleaseHighlights';
 import { appUpdates, downloadProgress, useAppUpdates } from './service';
-import { openPlayStore } from './store-page';
 
 function PanelAction({
   children,
@@ -231,23 +230,9 @@ export function UpdatePanel() {
                 </AppText>
               </View>
             ) : (
-              <View style={{ gap: 8 }}>
-                <AppText style={{ color: colors.muted }}>
-                  Bu versiyanın dəyişiklik məlumatı hazırda əlçatan deyil.
-                </AppText>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={openPlayStore}
-                  style={{ minHeight: 44, justifyContent: 'center' }}
-                >
-                  <AppText
-                    variant="caption"
-                    style={{ color: colors.primary, fontFamily: tokens.font.semibold }}
-                  >
-                    Play Store-da bax
-                  </AppText>
-                </Pressable>
-              </View>
+              <AppText style={{ color: colors.muted }}>
+                Bu versiyanın dəyişiklik məlumatı hazırda əlçatan deyil.
+              </AppText>
             )}
             {update.error && !whatsNew && (
               <AppText accessibilityLiveRegion="assertive" style={{ color: colors.error }}>
