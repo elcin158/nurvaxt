@@ -40,6 +40,8 @@ beforeEach(() => {
     status: 'available',
     panel: 'update',
     announcement: null,
+    release: null,
+    notesLoading: false,
     busy: false,
     checking: false,
     error: null,
@@ -100,11 +102,47 @@ test('unknown future versions offer the store details instead of invented releas
   const link = jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
   await show();
   expect(
-    screen.getByText('Yeni versiyanın dəyişikliklərini Play Store-da görə bilərsiniz.'),
+    screen.getByText('Bu versiyanın dəyişiklik məlumatı hazırda əlçatan deyil.'),
   ).toBeOnTheScreen();
   expect(screen.queryByText('1.0.14')).not.toBeOnTheScreen();
   await fireEvent.press(screen.getByRole('button', { name: 'Play Store-da bax' }));
   expect(link).toHaveBeenCalledWith('https://play.google.com/store/apps/details?id=az.nurvaxt.app');
+});
+
+test('GitHub notes show the exact future version and its changes before installation', async () => {
+  useAppUpdates.setState({
+    release: {
+      versionCode: 99,
+      version: '2.0.0',
+      date: '2026-11-03',
+      important: true,
+      items: [{ icon: 'sparkles-outline', title: 'Yeni imkan', description: 'İmkanın izahı.' }],
+    },
+  });
+  await show();
+  expect(screen.getByText('2.0.0')).toBeOnTheScreen();
+  expect(screen.getByText('Yeni imkan')).toBeOnTheScreen();
+  expect(screen.getByText('İmkanın izahı.')).toBeOnTheScreen();
+  expect(screen.queryByText('Play Store-da bax')).not.toBeOnTheScreen();
+});
+
+test('waiting for notes keeps update actions usable and does not claim notes are missing', async () => {
+  useAppUpdates.setState({ notesLoading: true });
+  await show();
+  expect(screen.getByText('Yeniliklər yüklənir…')).toBeOnTheScreen();
+  expect(screen.queryByText('Play Store-da bax')).not.toBeOnTheScreen();
+  await fireEvent.press(
+    within(screen.getByTestId('update-panel')).getByRole('button', { name: 'Yenilə' }),
+  );
+  expect(appUpdates.start).toHaveBeenCalledTimes(1);
+});
+
+test('notes belonging to another future build cannot appear in the update panel', async () => {
+  useAppUpdates.setState({ release: { ...findRelease(14)!, versionCode: 98, version: '9.9.9' } });
+  await show();
+  expect(screen.queryByText('9.9.9')).not.toBeOnTheScreen();
+  expect(screen.queryByText('Daha aydın canlı bildiriş')).not.toBeOnTheScreen();
+  expect(screen.getByText('Play Store-da bax')).toBeOnTheScreen();
 });
 
 test('a downloaded update only installs after pressing Restart', async () => {

@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import { create } from 'zustand';
 import Updates, { type PlayUpdateInfo } from '../../../modules/nurvaxt-updates/src';
+import { createReleaseFeed } from './release-feed';
 import { createReleaseHistory } from './release-history';
 import { findRelease, releases, type ReleaseNotes } from './releases';
 import { installedVersionCode } from './version';
@@ -18,6 +19,8 @@ type UpdateState = {
   totalBytes: number;
   panel: 'update' | 'whats-new' | null;
   announcement: ReleaseNotes | null;
+  release: ReleaseNotes | null;
+  notesLoading: boolean;
   checking: boolean;
   busy: boolean;
   error: string | null;
@@ -29,7 +32,11 @@ type NativeUpdates = Pick<
   'checkForUpdate' | 'startUpdate' | 'completeUpdate' | 'addListener'
 >;
 type Storage = Pick<typeof AsyncStorage, 'getItem' | 'setItem' | 'removeItem'>;
-type Options = { installedVersionCode?: number; releases?: readonly ReleaseNotes[] };
+type Options = {
+  installedVersionCode?: number;
+  releases?: readonly ReleaseNotes[];
+  loadReleaseNotes?: (versionCode: number, force: boolean) => Promise<ReleaseNotes | undefined>;
+};
 
 export function downloadProgress(update: Pick<UpdateState, 'bytesDownloaded' | 'totalBytes'>) {
   return update.totalBytes > 0
@@ -51,6 +58,8 @@ export function createUpdateController(
     totalBytes: 0,
     panel: null,
     announcement: null,
+    release: null,
+    notesLoading: false,
     checking: false,
     busy: false,
     error: null,
@@ -64,6 +73,34 @@ export function createUpdateController(
   let dismissedPanel: Dismissal | null = null;
   const catalog = options.releases ?? releases;
   const history = createReleaseHistory(storage, options.installedVersionCode ?? 0, catalog);
+  const notesRequests = new Set<number>();
+
+  function loadReleaseNotes(versionCode: number, force = false) {
+    const state = useStore.getState();
+    if (
+      !options.loadReleaseNotes ||
+      state.status === 'idle' ||
+      state.release ||
+      notesRequests.has(versionCode)
+    )
+      return;
+    notesRequests.add(versionCode);
+    useStore.setState({ notesLoading: true });
+    void (async () => {
+      try {
+        const release = await options.loadReleaseNotes!(versionCode, force);
+        const current = useStore.getState();
+        if (current.versionCode === versionCode && current.status !== 'idle')
+          useStore.setState({ release: release?.versionCode === versionCode ? release : null });
+      } catch {
+        // Release text must never prevent downloading an eligible Play update.
+      } finally {
+        notesRequests.delete(versionCode);
+        if (useStore.getState().versionCode === versionCode)
+          useStore.setState({ notesLoading: false });
+      }
+    })();
+  }
 
   function load(existingInstall = false) {
     return (loaded ??= Promise.all([
@@ -96,6 +133,11 @@ export function createUpdateController(
         : 'idle';
     const deferred = dismissal?.versionCode === info.versionCode && dismissal.until > now();
     const previous = useStore.getState();
+    const release =
+      status === 'idle'
+        ? null
+        : (findRelease(info.versionCode, catalog) ??
+          (previous.versionCode === info.versionCode ? previous.release : null));
     if (manual) dismissedPanel = null;
     const hidden = dismissedPanel?.versionCode === info.versionCode && dismissedPanel.until > now();
     const alreadyOpen = previous.panel === 'update' && previous.versionCode === info.versionCode;
@@ -107,9 +149,17 @@ export function createUpdateController(
       versionCode: info.versionCode,
       bytesDownloaded: info.bytesDownloaded,
       totalBytes: info.totalBytes,
+      release,
+      notesLoading: status !== 'idle' && !release && notesRequests.has(info.versionCode),
       panel: show ? 'update' : previous.panel === 'update' ? null : previous.panel,
       error: info.status === 'failed' ? 'Yeniləmə yüklənə bilmədi. Yenidən cəhd edin.' : null,
     });
+    if (
+      status !== 'idle' &&
+      !release &&
+      (status === 'available' || previous.versionCode !== info.versionCode)
+    )
+      loadReleaseNotes(info.versionCode, manual);
     return status === 'idle' ? 'current' : status === 'pending' ? 'downloading' : status;
   }
   async function markRead(versionCode: number) {
@@ -123,6 +173,7 @@ export function createUpdateController(
     if (useStore.getState().status === 'idle') return;
     dismissedPanel = null;
     useStore.setState({ panel: 'update' });
+    loadReleaseNotes(useStore.getState().versionCode);
   }
   async function dismiss() {
     const state = useStore.getState();
@@ -135,8 +186,7 @@ export function createUpdateController(
     await load();
     if (state.panel === 'whats-new' && state.announcement)
       await markRead(state.announcement.versionCode);
-    else if (state.panel === 'update' && findRelease(state.versionCode, catalog))
-      await markRead(state.versionCode);
+    else if (state.panel === 'update' && state.release) await markRead(state.versionCode);
     // Active downloads stay in the background; ready updates return on foreground.
     if (state.panel !== 'update' || state.status !== 'available') return;
     dismissal = { versionCode: state.versionCode, until: now() + DAY };
@@ -172,7 +222,7 @@ export function createUpdateController(
     if (!native || useStore.getState().busy) return;
     useStore.setState({ busy: true, error: null });
     try {
-      if (findRelease(useStore.getState().versionCode, catalog)) {
+      if (useStore.getState().release) {
         await load();
         await markRead(useStore.getState().versionCode);
       }
@@ -255,10 +305,11 @@ export function createUpdateController(
   };
 }
 
+const releaseFeed = createReleaseFeed(AsyncStorage);
 export const appUpdates = createUpdateController(
   Platform.OS === 'android' ? Updates : null,
   AsyncStorage,
   Date.now,
-  { installedVersionCode },
+  { installedVersionCode, loadReleaseNotes: releaseFeed.get },
 );
 export const useAppUpdates = appUpdates.useStore;

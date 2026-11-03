@@ -72,7 +72,10 @@ export function UpdatePanel() {
   const { height, width, fontScale } = useWindowDimensions();
   if (!update.panel) return null;
   const whatsNew = update.panel === 'whats-new';
-  const release = whatsNew ? update.announcement : findRelease(update.versionCode);
+  const release = whatsNew
+    ? update.announcement
+    : (findRelease(update.versionCode) ??
+      (update.release?.versionCode === update.versionCode ? update.release : null));
   if (whatsNew && !release) return null;
   const ready = !whatsNew && update.status === 'downloaded';
   const downloading = !whatsNew && (update.status === 'pending' || update.status === 'downloading');
@@ -224,10 +227,17 @@ export function UpdatePanel() {
             </View>
             {release ? (
               <ReleaseHighlights release={release} />
+            ) : update.notesLoading ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <ActivityIndicator color={colors.primary} />
+                <AppText variant="caption" style={{ color: colors.muted }}>
+                  Yeniliklər yüklənir…
+                </AppText>
+              </View>
             ) : (
               <View style={{ gap: 8 }}>
                 <AppText style={{ color: colors.muted }}>
-                  Yeni versiyanın dəyişikliklərini Play Store-da görə bilərsiniz.
+                  Bu versiyanın dəyişiklik məlumatı hazırda əlçatan deyil.
                 </AppText>
                 <Pressable
                   accessibilityRole="button"

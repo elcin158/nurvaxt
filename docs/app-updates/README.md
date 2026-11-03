@@ -24,7 +24,8 @@ when ready. Tapping the badge reopens the same sheet without downloading or chec
 - **Ayarlar → Yeniliklər** opens a separate, scrollable history on every platform. It shows only
   releases at or below the installed build, with the current version identified.
 - iOS, web and older development builds without this native module show history, but no Play
-  update controls. No server, store-page scraping or Expo OTA updates are used.
+  update controls. Release text comes from a public GitHub JSON feed; there is no backend,
+  store-page scraping or Expo OTA update service.
 
 ## Release notes and announcements
 
@@ -33,18 +34,50 @@ published build's exact `versionCode`, version, date and user-facing changes the
 `important: true` for a release worth introducing automatically; minor fixes remain in history.
 The sample future release text from the design preview is not shipped.
 
-`npm run release:notes` generates the current release's Play Store text from these
-same titles and descriptions. `npm run release:notes:check` verifies byte-for-byte
-agreement, the configured/native version and the
+`npm run release:notes` generates the current release's Play Store text and the public
+`updates.json` feed from these same titles and descriptions. `npm run release:notes:check`
+verifies byte-for-byte agreement for both files, the configured/native version and the
 [500-character Play limit](https://support.google.com/googleplay/android-developer/answer/9859348).
 Both local release-build npm scripts run that check before Gradle starts.
 
 Google Play's [AppUpdateInfo](https://developer.android.com/reference/com/google/android/play/core/appupdate/AppUpdateInfo)
 exposes availability/progress and `availableVersionCode()`, but does not supply release notes
-or the human-readable future version. The sheet uses bundled notes only for an exact matching
-build. For an unknown future build it shows a truthful fallback with **Play Store-da bax**;
-it never relabels the installed release's notes as the offered update. To show arbitrary future
-release text before installation, a separate maintained release-notes feed would be needed.
+or the human-readable future version. The sheet first uses bundled notes for an exact matching
+build. For an unknown future build it loads the matching entry from:
+
+https://raw.githubusercontent.com/elcin158/nurvaxt/main/updates.json
+
+The feed carries `schemaVersion: 1`, `packageName: "az.nurvaxt.app"` and a `releases` array
+with the same shape as the bundled catalog. Only the exact `versionCode` offered by Play is
+displayed; the newest entry in the feed cannot trigger an update or change Play eligibility.
+This works for testing tracks too, provided that build's metadata is in the public feed.
+Do not include private tester information in release text.
+
+Validated metadata is cached in AsyncStorage for 15 minutes and remains usable offline.
+Requests share one in-flight fetch and have a five-second timeout, including the response body.
+Failed requests retry after a minute; manual checks can bypass the cache. Invalid metadata,
+unknown schema versions, duplicate build codes, oversized responses and missing files fail
+quietly. Loading text does not delay the Play offer, download or install. Late responses cannot
+replace a different build's notes or reopen a dismissed panel. If no matching text is available,
+the panel says so and retains **Play Store-da bax**. Reading remote notes also prevents a repeat
+post-install announcement for the same build.
+
+### Publishing release text
+
+1. Add the build's exact code, visible version and changes to `src/features/app-updates/releases.ts`.
+2. Run `npm run release:notes` to regenerate `updates.json` and the Play Store text.
+3. Commit the metadata to `main` before rolling out that build in Google Play. Draft releases
+   may be included: Play still decides which update each device is eligible to receive.
+4. Paste the generated `artifacts/google-play/release-notes-<version>-az.txt` into Play Console.
+
+The GitHub Actions release-notes workflow validates changes on pull requests and regenerates
+the feed after changes reach `main`. It publishes only generated metadata, with the built-in
+`GITHUB_TOKEN`; no personal token, Play Console credentials or application backend is needed.
+The workflow can also be run manually. If branch protection prevents its metadata commit,
+commit the generated files through the normal pull-request process instead.
+
+Existing installed builds must first receive an app build containing the feed reader; adding
+`updates.json` alone cannot change the behavior of an older binary.
 
 The installed build is tracked in AsyncStorage. A fresh install establishes a baseline before
 onboarding finishes, without an announcement. Existing users migrating from the old card can
@@ -61,7 +94,8 @@ Versions installed before this feature must first receive it through a normal Pl
 ```bash
 npm run typecheck
 npm run lint
-npm test -- --runTestsByPath tests/app-updates.test.ts tests/app-update-ui.test.tsx tests/release-history.test.ts
+npm run release:notes:check
+npm test -- --runTestsByPath tests/app-updates.test.ts tests/app-update-ui.test.tsx tests/release-history.test.ts tests/release-feed.test.ts tests/release-notes.test.ts
 cd android
 ./gradlew :nurvaxt-updates:compileDebugKotlin --no-daemon --max-workers=2
 ```

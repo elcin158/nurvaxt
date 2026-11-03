@@ -1,5 +1,6 @@
 import type { PlayUpdateInfo } from '../modules/nurvaxt-updates/src';
 import { createUpdateController } from '../src/features/app-updates/service';
+import type { ReleaseNotes } from '../src/features/app-updates/releases';
 
 jest.mock('../modules/nurvaxt-updates/src', () => ({ __esModule: true, default: null }));
 const available: PlayUpdateInfo = {
@@ -334,4 +335,154 @@ test('an automatic important update introduces itself once, even when Play has n
   const restarted = createUpdateController(native, trackedStorage, () => now, options);
   await restarted.check();
   expect(restarted.useStore.getState()).toMatchObject({ panel: null, announcement: null });
+});
+
+const futureRelease: ReleaseNotes = {
+  versionCode: 99,
+  version: '2.0.0',
+  date: '2026-11-03',
+  important: true,
+  items: [{ icon: 'sparkles-outline', title: 'Yeni imkan', description: 'İmkanın izahı.' }],
+};
+
+test('future release text loads independently without delaying the Play update offer', async () => {
+  let resolveNotes!: (release: ReleaseNotes) => void;
+  const loadReleaseNotes = jest.fn(
+    () => new Promise<ReleaseNotes>((resolve) => (resolveNotes = resolve)),
+  );
+  native.checkForUpdate.mockResolvedValue({ ...available, versionCode: 99 });
+  const updates = createUpdateController(native, storage, () => now, { loadReleaseNotes });
+  expect(await updates.check()).toBe('available');
+  expect(updates.useStore.getState()).toMatchObject({
+    panel: 'update',
+    status: 'available',
+    notesLoading: true,
+    release: null,
+  });
+  expect(loadReleaseNotes).toHaveBeenCalledWith(99, false);
+  await updates.start();
+  expect(native.startUpdate).toHaveBeenCalledTimes(1);
+  resolveNotes(futureRelease);
+  await Promise.resolve();
+  expect(updates.useStore.getState()).toMatchObject({
+    status: 'pending',
+    release: futureRelease,
+    notesLoading: false,
+  });
+});
+
+test('bundled notes, unsupported builds and unavailable updates need no feed request', async () => {
+  const loadReleaseNotes = jest.fn(async () => futureRelease);
+  const unsupported = createUpdateController(null, storage, () => now, { loadReleaseNotes });
+  await unsupported.check();
+  native.checkForUpdate.mockResolvedValueOnce({ ...available, status: 'unavailable' });
+  const updates = createUpdateController(native, storage, () => now, { loadReleaseNotes });
+  await updates.check();
+  native.checkForUpdate.mockResolvedValueOnce({ ...available, versionCode: 14 });
+  await updates.check();
+  expect(updates.useStore.getState().release?.version).toBe('1.0.11');
+  expect(loadReleaseNotes).not.toHaveBeenCalled();
+});
+
+test('failed notes can be retried manually without preventing an update', async () => {
+  const loadReleaseNotes = jest.fn<Promise<ReleaseNotes | undefined>, [number, boolean]>(
+    async () => undefined,
+  );
+  loadReleaseNotes.mockRejectedValueOnce(new Error('offline'));
+  native.checkForUpdate.mockResolvedValue({ ...available, versionCode: 99 });
+  const updates = createUpdateController(native, storage, () => now, { loadReleaseNotes });
+  expect(await updates.check()).toBe('available');
+  await Promise.resolve();
+  expect(updates.useStore.getState()).toMatchObject({ release: null, notesLoading: false });
+  loadReleaseNotes.mockResolvedValueOnce(futureRelease);
+  await updates.check(true);
+  await Promise.resolve();
+  expect(loadReleaseNotes).toHaveBeenLastCalledWith(99, true);
+  expect(updates.useStore.getState().release).toEqual(futureRelease);
+});
+
+test('notes for another build are ignored and late responses never reopen a dismissed panel', async () => {
+  let resolveNotes!: (release: ReleaseNotes) => void;
+  const loadReleaseNotes = jest.fn(
+    () => new Promise<ReleaseNotes>((resolve) => (resolveNotes = resolve)),
+  );
+  native.checkForUpdate.mockResolvedValue({ ...available, versionCode: 99 });
+  const updates = createUpdateController(native, storage, () => now, { loadReleaseNotes });
+  await updates.check();
+  await updates.check();
+  expect(loadReleaseNotes).toHaveBeenCalledTimes(1);
+  await updates.dismiss();
+  resolveNotes({ ...futureRelease, versionCode: 100 });
+  await Promise.resolve();
+  expect(updates.useStore.getState()).toMatchObject({ panel: null, release: null });
+});
+
+test('an old metadata request cannot replace notes for a newer offered build', async () => {
+  const resolvers = new Map<number, (release: ReleaseNotes) => void>();
+  const loadReleaseNotes = (code: number) =>
+    new Promise<ReleaseNotes>((resolve) => resolvers.set(code, resolve));
+  const updates = createUpdateController(native, storage, () => now, { loadReleaseNotes });
+  native.checkForUpdate.mockResolvedValueOnce({ ...available, versionCode: 99 });
+  await updates.check();
+  native.checkForUpdate.mockResolvedValueOnce({ ...available, versionCode: 100 });
+  await updates.check();
+  resolvers.get(99)!(futureRelease);
+  await Promise.resolve();
+  expect(updates.useStore.getState()).toMatchObject({
+    versionCode: 100,
+    release: null,
+    notesLoading: true,
+  });
+  resolvers.get(100)!({ ...futureRelease, versionCode: 100, version: '2.0.1' });
+  await Promise.resolve();
+  expect(updates.useStore.getState().release?.version).toBe('2.0.1');
+});
+
+test('metadata arriving after Play withdraws an update cannot restore it', async () => {
+  let resolveNotes!: (release: ReleaseNotes) => void;
+  const loadReleaseNotes = () => new Promise<ReleaseNotes>((resolve) => (resolveNotes = resolve));
+  const updates = createUpdateController(native, storage, () => now, { loadReleaseNotes });
+  native.checkForUpdate.mockResolvedValueOnce({ ...available, versionCode: 99 });
+  await updates.check();
+  native.checkForUpdate.mockResolvedValueOnce({
+    ...available,
+    versionCode: 99,
+    status: 'unavailable',
+  });
+  await updates.check();
+  resolveNotes(futureRelease);
+  await Promise.resolve();
+  expect(updates.useStore.getState()).toMatchObject({
+    status: 'idle',
+    panel: null,
+    release: null,
+    notesLoading: false,
+  });
+});
+
+test('remote notes read before updating do not repeat as a post-install announcement', async () => {
+  const values = new Map<string, string>();
+  const trackedStorage = {
+    getItem: async (key: string) => values.get(key) ?? null,
+    setItem: async (key: string, value: string) => {
+      values.set(key, value);
+    },
+    removeItem: async (key: string) => {
+      values.delete(key);
+    },
+  };
+  native.checkForUpdate.mockResolvedValue({ ...available, versionCode: 99 });
+  const updates = createUpdateController(native, trackedStorage, () => now, {
+    installedVersionCode: 16,
+    loadReleaseNotes: async () => futureRelease,
+  });
+  await updates.check();
+  await Promise.resolve();
+  await updates.dismiss();
+  const restarted = createUpdateController(null, trackedStorage, () => now, {
+    installedVersionCode: 99,
+    releases: [futureRelease],
+  });
+  await restarted.prepare();
+  expect(restarted.useStore.getState()).toMatchObject({ announcement: null, panel: null });
 });

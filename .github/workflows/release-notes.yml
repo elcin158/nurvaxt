@@ -1,0 +1,89 @@
+name: Release notes
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/release-notes.yml'
+      - 'src/features/app-updates/**'
+      - 'scripts/generate-release-notes.ts'
+      - 'tests/*release*.test.ts'
+      - 'tests/app-update*.test.*'
+      - 'app.config.ts'
+      - 'android/app/build.gradle'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'updates.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-notes-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verify:
+    name: Validate release metadata and update behavior
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Generate GitHub feed and Google Play notes
+        run: npm run release:notes
+      - run: npm run release:notes:check
+      - run: npm run typecheck
+      - run: npm run lint
+      - name: Test release feed and update flow
+        run: >-
+          npm test -- --runTestsByPath
+          tests/release-feed.test.ts
+          tests/release-notes.test.ts
+          tests/app-updates.test.ts
+          tests/app-update-ui.test.tsx
+          tests/release-history.test.ts
+      - name: Save validated public release metadata
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-metadata
+          path: |
+            updates.json
+            artifacts/google-play/release-notes-*-az.txt
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish release metadata to GitHub
+    needs: verify
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: release-metadata
+      - name: Commit generated release metadata
+        shell: bash
+        run: |
+          git add -- updates.json artifacts/google-play
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore: regenerate release notes'
+          git push origin HEAD:main
