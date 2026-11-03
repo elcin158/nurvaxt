@@ -17,6 +17,20 @@ export type ReleaseNotes = {
 // Never substitute these installed-release notes for an unknown future Play update.
 export const releases: readonly ReleaseNotes[] = [
   {
+    versionCode: 21,
+    version: '1.0.17',
+    date: '2026-11-03',
+    important: false,
+    items: [
+      {
+        icon: 'checkmark-circle-outline',
+        title: 'Daha sadə yeniləmə paneli',
+        description:
+          'Yeniləmə paneli sadələşdirildi. Cari versiyanın dəyişikliklərinə Ayarlar → Yeniliklər bölməsindən baxmaq olar.',
+      },
+    ],
+  },
+  {
     versionCode: 20,
     version: '1.0.16',
     date: '2026-11-03',

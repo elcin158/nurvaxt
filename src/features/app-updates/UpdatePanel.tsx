@@ -8,7 +8,6 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppText, Icon } from '../../components/ui';
 import { tokens, useTheme } from '../../theme';
@@ -101,9 +100,6 @@ export function UpdatePanel() {
           : 'Yeniləmədə nələr var?';
   const dismiss = () => {
     if (!update.busy) void appUpdates.dismiss();
-  };
-  const history = () => {
-    void appUpdates.dismiss().then(() => router.push('/whats-new'));
   };
   const stacked = width < 340 || fontScale > 1.2;
   return (
@@ -325,28 +321,6 @@ export function UpdatePanel() {
                   </PanelAction>
                 </View>
               )}
-              <Pressable
-                accessibilityRole="button"
-                onPress={history}
-                disabled={update.busy}
-                accessibilityState={{ disabled: update.busy }}
-                style={{
-                  minHeight: 44,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexDirection: 'row',
-                  gap: 6,
-                  opacity: update.busy ? 0.5 : 1,
-                }}
-              >
-                <AppText
-                  variant="caption"
-                  style={{ color: colors.primary, fontFamily: tokens.font.semibold }}
-                >
-                  Bütün yeniliklər
-                </AppText>
-                <Icon name="arrow-forward-outline" size={16} />
-              </Pressable>
             </View>
           </ScrollView>
         </View>

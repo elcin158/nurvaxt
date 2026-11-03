@@ -1,0 +1,11 @@
+{
+  "allReleaseTextEmbedded": true,
+  "characters": 137,
+  "checkedTextLines": {
+    "Daha sadə yeniləmə paneli": true,
+    "Yeniləmə paneli sadələşdirildi. Cari versiyanın dəyişikliklərinə Ayarlar → Yeniliklər bölməsindən baxmaq olar.": true
+  },
+  "playTextSha256": "865ebd94491bf7ea9d5befc2434580377d0fc606d9464478cae8361a96560118",
+  "gitHubFeedUrlEmbedded": true,
+  "removedButtonTextAbsentFromAab": true
+}

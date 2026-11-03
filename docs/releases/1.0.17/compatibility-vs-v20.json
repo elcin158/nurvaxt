@@ -1,0 +1,219 @@
+{
+  "previousVersionCode": 20,
+  "newVersionCode": 21,
+  "sameManifestDeviceFilters": true,
+  "previous": {
+    "uses-sdk": [
+      {
+        "{http://schemas.android.com/apk/res/android}minSdkVersion": "24",
+        "{http://schemas.android.com/apk/res/android}targetSdkVersion": "36"
+      }
+    ],
+    "uses-feature": [],
+    "uses-permission": [
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.ACCESS_COARSE_LOCATION"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.ACCESS_NETWORK_STATE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.FOREGROUND_SERVICE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.INTERNET"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.MODIFY_AUDIO_SETTINGS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.POST_NOTIFICATIONS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.POST_PROMOTED_NOTIFICATIONS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.READ_APP_BADGE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.RECEIVE_BOOT_COMPLETED"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.SCHEDULE_EXACT_ALARM"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.VIBRATE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.WAKE_LOCK"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "az.nurvaxt.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.anddoes.launcher.permission.UPDATE_COUNT"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.google.android.c2dm.permission.RECEIVE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.htc.launcher.permission.READ_SETTINGS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.htc.launcher.permission.UPDATE_SHORTCUT"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.huawei.android.launcher.permission.CHANGE_BADGE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.huawei.android.launcher.permission.READ_SETTINGS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.huawei.android.launcher.permission.WRITE_SETTINGS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.majeur.launcher.permission.UPDATE_BADGE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.oppo.launcher.permission.READ_SETTINGS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.oppo.launcher.permission.WRITE_SETTINGS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.sec.android.provider.badge.permission.READ"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.sec.android.provider.badge.permission.WRITE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.sonyericsson.home.permission.BROADCAST_BADGE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.sonymobile.home.permission.PROVIDER_INSERT_BADGE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "me.everything.badger.permission.BADGE_COUNT_READ"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "me.everything.badger.permission.BADGE_COUNT_WRITE"
+      }
+    ],
+    "supports-screens": [],
+    "compatible-screens": [],
+    "application/uses-library": []
+  },
+  "current": {
+    "uses-sdk": [
+      {
+        "{http://schemas.android.com/apk/res/android}minSdkVersion": "24",
+        "{http://schemas.android.com/apk/res/android}targetSdkVersion": "36"
+      }
+    ],
+    "uses-feature": [],
+    "uses-permission": [
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.ACCESS_COARSE_LOCATION"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.ACCESS_NETWORK_STATE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.FOREGROUND_SERVICE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.INTERNET"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.MODIFY_AUDIO_SETTINGS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.POST_NOTIFICATIONS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.POST_PROMOTED_NOTIFICATIONS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.READ_APP_BADGE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.RECEIVE_BOOT_COMPLETED"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.SCHEDULE_EXACT_ALARM"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.VIBRATE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "android.permission.WAKE_LOCK"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "az.nurvaxt.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.anddoes.launcher.permission.UPDATE_COUNT"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.google.android.c2dm.permission.RECEIVE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.htc.launcher.permission.READ_SETTINGS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.htc.launcher.permission.UPDATE_SHORTCUT"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.huawei.android.launcher.permission.CHANGE_BADGE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.huawei.android.launcher.permission.READ_SETTINGS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.huawei.android.launcher.permission.WRITE_SETTINGS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.majeur.launcher.permission.UPDATE_BADGE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.oppo.launcher.permission.READ_SETTINGS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.oppo.launcher.permission.WRITE_SETTINGS"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.sec.android.provider.badge.permission.READ"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.sec.android.provider.badge.permission.WRITE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.sonyericsson.home.permission.BROADCAST_BADGE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "com.sonymobile.home.permission.PROVIDER_INSERT_BADGE"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "me.everything.badger.permission.BADGE_COUNT_READ"
+      },
+      {
+        "{http://schemas.android.com/apk/res/android}name": "me.everything.badger.permission.BADGE_COUNT_WRITE"
+      }
+    ],
+    "supports-screens": [],
+    "compatible-screens": [],
+    "application/uses-library": []
+  }
+}

@@ -193,13 +193,6 @@ test('post-install announcements use Oldu and do not offer another update', asyn
   expect(appUpdates.dismiss).toHaveBeenCalledTimes(1);
 });
 
-test('the panel closes before navigating to release history', async () => {
-  await show();
-  await fireEvent.press(screen.getByRole('button', { name: 'Bütün yeniliklər' }));
-  expect(appUpdates.dismiss).toHaveBeenCalledTimes(1);
-  expect(router.push).toHaveBeenCalledWith('/whats-new');
-});
-
 test('Settings reopens an available update instead of rechecking it', async () => {
   useAppUpdates.setState({ panel: null });
   await render(
