@@ -1,0 +1,12 @@
+{
+  "allReleaseTextEmbedded": true,
+  "characters": 225,
+  "checkedTextLines": {
+    "Yeniliklər yeniləmədən əvvəl": true,
+    "Yeni versiyadakı əlavələr və düzəlişlər birbaşa tətbiqdə göstərilir.": true,
+    "Daha rahat yeniləmə": true,
+    "Yenilik mətninin yüklənməsi tətbiqin yenilənməsini ləngitmir. Saxlanmış yeniliklər internetsiz də oxunur.": true
+  },
+  "playTextSha256": "9443a36ba104740a8dfdc7912a93a9fcb36f1bb0137e6d0165fd303723f96129",
+  "gitHubFeedUrlEmbedded": true
+}

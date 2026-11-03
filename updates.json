@@ -3,6 +3,42 @@
   "packageName": "az.nurvaxt.app",
   "releases": [
     {
+      "versionCode": 20,
+      "version": "1.0.16",
+      "date": "2026-11-03",
+      "important": true,
+      "items": [
+        {
+          "icon": "sparkles-outline",
+          "title": "Yeniliklər yeniləmədən əvvəl",
+          "description": "Yeni versiyadakı əlavələr və düzəlişlər birbaşa tətbiqdə göstərilir."
+        },
+        {
+          "icon": "checkmark-circle-outline",
+          "title": "Daha rahat yeniləmə",
+          "description": "Yenilik mətninin yüklənməsi tətbiqin yenilənməsini ləngitmir. Saxlanmış yeniliklər internetsiz də oxunur."
+        }
+      ]
+    },
+    {
+      "versionCode": 19,
+      "version": "1.0.15",
+      "date": "2026-11-02",
+      "important": false,
+      "items": [
+        {
+          "icon": "sparkles-outline",
+          "title": "Cari versiyanın yenilikləri",
+          "description": "“Yeniliklər” bölməsi yalnız quraşdırılmış versiyada nələrin dəyişdiyini göstərir."
+        },
+        {
+          "icon": "checkmark-circle-outline",
+          "title": "Daha aydın xatırlatma ayarları",
+          "description": "Android-də iPhone-a aid vibrasiya qeydi çıxarılıb."
+        }
+      ]
+    },
+    {
       "versionCode": 18,
       "version": "1.0.14",
       "date": "2026-10-31",

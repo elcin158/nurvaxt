@@ -44,7 +44,7 @@ export function UpdateSettings() {
     <>
       <SettingsRow
         title="Yeniliklər"
-        subtitle="Versiyalarda nələr dəyişib?"
+        subtitle="Bu versiyada nələr dəyişib?"
         onPress={() => router.push('/whats-new')}
       >
         {update.announcement ? (

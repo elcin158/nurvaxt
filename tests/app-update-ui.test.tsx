@@ -259,7 +259,7 @@ test('web keeps the release history without unsupported Play controls', async ()
   expect(screen.queryByText('Yeniləməni yoxla')).not.toBeOnTheScreen();
 });
 
-test('history shows real installed-release notes and marks the announcement read', async () => {
+test('whats-new shows only the installed release notes and marks the announcement read', async () => {
   await render(
     <ThemeProvider>
       <WhatsNew />
@@ -268,5 +268,6 @@ test('history shows real installed-release notes and marks the announcement read
   expect(screen.getByText('1.0.13')).toBeOnTheScreen();
   expect(screen.getByText('Daha sadə canlı bildiriş')).toBeOnTheScreen();
   expect(screen.queryByText('1.0.14')).not.toBeOnTheScreen();
+  expect(screen.queryByText('1.0.12')).not.toBeOnTheScreen();
   expect(appUpdates.readWhatsNew).toHaveBeenCalledTimes(1);
 });

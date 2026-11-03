@@ -5,7 +5,7 @@ import { Screen } from '../src/components/layout/Screen';
 import { ScreenHeader } from '../src/components/layout/ScreenHeader';
 import { AppText, Card } from '../src/components/ui';
 import { ReleaseHighlights } from '../src/features/app-updates/ReleaseHighlights';
-import { releaseHistory } from '../src/features/app-updates/releases';
+import { findRelease } from '../src/features/app-updates/releases';
 import { installedVersionCode } from '../src/features/app-updates/version';
 import { appUpdates } from '../src/features/app-updates/service';
 import { tokens, useTheme } from '../src/theme';
@@ -16,7 +16,8 @@ export default function WhatsNew() {
   useEffect(() => {
     void appUpdates.readWhatsNew();
   }, []);
-  const history = releaseHistory(installedVersionCode);
+  const release = findRelease(installedVersionCode);
+  const history = release ? [release] : [];
   return (
     <Screen
       bottomSafeArea

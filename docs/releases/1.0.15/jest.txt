@@ -1,0 +1,30 @@
+
+> nurvaxt-mobile@1.0.15 test
+> jest --runInBand --json --outputFile=docs/releases/1.0.15/jest.json
+
+PASS tests/reminder-sounds.test.tsx (7.739 s)
+PASS tests/data.test.ts (5.986 s)
+PASS tests/prayer-domain.test.ts
+PASS tests/ui.test.tsx
+PASS tests/qibla.test.tsx
+PASS tests/onboarding-reminders.test.tsx
+PASS tests/locations.test.tsx
+PASS tests/notifications.test.ts
+PASS tests/kerahat-notification-service.test.ts
+PASS tests/kerahat-reminders.test.tsx
+PASS tests/app-updates.test.ts
+PASS tests/database.test.ts
+PASS tests/app-update-ui.test.tsx
+PASS tests/image-review.test.ts
+PASS tests/preferences.test.ts
+PASS tests/theme.test.tsx
+PASS tests/release-notes.test.ts
+PASS tests/solar.test.ts
+PASS tests/release-history.test.ts
+
+Test Suites: 19 passed, 19 total
+Tests:       196 passed, 196 total
+Snapshots:   0 total
+Time:        24.27 s, estimated 77 s
+Ran all test suites.
+Test results written to: docs/releases/1.0.15/jest.json

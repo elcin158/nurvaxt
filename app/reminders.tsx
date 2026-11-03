@@ -144,9 +144,11 @@ export default function Reminders() {
             onChange={(vibration) => prefs.set({ reminders: { ...prefs.reminders, vibration } })}
           />
         </SettingsRow>
-        <AppText variant="caption" style={{ color: colors.muted }}>
-          iOS-da vibrasiya sistem ayarları ilə idarə olunur.
-        </AppText>
+        {Platform.OS === 'ios' && (
+          <AppText variant="caption" style={{ color: colors.muted }}>
+            Vibrasiya iPhone-un sistem ayarları ilə idarə olunur.
+          </AppText>
+        )}
       </Card>
       <Card>
         <SettingsRow title="Səssiz saatlar" subtitle="Bu aralıqda xatırlatmalar göndərilmir">

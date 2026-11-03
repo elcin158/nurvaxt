@@ -1,0 +1,5 @@
+Cari versiyanın yenilikləri
+“Yeniliklər” bölməsi yalnız quraşdırılmış versiyada nələrin dəyişdiyini göstərir.
+
+Daha aydın xatırlatma ayarları
+Android-də iPhone-a aid vibrasiya qeydi çıxarılıb.

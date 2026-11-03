@@ -1,0 +1,5 @@
+Yeniliklər yeniləmədən əvvəl
+Yeni versiyadakı əlavələr və düzəlişlər birbaşa tətbiqdə göstərilir.
+
+Daha rahat yeniləmə
+Yenilik mətninin yüklənməsi tətbiqin yenilənməsini ləngitmir. Saxlanmış yeniliklər internetsiz də oxunur.

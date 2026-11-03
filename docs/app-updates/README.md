@@ -21,9 +21,9 @@ when ready. Tapping the badge reopens the same sheet without downloading or chec
 - Settings shows **Yeniləmə mövcuddur**, download progress or **Yeniləmə hazırdır** while an
   update is active. Otherwise **Yeniləməni yoxla** performs a manual Play check. Background
   errors are silent; manual errors offer the app's Play Store page.
-- **Ayarlar → Yeniliklər** opens a separate, scrollable history on every platform. It shows only
-  releases at or below the installed build, with the current version identified.
-- iOS, web and older development builds without this native module show history, but no Play
+- **Ayarlar → Yeniliklər** opens a separate screen on every platform. It shows only the
+  installed build's release notes, marked as the current version.
+- iOS, web and older development builds without this native module show release notes, but no Play
   update controls. Release text comes from a public GitHub JSON feed; there is no backend,
   store-page scraping or Expo OTA update service.
 
