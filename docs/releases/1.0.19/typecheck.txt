@@ -1,0 +1,3 @@
+
+> nurvaxt-mobile@1.0.19 typecheck
+> tsc --noEmit

@@ -2,7 +2,7 @@ import type { ExpoConfig } from 'expo/config';
 const config: ExpoConfig = {
   name: 'NurVaxt',
   slug: 'nurvaxt',
-  version: '1.0.18',
+  version: '1.0.19',
   scheme: 'nurvaxt',
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
@@ -14,7 +14,7 @@ const config: ExpoConfig = {
   },
   android: {
     package: 'az.nurvaxt.app',
-    versionCode: 22,
+    versionCode: 23,
     allowBackup: false,
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',

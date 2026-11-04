@@ -71,20 +71,17 @@ export default function Home() {
         <View
           style={{
             flexDirection: 'row',
-            flexWrap: 'wrap',
             alignItems: 'center',
             justifyContent: 'space-between',
-            columnGap: 8,
-            rowGap: 6,
+            gap: 8,
           }}
         >
           <View
             style={{
               flexDirection: 'row',
-              flexWrap: 'wrap',
               alignItems: 'center',
               gap: 6,
-              flexShrink: 1,
+              flexShrink: 0,
             }}
           >
             <BrandLockup compact />
@@ -96,6 +93,7 @@ export default function Home() {
               alignItems: 'center',
               gap: 2,
               maxWidth: '50%',
+              minWidth: 0,
               flexShrink: 1,
             }}
           >

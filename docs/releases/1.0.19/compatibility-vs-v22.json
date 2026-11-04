@@ -1,0 +1,15 @@
+{
+  "previousVersionCode": 22,
+  "newVersionCode": 23,
+  "sameManifestDeviceFilters": true,
+  "checkedElements": [
+    "uses-sdk",
+    "uses-feature",
+    "uses-permission",
+    "uses-permission-sdk-23",
+    "supports-screens",
+    "compatible-screens",
+    "uses-configuration",
+    "supports-gl-texture"
+  ]
+}

@@ -1,0 +1,2 @@
+Əsas ekranda başlıq düzəlişi
+“Yenilə” düyməsi görünəndə şəhər seçimi və paylaşma düyməsi eyni sətirdə qalır. Yer çatmadıqda şəhər adı qısaldılır.

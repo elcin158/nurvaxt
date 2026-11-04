@@ -3,6 +3,19 @@
   "packageName": "az.nurvaxt.app",
   "releases": [
     {
+      "versionCode": 23,
+      "version": "1.0.19",
+      "date": "2026-11-04",
+      "important": false,
+      "items": [
+        {
+          "icon": "checkmark-circle-outline",
+          "title": "Əsas ekranda başlıq düzəlişi",
+          "description": "“Yenilə” düyməsi görünəndə şəhər seçimi və paylaşma düyməsi eyni sətirdə qalır. Yer çatmadıqda şəhər adı qısaldılır."
+        }
+      ]
+    },
+    {
       "versionCode": 22,
       "version": "1.0.18",
       "date": "2026-11-03",
