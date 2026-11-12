@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-11-11T12:39:12.432657+00:00",
+  "serial": "emulator-5556",
+  "androidApi": 35,
+  "apkSha256": "b28767916e2c81b3a68c3afc34692e6fdd85d18f587fd5ba1ba6297ccb01b23c",
+  "signedReleaseInstalled": true,
+  "allThreeVariantsPinned": true,
+  "compactOneRowVerified": true,
+  "compactHostPixels": {
+    "width": 946,
+    "height": 273
+  },
+  "notificationsGranted": false,
+  "wifiEnabled": false,
+  "mobileDataEnabled": false,
+  "widgetsVisibleAfterBackgroundProcessKill": true,
+  "widgetTapOpensApp": true,
+  "nativeRenderChecks": 3,
+  "javascriptTests": 238,
+  "nativeUnitTests": 30,
+  "physicalDeviceTested": false
+}

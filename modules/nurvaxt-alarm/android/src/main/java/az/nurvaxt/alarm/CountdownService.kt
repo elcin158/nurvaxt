@@ -56,6 +56,8 @@ class CountdownService : Service() {
     foreground = true
   }
 
+  // allowed() below checks notification permission; revocation is handled by fail().
+  @android.annotation.SuppressLint("MissingPermission")
   private fun refresh() {
     handler.removeCallbacks(tick)
     try {

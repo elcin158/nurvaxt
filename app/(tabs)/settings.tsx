@@ -79,6 +79,13 @@ export default function Settings() {
             onPress={() => router.push('/cities')}
           />
           <SettingsRow title="Dil" subtitle="Azərbaycan dili" />
+          {Platform.OS === 'android' && (
+            <SettingsRow
+              title="Ana ekran widget-ləri"
+              subtitle="Geniş 4×3, kompakt 4×1 və kiçik 2×2"
+              onPress={() => router.push('/widgets')}
+            />
+          )}
           <SettingsRow title="Görünüş" />
           <ChoiceGroup>
             {(['light', 'dark', 'system'] as const).map((mode, i) => (

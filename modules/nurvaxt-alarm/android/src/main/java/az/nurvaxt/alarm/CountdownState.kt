@@ -144,6 +144,8 @@ object CountdownState {
   }
 
   /** Some OEM Clear all actions remove even an ongoing foreground-service notification. */
+  // allowed() checks notification permission; a concurrent revocation is caught below.
+  @android.annotation.SuppressLint("MissingPermission")
   @Synchronized fun restoreDismissedNotification(context: Context) {
     try {
       // The user's enabled countdown must already be running. Never revive a disabled service,

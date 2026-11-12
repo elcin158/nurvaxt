@@ -29,6 +29,9 @@ class CountdownTestRunner : Instrumentation() {
     if (arguments?.getString("class") == CountdownDismissalTest::class.java.name) {
       testClass = CountdownDismissalTest::class.java
     }
+    if (arguments?.getString("class") == PrayerWidgetTest::class.java.name) {
+      testClass = PrayerWidgetTest::class.java
+    }
     start()
   }
 
@@ -36,6 +39,7 @@ class CountdownTestRunner : Instrumentation() {
     CountdownNotificationTest.context = targetContext
     SystemSoundPreviewTest.context = targetContext
     ReminderNotificationTest.context = targetContext
+    PrayerWidgetTest.context = targetContext
     CountdownDismissalTest.context = targetContext
     if (preview) {
       ReminderNotificationTest().preview()
@@ -80,7 +84,7 @@ class CountdownTestRunner : Instrumentation() {
       summary = "${result.runCount} tests, ${result.failureCount} failures"
     }
     // Sound timeout checks leave the main looper free to process native cleanup.
-    if (testClass == CountdownNotificationTest::class.java) runOnMainSync { runTests() } else runTests()
+    if (testClass in listOf(CountdownNotificationTest::class.java, PrayerWidgetTest::class.java)) runOnMainSync { runTests() } else runTests()
     finish(if (success) Activity.RESULT_OK else Activity.RESULT_CANCELED, Bundle().apply {
       putString("stream", summary)
     })

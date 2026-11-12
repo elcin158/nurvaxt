@@ -1,0 +1,22 @@
+{
+  "apk": "artifacts/nurvaxt-1.0.19-widgets-preview.apk",
+  "bytes": 106289426,
+  "sha256": "b28767916e2c81b3a68c3afc34692e6fdd85d18f587fd5ba1ba6297ccb01b23c",
+  "version": "1.0.19",
+  "versionCode": "23",
+  "signatureVerified": true,
+  "abis": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86",
+    "x86_64"
+  ],
+  "embeddedBundleBytes": 3767608,
+  "providers": [
+    "az.nurvaxt.alarm.LargePrayerWidget",
+    "az.nurvaxt.alarm.CompactPrayerWidget",
+    "az.nurvaxt.alarm.SmallPrayerWidget"
+  ],
+  "releasePreview": true,
+  "published": false
+}

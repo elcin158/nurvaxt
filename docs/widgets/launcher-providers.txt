@@ -1,0 +1,6 @@
+[33] provider ProviderId{user:0, app:10211, cmp:ComponentInfo{az.nurvaxt.app/az.nurvaxt.alarm.LargePrayerWidget}}
+[34] provider ProviderId{user:0, app:10211, cmp:ComponentInfo{az.nurvaxt.app/az.nurvaxt.alarm.CompactPrayerWidget}}
+[35] provider ProviderId{user:0, app:10211, cmp:ComponentInfo{az.nurvaxt.app/az.nurvaxt.alarm.SmallPrayerWidget}}
+provider=ProviderId{user:0, app:10211, cmp:ComponentInfo{az.nurvaxt.app/az.nurvaxt.alarm.LargePrayerWidget}}
+provider=ProviderId{user:0, app:10211, cmp:ComponentInfo{az.nurvaxt.app/az.nurvaxt.alarm.CompactPrayerWidget}}
+provider=ProviderId{user:0, app:10211, cmp:ComponentInfo{az.nurvaxt.app/az.nurvaxt.alarm.SmallPrayerWidget}}

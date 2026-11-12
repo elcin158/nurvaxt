@@ -4,6 +4,7 @@ dist/
 coverage/
 *.log
 android/.gradle/
+android/.kotlin/
 android/build/
 android/app/build/
 modules/**/build/

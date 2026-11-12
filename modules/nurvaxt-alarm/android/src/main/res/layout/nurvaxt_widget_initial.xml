@@ -1,0 +1,28 @@
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  android:gravity="center"
+  android:padding="16dp"
+  android:background="@drawable/nurvaxt_widget_blue">
+  <ImageView
+    android:layout_width="26dp"
+    android:layout_height="26dp"
+    android:src="@drawable/nurvaxt_widget_crescent"
+    android:contentDescription="@null" />
+  <TextView
+    style="@style/NurvaxtWidgetText"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:text="@string/nurvaxt_widget_brand"
+    android:textSize="20sp" />
+  <TextView
+    style="@style/NurvaxtWidgetText"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="6dp"
+    android:text="@string/nurvaxt_widget_open_prompt"
+    android:textSize="12sp" />
+</LinearLayout>

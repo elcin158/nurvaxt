@@ -1,0 +1,77 @@
+<FrameLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/widget_root"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@drawable/nurvaxt_widget_blue"
+  android:clipToOutline="true"
+  android:layoutDirection="ltr">
+  <ImageView
+    android:layout_width="160dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="top|end"
+    android:src="@drawable/nurvaxt_widget_orbit"
+    android:contentDescription="@null" />
+  <LinearLayout
+    android:id="@+id/widget_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="14dp">
+    <ImageView
+      android:layout_width="22dp"
+      android:layout_height="22dp"
+      android:src="@drawable/nurvaxt_widget_crescent"
+      android:contentDescription="@null" />
+    <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:orientation="vertical"
+      android:layout_marginStart="12dp"
+      android:paddingEnd="8dp">
+      <TextView
+        android:id="@+id/widget_prayer"
+        style="@style/NurvaxtWidgetNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/nurvaxt_widget_asr"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+      <TextView
+        android:id="@+id/widget_time"
+        style="@style/NurvaxtWidgetNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/nurvaxt_widget_preview_asr"
+        android:textSize="16sp"
+        android:layout_marginTop="2dp" />
+    </LinearLayout>
+    <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1.15"
+      android:orientation="vertical"
+      android:gravity="end">
+      <TextView
+        android:id="@+id/widget_remaining"
+        style="@style/NurvaxtWidgetNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/nurvaxt_widget_preview_remaining"
+        android:textSize="29sp"
+        android:gravity="end"
+        android:textStyle="bold" />
+      <TextView
+        android:id="@+id/widget_location"
+        style="@style/NurvaxtWidgetText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/nurvaxt_widget_preview_city"
+        android:textSize="10sp"
+        android:layout_marginTop="3dp"
+        android:textColor="#CCE7FF" />
+    </LinearLayout>
+  </LinearLayout>
+</FrameLayout>

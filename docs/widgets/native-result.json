@@ -1,0 +1,27 @@
+{
+  "serial": "emulator-5556",
+  "androidApi": "35",
+  "instrumentation": "3 tests, 0 failures",
+  "captures": [
+    "app-widget-gallery-bottom.png",
+    "app-widget-gallery-top.png",
+    "compact-narrow-1.0.png",
+    "compact-narrow-2.0.png",
+    "compact-short-1.0.png",
+    "compact-short-2.0.png",
+    "compact-unavailable.png",
+    "compact.png",
+    "large-narrow-1.0.png",
+    "large-narrow-2.0.png",
+    "large-unavailable.png",
+    "large.png",
+    "launcher-large-compact.png",
+    "launcher-large.png",
+    "launcher-widgets-background.png",
+    "small-narrow-1.0.png",
+    "small-narrow-2.0.png",
+    "small-unavailable.png",
+    "small.png"
+  ],
+  "scope": "Real parcelled RemoteViews; sample 22 October timetable, normal/narrow sizes, 12/24-hour format, 200% fonts, missing calendar. Launcher lifecycle is checked separately."
+}

@@ -33,6 +33,14 @@ class NurvaxtAlarmModule : Module() {
       val context = appContext.reactContext ?: throw IllegalStateException("Context unavailable")
       CountdownState.replace(context, JSONObject(json))
     }
+    AsyncFunction("replaceWidgetPlan") { json: String ->
+      val context = appContext.reactContext ?: throw IllegalStateException("Context unavailable")
+      PrayerWidgetState.replace(context, JSONObject(json))
+    }
+    AsyncFunction("requestPinWidget") { variant: String ->
+      val context = appContext.reactContext ?: throw IllegalStateException("Context unavailable")
+      PrayerWidgetState.pin(context, variant)
+    }.runOnQueue(expo.modules.kotlin.functions.Queues.MAIN)
     AsyncFunction("scheduleTest") {
       AlarmQueue.scheduleTest(appContext.reactContext ?: throw IllegalStateException("Context unavailable"))
     }

@@ -1,0 +1,37 @@
+<resources>
+  <string name="nurvaxt_widget_large_name">NurVaxt · Geniş</string>
+  <string name="nurvaxt_widget_compact_name">NurVaxt · Kompakt</string>
+  <string name="nurvaxt_widget_small_name">NurVaxt · Kiçik</string>
+  <string name="nurvaxt_widget_large_description">Namaz vaxtları və geri sayım · 4×3</string>
+  <string name="nurvaxt_widget_compact_description">Namazın adı, vaxtı və geri sayım · 4×1</string>
+  <string name="nurvaxt_widget_small_description">Kiçik namaz vaxtı və geri sayım · 2×2</string>
+  <string name="nurvaxt_widget_open">NurVaxt-ı aç</string>
+  <style name="NurvaxtWidgetText">
+    <item name="android:fontFamily">sans-serif</item>
+    <item name="android:textColor">#FFFFFF</item>
+    <item name="android:includeFontPadding">false</item>
+    <item name="android:maxLines">1</item>
+    <item name="android:ellipsize">end</item>
+    <item name="android:textDirection">ltr</item>
+  </style>
+  <style name="NurvaxtWidgetNumber" parent="NurvaxtWidgetText">
+    <item name="android:fontFamily">sans-serif-medium</item>
+    <item name="android:fontFeatureSettings">tnum</item>
+    <item name="android:letterSpacing">-0.025</item>
+  </style>
+  <string name="nurvaxt_widget_brand">NurVaxt</string>
+  <string name="nurvaxt_widget_preview_city">Bakı</string>
+  <string name="nurvaxt_widget_open_prompt">Tətbiqi açın</string>
+  <string name="nurvaxt_widget_preview_date">22 oktyabr 2026</string>
+  <string name="nurvaxt_widget_asr">Əsr</string>
+  <string name="nurvaxt_widget_fajr">Sübh</string>
+  <string name="nurvaxt_widget_dhuhr">Zöhr</string>
+  <string name="nurvaxt_widget_maghrib">Məğrib</string>
+  <string name="nurvaxt_widget_isha">İşa</string>
+  <string name="nurvaxt_widget_preview_asr">16:08</string>
+  <string name="nurvaxt_widget_preview_fajr">05:39</string>
+  <string name="nurvaxt_widget_preview_dhuhr">12:25</string>
+  <string name="nurvaxt_widget_preview_maghrib">18:04</string>
+  <string name="nurvaxt_widget_preview_isha">19:05</string>
+  <string name="nurvaxt_widget_preview_remaining">38 dəq</string>
+</resources>

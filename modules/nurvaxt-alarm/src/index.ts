@@ -15,6 +15,8 @@ export default requireOptionalNativeModule<{
   isSoundPreviewPlaying: () => boolean;
   replacePlan: (json: string) => Promise<void>;
   replaceCountdownPlan: (json: string) => Promise<void>;
+  replaceWidgetPlan: (json: string) => Promise<void>;
+  requestPinWidget: (variant: 'large' | 'compact' | 'small') => Promise<boolean>;
   scheduleTest: () => Promise<void>;
   diagnostics: () => AlarmDiagnostics;
   requestExactAccess: () => void;

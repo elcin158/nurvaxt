@@ -20,6 +20,7 @@ import {
 import { AppText, Button } from '../src/components/ui';
 import { useAppUpdateLifecycle } from '../src/features/app-updates/useAppUpdateLifecycle';
 import { UpdatePanel } from '../src/features/app-updates/UpdatePanel';
+import { synchronizeWidgets } from '../src/features/widgets/service';
 void SplashScreen.preventAutoHideAsync();
 const client = new QueryClient({ defaultOptions: { queries: { retry: 1 } } });
 function Shell() {
@@ -54,6 +55,9 @@ function Shell() {
   useEffect(() => {
     if (ready && hydrated) void requestReconciliation();
   }, [ready, hydrated, city, reminders, timeFormat, showKerahat, kerahatDurations]);
+  useEffect(() => {
+    if (ready && hydrated) void synchronizeWidgets().catch(() => {});
+  }, [ready, hydrated, city, timeFormat]);
   const remindersEnabled = reminders.enabled;
   useEffect(() => {
     if (ready && hydrated && remindersEnabled) void promptExactAccessOnce();
@@ -61,6 +65,7 @@ function Shell() {
   useEffect(() => {
     const listener = AppState.addEventListener('change', (state) => {
       if (state === 'active' && ready && hydrated) void requestReconciliation();
+      if (state === 'active' && ready && hydrated) void synchronizeWidgets().catch(() => {});
     });
     return () => listener.remove();
   }, [ready, hydrated]);
@@ -97,6 +102,7 @@ function Shell() {
           <Stack.Screen name="cities" options={{ presentation: 'modal' }} />
           <Stack.Screen name="reminders" options={{ presentation: 'modal' }} />
           <Stack.Screen name="whats-new" />
+          <Stack.Screen name="widgets" />
         </Stack>
       )}
       {ready && hydrated && onboarded && <UpdatePanel />}
