@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ServiceInfo
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -23,6 +24,7 @@ class CountdownService : Service() {
   private var foreground = false
   private var plan: CountdownPlan? = null
   private var armedPrayer: Long? = null
+  private var nightMode = Configuration.UI_MODE_NIGHT_UNDEFINED
   private val tick = Runnable { refresh() }
   private val screen = object : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) { refresh() }
@@ -30,10 +32,19 @@ class CountdownService : Service() {
 
   override fun onCreate() {
     super.onCreate()
+    nightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
     ContextCompat.registerReceiver(this, screen, IntentFilter().apply {
       addAction(Intent.ACTION_SCREEN_ON)
       addAction(Intent.ACTION_USER_PRESENT)
     }, ContextCompat.RECEIVER_NOT_EXPORTED)
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    val updated = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    if (updated == nightMode) return
+    nightMode = updated
+    if (foreground) refresh()
   }
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

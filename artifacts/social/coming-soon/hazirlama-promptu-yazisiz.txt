@@ -1,0 +1,8 @@
+Alət: daxili imagegen (built-in).
+Yekun şəkil: nurvaxt-tezlikle-yazisiz.png.
+
+Use case: precise-object-edit.
+Edit ONLY the supplied image. Remove ONLY the white text "Bizi izləyin." in the bottom-left corner (approximately x 70–260, y 1330–1375 of this 1092×1440 image), and naturally reconstruct the same dark blue textured gradient background behind those letters.
+
+Strict invariants: keep every other part of the image unchanged. Preserve original dimensions, framing, all existing text and glyphs, NurVaxt logo, typography, large "Tezliklə xidmətinizdə." headline, features line, phone in the exact same size/position/perspective, every screen detail and number, blue/cyan colors, crescent light arcs, lighting and shadows. Keep the small cyan decorative horizontal dash above the removed text unchanged. Do not move or redesign anything. Do not add any text, notification panel, calendar information, badge or new feature. The finished result is exactly this supplied original poster with only "Bizi izləyin." erased. Output a single finished image.
+

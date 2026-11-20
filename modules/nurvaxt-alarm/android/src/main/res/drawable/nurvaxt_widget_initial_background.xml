@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+  <corners android:radius="@dimen/nurvaxt_widget_corner_radius" />
+  <solid android:color="@color/nurvaxt_widget_initial_surface" />
+</shape>

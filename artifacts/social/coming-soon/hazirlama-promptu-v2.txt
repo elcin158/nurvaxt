@@ -1,0 +1,12 @@
+Alət: daxili imagegen (built-in).
+Yekun şəkil: nurvaxt-tezlikle-v2.png.
+Dəyişikliklər: “Bizi izləyin” çıxarılıb, real daimi bildiriş kartı və geri sayım vurğusu, Azərbaycan üzrə namaz təqvimi haqqında sətir əlavə edilib.
+
+Yekun redaktə promptu:
+Use case: compositing / ads-marketing.
+Edit the supplied latest NurVaxt launch poster with one targeted addition. Keep the full current design and all existing elements, particularly the large real persistent Android notification, its countdown 37:44 and all its exact text and progress bar, phone, logo, blue/cyan palette, headline "Tezliklə" / "xidmətinizdə.", and bottom caption "Bildiriş panelində" / "daimi geri sayım".
+Add this exact Azerbaijani explanatory line directly below the feature line "Namaz vaxtları · Qiblə · Xatırlatmalar", in smaller but clearly readable white or soft cyan sans serif:
+"Azərbaycan üzrə namaz təqvimi əsasında"
+This added line must be easy to read in a social media post. Preserve all Azerbaijani glyphs, especially ə, ü, z, ı. It describes the calendar used throughout Azerbaijan. Do not add a year, launch date, claim that it is an official government app, any follow request, app store badges, or any new feature.
+Keep the current headline and the full bottom permanent-notification feature fully visible with comfortable margins. Shift the phone and notification slightly down or gently reduce the phone only if needed to fit the added line between the feature text and phone, without overlap or clutter. Retain phone countdown and notification card readability. One finished portrait poster, same dimensions/proportions, clean crisp premium output.
+

@@ -4,7 +4,7 @@ import { bundledDatasets, PRAYER_DB_BUNDLE } from '../../database/bundled';
 import { readDays } from '../../database/repository';
 import { usePreferences } from '../../store/preferences';
 import { locationName } from '../locations/locations';
-import { createWidgetPlan, type WidgetVariant } from './domain';
+import { createWidgetPlan } from './domain';
 
 let queue = Promise.resolve();
 async function synchronize() {
@@ -36,10 +36,4 @@ async function synchronize() {
 export function synchronizeWidgets(): Promise<void> {
   queue = queue.then(synchronize, synchronize);
   return queue;
-}
-
-export async function pinWidget(variant: WidgetVariant): Promise<boolean> {
-  if (Platform.OS !== 'android' || !Alarm?.requestPinWidget) return false;
-  await synchronizeWidgets();
-  return Alarm.requestPinWidget(variant);
 }

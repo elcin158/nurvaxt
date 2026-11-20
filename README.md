@@ -124,9 +124,9 @@ for adding 2027 when QMİ publishes it; the app does not download new years auto
   with the selected city, date, time format and source attribution.
 - Missing-data states outside the bundled coverage, with source attribution.
 - System/light/dark themes, bundled Manrope fonts, font scaling, screen reader labels.
-- Android home-screen widgets in 4×3, 4×1 and 2×2 sizes, with city/time-format sync and offline
-  native updates independent of reminders. Add from **Ayarlar → Ana ekran widget-ləri**;
-  requires a new Android build. See [widgets and verification](docs/widgets/README.md).
+- Seven Android home-screen widget designs with automatic system themes, city and time-format
+  sync, and offline updates independent of reminders. Add from the Android home-screen widget
+  picker under **NurVaxt**. See [widgets and verification](docs/widgets/README.md).
 - Independent multi-reminders for five prayers and İmsak; quiet hours, vibration and tone.
 - Default at-time notifications for all five prayers, alongside optional advance reminders.
 - Android silent ongoing countdown with a minute/second status icon, horizontal progress and upcoming/active kərahət timers.
@@ -141,7 +141,7 @@ mode and azan recordings are deliberately deferred. No guessed dates or sunset/M
 
 ## Builds and checks
 
-Google Play test bundle (version 1.0.19, Android versionCode 23):
+Google Play test bundle (version 1.0.22, Android versionCode 27):
 
 ```bash
 npm run release:notes
@@ -153,15 +153,12 @@ Keep all four default architectures (`armeabi-v7a`, `arm64-v8a`, `x86`, `x86_64`
 to preserve the CPU coverage of the previous Play release. The verifier rejects
 bundles with missing architectures.
 
-The signed upload file is written to `artifacts/nurvaxt-1.0.19-v23.aab`. Release
-binaries are not tracked in git; rebuild it with the commands above and compare
-the recorded checksum. See `artifacts/nurvaxt-1.0.19-v23.validation.json` for its
-signature, checksum, packaged permissions and 16 KB alignment checks. Azerbaijani release notes are in
-`artifacts/google-play/release-notes-1.0.19-az.txt`, generated from the same release
-items shown in the app. Release builds check that these texts match and fit Play's
-500-character limit. Handover details are in
-`artifacts/nurvaxt-1.0.19-README-az.md`. The user uploads the bundle to the existing
-Play test track; no Play Console submission was performed by this task.
+The verifier saves the signed upload file to `artifacts/nurvaxt-1.0.22-v27.aab`
+and records its signature, checksum, packaged permissions and 16 KB alignment
+checks in `artifacts/nurvaxt-1.0.22-v27.validation.json`. Azerbaijani release notes
+for the Play test track are in `artifacts/google-play/release-notes-1.0.22-az.txt`.
+The generator uses the same release items as the app and checks Play's
+500-character limit.
 
 Local signed release APK (uses the current configured version):
 

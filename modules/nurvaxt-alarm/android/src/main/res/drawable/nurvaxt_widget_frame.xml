@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+  <corners android:radius="@dimen/nurvaxt_widget_corner_radius" />
+  <solid android:color="@android:color/transparent" />
+  <stroke android:width="1dp" android:color="@color/nurvaxt_widget_frame" />
+</shape>

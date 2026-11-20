@@ -17,4 +17,7 @@
     <color name="countdown_kerahat">#FF87A0</color>
     <color name="countdown_kerahat_track">#FA4C71</color>
     <color name="countdown_divider">#2EFFFFFF</color>
+    <color name="nurvaxt_widget_initial_surface">#082E57</color>
+    <color name="nurvaxt_widget_initial_ink">#FFFFFF</color>
+    <color name="nurvaxt_widget_frame">#56D9FF</color>
 </resources>

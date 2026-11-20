@@ -5,11 +5,12 @@
   android:orientation="vertical"
   android:gravity="center"
   android:padding="16dp"
-  android:background="@drawable/nurvaxt_widget_blue">
+  android:background="@drawable/nurvaxt_widget_initial_background">
   <ImageView
     android:layout_width="26dp"
     android:layout_height="26dp"
     android:src="@drawable/nurvaxt_widget_crescent"
+    android:tint="@color/nurvaxt_widget_initial_ink"
     android:contentDescription="@null" />
   <TextView
     style="@style/NurvaxtWidgetText"
@@ -17,6 +18,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="8dp"
     android:text="@string/nurvaxt_widget_brand"
+    android:textColor="@color/nurvaxt_widget_initial_ink"
     android:textSize="20sp" />
   <TextView
     style="@style/NurvaxtWidgetText"
@@ -24,5 +26,6 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="6dp"
     android:text="@string/nurvaxt_widget_open_prompt"
+    android:textColor="@color/nurvaxt_widget_initial_ink"
     android:textSize="12sp" />
 </LinearLayout>

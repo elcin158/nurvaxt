@@ -17,6 +17,69 @@ export type ReleaseNotes = {
 // Never substitute these installed-release notes for an unknown future Play update.
 export const releases: readonly ReleaseNotes[] = [
   {
+    versionCode: 27,
+    version: '1.0.22',
+    date: '2026-11-20',
+    important: false,
+    items: [
+      {
+        icon: 'sparkles-outline',
+        title: 'Vidcet görünüşü',
+        description: 'Tünd rejimdə ana ekran vidcetlərinin haşiyəsi künclərdə bütöv görünür.',
+      },
+    ],
+  },
+  {
+    versionCode: 26,
+    version: '1.0.21',
+    date: '2026-11-20',
+    important: true,
+    items: [
+      {
+        icon: 'sparkles-outline',
+        title: 'Ana ekran vidcetləri',
+        description:
+          'Namaz vaxtları və geri sayım üçün 7 dizayn telefonun açıq və tünd mövzusuna avtomatik uyğunlaşır. Vidcetləri ana ekrandakı NurVaxt vidcet siyahısından əlavə edə bilərsiniz.',
+      },
+      {
+        icon: 'notifications-outline',
+        title: 'Canlı geri sayım',
+        description: 'Sistem mövzusu dəyişəndə canlı bildirişin rəngləri dərhal yenilənir.',
+      },
+      {
+        icon: 'checkmark-circle-outline',
+        title: 'Cihaz uyğunluğu',
+        description: 'Google Play-də şaquli ekran dəstəyi quraşdırma üçün seçimlidir.',
+      },
+    ],
+  },
+  {
+    versionCode: 24,
+    version: '1.0.20',
+    date: '2026-11-12',
+    important: true,
+    items: [
+      {
+        icon: 'sparkles-outline',
+        title: 'Ana ekran widget-ləri',
+        description:
+          'Namaz vaxtları və geri sayım üçün 7 dizayn sistemin açıq və tünd mövzusuna uyğunlaşır. Ana ekranda Widget-lər → NurVaxt bölməsindən əlavə edin.',
+      },
+      {
+        icon: 'checkmark-circle-outline',
+        title: 'Sahəyə uyğun görünüş',
+        description:
+          'Widget-lər ayrılan sahəni tam doldurur, yuxarı və aşağı artıq boşluqlar çıxarılıb.',
+      },
+      {
+        icon: 'time-outline',
+        title: 'Daha sadə vaxt siyahısı',
+        description:
+          'Namaz adlarının qarşısındakı ikonlar çıxarılıb, seçilmiş namaz aydın çərçivə ilə göstərilir.',
+      },
+    ],
+  },
+  {
     versionCode: 23,
     version: '1.0.19',
     date: '2026-11-04',

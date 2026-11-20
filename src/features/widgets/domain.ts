@@ -2,8 +2,17 @@ import { DAILY_PRAYERS, LABELS } from '../../constants/prayers';
 import type { PrayerDay } from '../../types/data';
 import { atTime } from '../../utils/time';
 
-export const WIDGET_VARIANTS = ['large', 'compact', 'small'] as const;
+export const WIDGET_VARIANTS = [
+  'large',
+  'vertical',
+  'compact',
+  'compactProgress',
+  'strip',
+  'small',
+  'list',
+] as const;
 export type WidgetVariant = (typeof WIDGET_VARIANTS)[number];
+export type WidgetTheme = 'dark' | 'light';
 export type WidgetPrayer = {
   field: (typeof DAILY_PRAYERS)[number];
   name: string;

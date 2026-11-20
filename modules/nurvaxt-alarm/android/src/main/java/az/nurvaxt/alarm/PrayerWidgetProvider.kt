@@ -12,14 +12,14 @@ import java.util.concurrent.Executors
 /** A short native update; React Native is never started by the launcher or a timer. */
 internal object PrayerWidgetUpdater {
   private val executor = Executors.newSingleThreadExecutor()
-  fun enqueue(context: Context, pending: BroadcastReceiver.PendingResult) {
+  fun enqueue(context: Context, pending: BroadcastReceiver.PendingResult? = null) {
     executor.execute {
       try {
         PrayerWidgetState.update(context.applicationContext)
       } catch (error: Exception) {
         Log.e("NurvaxtWidget", "Widget refresh failed", error)
       } finally {
-        pending.finish()
+        pending?.finish()
       }
     }
   }
@@ -41,8 +41,19 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
 }
 
 class LargePrayerWidget : PrayerWidgetProvider()
+class LightLargePrayerWidget : PrayerWidgetProvider()
 class CompactPrayerWidget : PrayerWidgetProvider()
+class LightCompactPrayerWidget : PrayerWidgetProvider()
 class SmallPrayerWidget : PrayerWidgetProvider()
+class LightSmallPrayerWidget : PrayerWidgetProvider()
+class VerticalPrayerWidget : PrayerWidgetProvider()
+class LightVerticalPrayerWidget : PrayerWidgetProvider()
+class CompactProgressPrayerWidget : PrayerWidgetProvider()
+class LightCompactProgressPrayerWidget : PrayerWidgetProvider()
+class StripPrayerWidget : PrayerWidgetProvider()
+class LightStripPrayerWidget : PrayerWidgetProvider()
+class ListPrayerWidget : PrayerWidgetProvider()
+class LightListPrayerWidget : PrayerWidgetProvider()
 
 class PrayerWidgetRefreshReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {

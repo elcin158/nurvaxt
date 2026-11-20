@@ -35,6 +35,13 @@ android = '{http://schemas.android.com/apk/res/android}'
 assert manifest.attrib['package'] == 'az.nurvaxt.app'
 assert manifest.attrib[android + 'versionName'] == version
 assert manifest.attrib[android + 'versionCode'] == str(version_code)
+portrait_features = [
+    feature for feature in manifest.findall('uses-feature')
+    if feature.get(android + 'name') == 'android.hardware.screen.portrait'
+]
+assert len(portrait_features) == 1 and portrait_features[0].get(android + 'required') == 'false', (
+    'Portrait screen support must be optional in the Play bundle manifest'
+)
 application = manifest.find('application')
 assert application is not None
 assert application.attrib.get(android + 'debuggable', 'false') == 'false'
@@ -123,6 +130,7 @@ report = {
     'bundletoolVersion': config['bundletool']['version'],
     'bundletoolValidation': True,
     'debuggable': False,
+    'portraitScreenRequired': False,
     'abis': abis,
     'allFourArchitecturesVerified': True,
     'nativeLibrariesPerAbi': libraries_per_abi,

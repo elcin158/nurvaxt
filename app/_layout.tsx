@@ -102,7 +102,6 @@ function Shell() {
           <Stack.Screen name="cities" options={{ presentation: 'modal' }} />
           <Stack.Screen name="reminders" options={{ presentation: 'modal' }} />
           <Stack.Screen name="whats-new" />
-          <Stack.Screen name="widgets" />
         </Stack>
       )}
       {ready && hydrated && onboarded && <UpdatePanel />}

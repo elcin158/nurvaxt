@@ -6,6 +6,7 @@ version = '1.0.0'
 
 android {
   namespace 'az.nurvaxt.alarm'
+  sourceSets.main.assets.srcDirs += rootProject.file('../assets/widgets')
   defaultConfig {
     versionCode 1; versionName '1.0.0'
     testInstrumentationRunner 'az.nurvaxt.alarm.CountdownTestRunner'

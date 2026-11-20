@@ -30,7 +30,8 @@
         android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="vertical"
         android:visibility="gone">
         <!-- RemoteViews permits ImageView, but not a plain View, for the divider. -->
-        <ImageView android:layout_width="match_parent" android:layout_height="1dp"
+        <ImageView android:id="@+id/countdown_kerahat_divider"
+            android:layout_width="match_parent" android:layout_height="1dp"
             android:layout_marginBottom="8dp" android:background="@drawable/nurvaxt_countdown_divider"
             android:importantForAccessibility="no" />
         <LinearLayout android:layout_width="match_parent" android:layout_height="44dp"

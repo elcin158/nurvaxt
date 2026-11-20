@@ -1,0 +1,18 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@android:id/background"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@drawable/nurvaxt_widget_initial_background"
+  android:clipToOutline="true"
+  android:foreground="@drawable/nurvaxt_widget_frame"
+  android:layoutDirection="ltr"
+  android:importantForAccessibility="yes"
+  android:descendantFocusability="blocksDescendants">
+  <ImageView
+    android:id="@+id/widget_artwork"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scaleType="fitXY"
+    android:importantForAccessibility="no"
+    android:contentDescription="@null" />
+</FrameLayout>

@@ -1,0 +1,8 @@
+Ana ekran vidcetləri
+Namaz vaxtları və geri sayım üçün 7 dizayn telefonun açıq və tünd mövzusuna avtomatik uyğunlaşır. Vidcetləri ana ekrandakı NurVaxt vidcet siyahısından əlavə edə bilərsiniz.
+
+Canlı geri sayım
+Sistem mövzusu dəyişəndə canlı bildirişin rəngləri dərhal yenilənir.
+
+Cihaz uyğunluğu
+Google Play-də şaquli ekran dəstəyi quraşdırma üçün seçimlidir.

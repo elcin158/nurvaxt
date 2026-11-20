@@ -1,0 +1,3 @@
+npm notice run nurvaxt-mobile@1.0.20 release:notes:check
+npm notice run node --import tsx scripts/generate-release-notes.ts --check
+Release notes match: 1.0.20 (24), 372/500 characters.

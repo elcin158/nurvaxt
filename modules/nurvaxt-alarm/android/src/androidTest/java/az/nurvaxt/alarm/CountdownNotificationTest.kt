@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Icon
 import android.os.Parcel
 import android.os.SystemClock
@@ -95,6 +96,42 @@ class CountdownNotificationTest {
             }
             assertNull(CountdownState.prefs(context).getString("notificationViewError", null))
           }
+        }
+      }
+    }
+  }
+
+  @Test fun bothNotificationLayoutsUpdateColorsWithoutReinflation() {
+    val now = System.currentTimeMillis()
+    val prayer = CountdownPrayer("Sübh", "2026-10-12", "06:45", now + 1_200_000, now - 3_600_000, "end")
+    val plan = CountdownPlan(true, "Bakı", "24", listOf(prayer),
+      listOf(CountdownKerahat("Günçıxma", prayer.date, now - 60_000, now + 300_000)))
+    fun themed(night: Int): Context {
+      val configuration = Configuration(context.resources.configuration)
+      configuration.uiMode = (configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or night
+      return context.createConfigurationContext(configuration)
+    }
+    fun layouts(theme: Context): List<RemoteViews> {
+      val notification = roundTrip(CountdownNotification.build(theme, plan, prayer, now))
+      return listOf(notification.contentView, notification.bigContentView)
+    }
+    val dark = themed(Configuration.UI_MODE_NIGHT_YES)
+    val light = themed(Configuration.UI_MODE_NIGHT_NO)
+    val darkLayouts = layouts(dark)
+    val displayed = darkLayouts.map { it.apply(dark, null) }
+    assertNotEquals(dark.getColor(R.color.countdown_primary), light.getColor(R.color.countdown_primary))
+
+    for (theme in listOf(light, dark)) {
+      layouts(theme).zip(displayed).forEachIndexed { index, (updated, content) ->
+        updated.reapply(theme, content)
+        val primary = theme.getColor(R.color.countdown_primary)
+        assertEquals(primary, content.findViewById<TextView>(R.id.countdown_prayer).currentTextColor)
+        val timer = content.findViewById<Chronometer>(R.id.countdown_timer)
+        assertEquals(primary, timer.currentTextColor)
+        assertTrue(timer.isCountDown)
+        if (index == 1) {
+          val divider = content.findViewById<View>(R.id.countdown_kerahat_divider).background as ColorDrawable
+          assertEquals(theme.getColor(R.color.countdown_divider), divider.color)
         }
       }
     }

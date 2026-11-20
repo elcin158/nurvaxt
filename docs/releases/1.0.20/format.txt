@@ -1,0 +1,4 @@
+npm notice run nurvaxt-mobile@1.0.20 npx
+npm notice run 'prettier' --check app.config.ts package.json package-lock.json src/features/app-updates/releases.ts updates.json README.md
+Checking formatting...
+All matched files use Prettier code style!

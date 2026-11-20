@@ -1,0 +1,9 @@
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+  android:initialLayout="@layout/nurvaxt_widget_initial"
+  android:description="@string/nurvaxt_widget_strip_description"
+  android:minWidth="300dp" android:minHeight="40dp"
+  android:minResizeWidth="300dp" android:minResizeHeight="40dp"
+  android:targetCellWidth="5" android:targetCellHeight="1"
+  android:resizeMode="horizontal"
+  android:updatePeriodMillis="1800000" android:widgetCategory="0"
+  android:previewImage="@drawable/nurvaxt_widget_preview_strip" />

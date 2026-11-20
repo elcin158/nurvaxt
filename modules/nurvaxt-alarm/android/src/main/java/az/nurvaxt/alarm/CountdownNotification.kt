@@ -144,6 +144,10 @@ object CountdownNotification {
     remaining: Long, plan: CountdownPlan, now: Long,
   ): RemoteViews = RemoteViews(context.packageName, layout).apply {
     val name = if (prayer.phase == "end") "Günçıxma" else prayer.name
+    // SystemUI can reapply the notification to views inflated before the theme changed.
+    val primary = context.getColor(R.color.countdown_primary)
+    setTextColor(R.id.countdown_prayer, primary)
+    setTextColor(R.id.countdown_timer, primary)
     setTextViewText(R.id.countdown_prayer, inlineTime(name, clock(prayer.time, plan.timeFormat),
       context.getColor(R.color.countdown_secondary)))
     setImageViewBitmap(R.id.countdown_progress,
@@ -164,6 +168,7 @@ object CountdownNotification {
     setViewVisibility(R.id.countdown_kerahat, if (kerahat == null) View.GONE else View.VISIBLE)
     if (kerahat != null) {
       val color = context.getColor(R.color.countdown_kerahat)
+      setInt(R.id.countdown_kerahat_divider, "setBackgroundColor", context.getColor(R.color.countdown_divider))
       val label = if (kerahat.active) "Kərahət bitməsinə" else "Kərahət girməsinə"
       setTextViewText(R.id.countdown_kerahat_label,
         inlineTime(label, timestampTime(kerahat.target, plan.timeFormat)))

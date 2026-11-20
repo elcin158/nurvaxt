@@ -1,22 +1,48 @@
 {
-  "apk": "artifacts/nurvaxt-1.0.19-widgets-preview.apk",
-  "bytes": 106289426,
-  "sha256": "b28767916e2c81b3a68c3afc34692e6fdd85d18f587fd5ba1ba6297ccb01b23c",
+  "apk": "artifacts/nurvaxt-1.0.19-widgets-fit-preview.apk",
+  "bytes": 107558374,
+  "sha256": "62e3633769a022355d10d9700ad5bb5f0aeced5ae5036a0864e8fc26b4581062",
   "version": "1.0.19",
   "versionCode": "23",
   "signatureVerified": true,
+  "matchesLocalReleaseKey": true,
+  "certificateSha256": "01e6e344bf078c3928dd2079192c6243636400a1916d494427eadc64e474e86e",
   "abis": [
     "arm64-v8a",
     "armeabi-v7a",
     "x86",
     "x86_64"
   ],
-  "embeddedBundleBytes": 3767608,
+  "embeddedBundleBytes": 3794856,
   "providers": [
-    "az.nurvaxt.alarm.LargePrayerWidget",
     "az.nurvaxt.alarm.CompactPrayerWidget",
-    "az.nurvaxt.alarm.SmallPrayerWidget"
+    "az.nurvaxt.alarm.CompactProgressPrayerWidget",
+    "az.nurvaxt.alarm.LargePrayerWidget",
+    "az.nurvaxt.alarm.LightCompactPrayerWidget",
+    "az.nurvaxt.alarm.LightCompactProgressPrayerWidget",
+    "az.nurvaxt.alarm.LightLargePrayerWidget",
+    "az.nurvaxt.alarm.LightListPrayerWidget",
+    "az.nurvaxt.alarm.LightSmallPrayerWidget",
+    "az.nurvaxt.alarm.LightStripPrayerWidget",
+    "az.nurvaxt.alarm.LightVerticalPrayerWidget",
+    "az.nurvaxt.alarm.ListPrayerWidget",
+    "az.nurvaxt.alarm.SmallPrayerWidget",
+    "az.nurvaxt.alarm.StripPrayerWidget",
+    "az.nurvaxt.alarm.VerticalPrayerWidget"
   ],
+  "sharedArtworkVerified": true,
+  "bundledFontsVerified": true,
   "releasePreview": true,
-  "published": false
+  "published": false,
+  "emulatorChecks": {
+    "androidApi": 35,
+    "instrumentation": "4 tests, 0 failures",
+    "all14VariantsInflated": true,
+    "narrowHostsAnd200PercentFonts": true,
+    "tallAndWideHostsHaveNoTransparentBands": true,
+    "missingCalendar": true,
+    "prayerRowIconsRemoved": true,
+    "launcherPinVerified": true,
+    "launcherScreenshot": "docs/widgets/gallery-previews/fit-launcher-dark.png"
+  }
 }

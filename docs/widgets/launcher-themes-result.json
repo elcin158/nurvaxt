@@ -1,0 +1,13 @@
+{
+  "serial": "emulator-5556",
+  "androidApi": 35,
+  "apkSha256": "70e082b5327d947695315c6c7a0b7cb8b57d2e9635dafdf478d2331c1960a1aa",
+  "darkProviderBound": true,
+  "lightProviderBound": true,
+  "galleryDarkScreenshot": "gallery-previews/dark-top.png",
+  "galleryLightScreenshot": "gallery-previews/light-top.png",
+  "launcherDarkScreenshot": "gallery-previews/launcher-dark.png",
+  "all14NativeDesignsVerified": true,
+  "physicalDeviceTested": false,
+  "pinLightScreenshot": "gallery-previews/pin-light.png"
+}

@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 import Alarm from '../modules/nurvaxt-alarm/src';
 import { readDays } from '../src/database/repository';
 import { defaultPreferences, usePreferences } from '../src/store/preferences';
-import { synchronizeWidgets, pinWidget } from '../src/features/widgets/service';
+import { synchronizeWidgets } from '../src/features/widgets/service';
 import { prayerDaySchema, type PrayerDay } from '../src/types/data';
 import dataset from '../data/verified/2026.json';
 
@@ -10,7 +10,6 @@ jest.mock('../modules/nurvaxt-alarm/src', () => ({
   __esModule: true,
   default: {
     replaceWidgetPlan: jest.fn(async () => {}),
-    requestPinWidget: jest.fn(async () => true),
   },
 }));
 jest.mock('../src/database/repository', () => ({ readDays: jest.fn() }));
@@ -63,18 +62,16 @@ test('city changes during IO cannot publish the previous city and the next run a
   });
 });
 
-test('failed IO is recoverable and pinning first synchronizes the calendar', async () => {
+test('failed IO is recoverable on the next synchronization', async () => {
   jest.mocked(readDays).mockRejectedValueOnce(new Error('unavailable'));
   await expect(synchronizeWidgets()).rejects.toThrow('unavailable');
-  await expect(pinWidget('small')).resolves.toBe(true);
-  expect(Alarm!.requestPinWidget).toHaveBeenCalledWith('small');
+  await expect(synchronizeWidgets()).resolves.toBeUndefined();
   expect(Alarm!.replaceWidgetPlan).toHaveBeenCalledTimes(1);
 });
 
 test('unsupported platforms do not read the database or call native widget functions', async () => {
   Platform.OS = 'ios';
   await synchronizeWidgets();
-  await expect(pinWidget('compact')).resolves.toBe(false);
   expect(readDays).not.toHaveBeenCalled();
   expect(Alarm!.replaceWidgetPlan).not.toHaveBeenCalled();
 });

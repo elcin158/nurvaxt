@@ -1,0 +1,8 @@
+Ana ekran widget-ləri
+Namaz vaxtları və geri sayım üçün 7 dizayn sistemin açıq və tünd mövzusuna uyğunlaşır. Ana ekranda Widget-lər → NurVaxt bölməsindən əlavə edin.
+
+Sahəyə uyğun görünüş
+Widget-lər ayrılan sahəni tam doldurur, yuxarı və aşağı artıq boşluqlar çıxarılıb.
+
+Daha sadə vaxt siyahısı
+Namaz adlarının qarşısındakı ikonlar çıxarılıb, seçilmiş namaz aydın çərçivə ilə göstərilir.

@@ -20,6 +20,7 @@ data class WidgetSnapshot(
 /** Pure model, always evaluated in the timetable's timezone rather than the phone's timezone. */
 object PrayerWidgetModel {
   val fields = listOf("fajr", "dhuhr", "asr", "maghrib", "isha")
+  val labels = fields.zip(listOf("Sübh", "Zöhr", "Əsr", "Məğrib", "İşa")).toMap()
   private val zone get() = TimeZone.getTimeZone("Asia/Baku")
 
   fun date(now: Long): String = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT).apply {

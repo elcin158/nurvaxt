@@ -2,7 +2,7 @@ import type { ExpoConfig } from 'expo/config';
 const config: ExpoConfig = {
   name: 'NurVaxt',
   slug: 'nurvaxt',
-  version: '1.0.19',
+  version: '1.0.22',
   scheme: 'nurvaxt',
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
@@ -14,7 +14,7 @@ const config: ExpoConfig = {
   },
   android: {
     package: 'az.nurvaxt.app',
-    versionCode: 23,
+    versionCode: 27,
     allowBackup: false,
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
@@ -99,6 +99,7 @@ const config: ExpoConfig = {
     './plugins/withNurvaxtAlarm',
     './plugins/withNurvaxtDevLauncherLifecycle',
     './plugins/withNurvaxtReleaseSigning',
+    './plugins/withNurvaxtScreenFeatures',
   ],
   experiments: { typedRoutes: true },
 };

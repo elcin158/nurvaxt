@@ -1,0 +1,16 @@
+Alət: daxili imagegen (built-in), CLI istifadə olunmayıb.
+Çıxış: nurvaxt-tezlikle.png — 1092 × 1440 px.
+
+Use case: ads-marketing.
+Asset type: a finished, premium 4:5 portrait social media launch teaser for the Azerbaijani mobile app NurVaxt. Target 1080 x 1350 pixels, one single flat artwork ready to post.
+Input images: Image 1 (/home/elchin-aghali/Projects/Own/nurvaxt/assets/app-icon.png) is the actual app logo; preserve its white stacked Nur Vaxt wordmark and crescent exactly. Image 2 (/home/elchin-aghali/Projects/Own/nurvaxt/artifacts/google-play/premium-video/source/captures/01-namaz-vaxtlari.png) is the real app screen; insert it faithfully into a realistic elegant Android phone, preserving all app UI, lettering and time values. Image 3 (/home/elchin-aghali/Projects/Own/nurvaxt/artifacts/google-play/feature-graphic-1024x500.png) is only a reference for the established deep blue / electric blue / cyan brand palette and clean Manrope typography, do not copy its entire layout.
+Primary request: NurVaxt 'coming soon, at your service' announcement in Azerbaijani. Calm, contemporary and beautifully art-directed technology launch campaign. Rich navy background with a luminous electric-blue to cyan gradient flowing diagonally behind one hero phone. Restrained translucent curved light ribbons, subtle elegant depth, generous breathing room. No photographic background or people.
+Composition: small app-icon plus white NurVaxt wordmark at the top left, with generous margin. Hero headline occupying the upper third in large bold refined sans-serif, left aligned, white first line and pale cyan second line. Below it, one quiet line explaining features. A large elegant realistic phone with the actual supplied app screenshot dominates the lower half, slightly rotated in perspective, with soft blue edge light, minimal premium shadow, fully inside canvas. Keep screen readable and undistorted. Behind phone only restrained abstract crescent-shaped light arc. Footer a small understated call to action. Everything composed deliberately with consistent margins. The headline must dominate and be readable on a phone feed. No ornament clutter, no invented UI, no download or app store badges, no dates, no fake website or social handles, no claim of availability today.
+Text (verbatim, exact Azerbaijani spelling):
+Brand: "NurVaxt"
+Headline line 1: "Tezliklə"
+Headline line 2: "xidmətinizdə."
+Supporting line: "Namaz vaxtları · Qiblə · Xatırlatmalar"
+Footer: "Bizi izləyin."
+Very important: preserve Azerbaijani ə, ı and other diacritics; "Tezliklə" ends in ə, "xidmətinizdə." has both ə glyphs and final period. Clean sharp high-quality text, all in Manrope-style sans serif. Output only one finished artwork, no sheet or alternate views.
+

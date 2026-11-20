@@ -5,17 +5,21 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Path
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.view.View
-import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.RemoteViews
-import android.widget.TextView
 import org.junit.Assert.*
 import org.junit.Test
 import java.io.File
 
-/** Inflate the real launcher RemoteViews after parceling, including narrow and enlarged-font hosts. */
+/** Exercise the actual parcelled launcher RemoteViews, not just the in-app preview. */
 class PrayerWidgetTest {
   companion object { lateinit var context: Context }
   private val date = "2026-10-22"
@@ -28,103 +32,123 @@ class PrayerWidgetTest {
     WidgetPrayer("isha", "İşa", "19:05", PrayerWidgetModel.timestamp(date, "19:05")),
   ))
   private val plan = WidgetPlan("Bakı", "24", listOf(day))
-
   private fun roundTrip(views: RemoteViews): RemoteViews {
     val parcel = Parcel.obtain()
-    return try {
-      views.writeToParcel(parcel, 0)
-      parcel.setDataPosition(0)
-      RemoteViews.CREATOR.createFromParcel(parcel)
-    } finally { parcel.recycle() }
+    return try { views.writeToParcel(parcel, 0); parcel.setDataPosition(0); RemoteViews.CREATOR.createFromParcel(parcel) }
+    finally { parcel.recycle() }
   }
-
   private fun inflate(
-    variant: String, width: Int, height: Int, value: WidgetPlan? = plan, fontScale: Float = 1f,
+    variant: String, width: Int, height: Int, value: WidgetPlan? = plan, fontScale: Float = 1f, light: Boolean = false,
   ): View {
-    val config = Configuration(context.resources.configuration).apply { this.fontScale = fontScale }
-    val host = context.createConfigurationContext(config)
+    fun themedContext(light: Boolean) = context.createConfigurationContext(Configuration(context.resources.configuration).apply {
+      val nightMode = if (light) Configuration.UI_MODE_NIGHT_NO else Configuration.UI_MODE_NIGHT_YES
+      uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or nightMode
+      this.fontScale = fontScale
+    })
+    val host = themedContext(light)
+    // Android 12+ must use the launcher's theme even if the provider had another one.
+    val provider = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) themedContext(!light) else host
     val options = Bundle().apply {
-      putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, width)
-      putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, width)
-      putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, height)
-      putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, height)
+      putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, width); putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, width)
+      putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, height); putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, height)
     }
-    val views = PrayerWidgetViews.build(host, variant, value, PrayerWidgetModel.snapshot(value, now), now, options)
-    val view = roundTrip(views).apply(host, null)
+    val view = roundTrip(PrayerWidgetViews.build(provider, variant, value, PrayerWidgetModel.snapshot(value, now), now, options)).apply(host, null)
     val density = host.resources.displayMetrics.density
     view.measure(View.MeasureSpec.makeMeasureSpec((width * density).toInt(), View.MeasureSpec.EXACTLY),
       View.MeasureSpec.makeMeasureSpec((height * density).toInt(), View.MeasureSpec.EXACTLY))
     view.layout(0, 0, view.measuredWidth, view.measuredHeight)
     return view
   }
-
-  private fun texts(view: View): List<TextView> = when (view) {
-    is TextView -> listOf(view)
-    is ViewGroup -> (0 until view.childCount).flatMap { texts(view.getChildAt(it)) }
-    else -> emptyList()
-  }
-
   private fun save(view: View, name: String) {
     val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
-    view.draw(Canvas(bitmap))
+    val canvas = Canvas(bitmap)
+    // Software captures need the outline clip that the launcher applies in hardware.
+    val radius = (view.background as GradientDrawable).cornerRadius
+    canvas.clipPath(Path().apply {
+      addRoundRect(0f, 0f, view.width.toFloat(), view.height.toFloat(), radius, radius, Path.Direction.CW)
+    })
+    view.draw(canvas)
     val folder = File(context.filesDir, "widget-previews").apply { mkdirs() }
     File(folder, "$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
     bitmap.recycle()
   }
-
-  @Test fun allThreeWidgetsRenderRealDataWithoutRemovedLabels() {
-    for ((variant, width, height) in listOf(Triple("large", 340, 240), Triple("compact", 340, 76), Triple("small", 160, 168))) {
-      val view = inflate(variant, width, height)
-      assertEquals("Əsr", view.findViewById<TextView>(R.id.widget_prayer).text.toString())
-      assertEquals("16:08", view.findViewById<TextView>(R.id.widget_time).text.toString())
-      assertEquals("38 dəq", view.findViewById<TextView>(R.id.widget_remaining).text.toString())
-      assertFalse(texts(view).any { it.text.contains("NÖVBƏTİ") || it.text.contains("qalıb") })
-      assertTrue(view.contentDescription.toString().contains("Bakı"))
-      if (variant == "large") {
-        assertEquals("05:39", view.findViewById<TextView>(R.id.widget_value_fajr).text.toString())
-        assertEquals("18:04", view.findViewById<TextView>(R.id.widget_value_maghrib).text.toString())
-        assertNotNull(view.findViewById<View>(R.id.widget_cell_asr).background)
-        assertNull(view.findViewById<View>(R.id.widget_cell_fajr).background)
+  private fun dimensions(variant: String): Pair<Int, Int> {
+    val design = PrayerWidgetArtwork.design(context, variant)
+    val width = when (variant) { "small", "list" -> 170; "vertical" -> 190; else -> 340 }
+    return width to (width * design.getDouble("height") / design.getDouble("width")).toInt()
+  }
+  @Test fun allSevenDesignsRenderDataInTheSystemTheme() {
+    assertEquals(7, PrayerWidgetState.providers.size)
+    assertEquals(14, PrayerWidgetState.providers.values.flatten().distinct().size)
+    for (variant in PrayerWidgetState.providers.keys) for (light in listOf(true, false)) {
+      val (width, height) = dimensions(variant)
+      val view = inflate(variant, width, height, light = light)
+      assertEquals(android.R.id.background, view.id)
+      assertTrue(view.clipToOutline)
+      val expectedRadius = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        view.resources.getDimensionPixelSize(android.R.dimen.system_app_widget_background_radius).toFloat()
+      } else 28f * view.resources.displayMetrics.density
+      assertEquals(expectedRadius, (view.background as GradientDrawable).cornerRadius, 0.5f)
+      assertEquals(expectedRadius, (view.foreground as GradientDrawable).cornerRadius, 0.5f)
+      val label = view.contentDescription.toString()
+      listOf("Bakı", "Əsr", "16:08", "38 dəq", "05:39", "18:04").forEach { assertTrue("$variant: $it", label.contains(it)) }
+      assertFalse(label.contains("qalıb"))
+      val bitmap = (view.findViewById<ImageView>(R.id.widget_artwork).drawable as BitmapDrawable).bitmap
+      var red = 0L; var samples = 0
+      for (y in 0 until bitmap.height step 5) for (x in 0 until bitmap.width step 5) {
+        val color = bitmap.getPixel(x, y)
+        if (Color.alpha(color) > 200) { red += Color.red(color); samples++ }
       }
-      save(view, variant)
+      assertTrue("$variant has no visible artwork", samples > 0)
+      val average = red / samples
+      if (light) assertTrue("$variant is not light: $average", average > 150)
+      else assertTrue("$variant is not dark: $average", average < 100)
+      assertTrue(bitmap.allocationByteCount < 4_000_000)
+      save(view, if (light) "${variant}_light" else variant)
     }
   }
-
-  @Test fun narrowWidgetsLongCitiesAndLargeFontsRemainInsideTheHost() {
-    for ((variant, width, height) in listOf(Triple("large", 250, 190), Triple("compact", 250, 64), Triple("compact", 250, 40), Triple("small", 110, 120))) {
-      for (scale in listOf(1f, 2f)) {
-        val view = inflate(variant, width, height, plan.copy(location = "Şabran (Dəvəçi)", timeFormat = "12"), scale)
-        assertEquals("4:08 g.s.", view.findViewById<TextView>(R.id.widget_time).text.toString())
-        for (text in texts(view)) {
-          val bounds = android.graphics.Rect(0, 0, text.width, text.height)
-          (view as ViewGroup).offsetDescendantRectToMyCoords(text, bounds)
-          assertTrue("$variant $scale: ${text.text} overflows vertically ($bounds / ${view.height})", bounds.bottom <= view.height && bounds.top >= 0)
-          assertTrue("$variant $scale: ${text.text} overflows horizontally", bounds.right <= view.width && bounds.left >= 0)
-          if (text.id != R.id.widget_location) {
-            assertTrue("$variant $scale: ${text.text} is ellipsized", (0 until text.lineCount).none { text.layout.getEllipsisCount(it) > 0 })
-            var ancestor = text.parent
-            while (ancestor is ViewGroup) {
-              val relative = android.graphics.Rect(0, 0, text.width, text.height)
-              ancestor.offsetDescendantRectToMyCoords(text, relative)
-              assertTrue("$variant $scale: ${text.text} is clipped by a parent", relative.bottom <= ancestor.height && relative.top >= 0)
-              if (ancestor == view) break
-              ancestor = ancestor.parent
-            }
-          }
-        }
-        save(view, "$variant-${if (height == 40) "short" else "narrow"}-$scale")
-      }
+  @Test fun narrowHostsLongCitiesAndLargeFontsStillRender() {
+    for (variant in PrayerWidgetState.providers.keys) for (scale in listOf(1f, 2f)) {
+      val (width, height) = dimensions(variant)
+      val view = inflate(variant, (width * 0.7f).toInt(), (height * 0.7f).toInt(), plan.copy(location = "Şabran (Dəvəçi)", timeFormat = "12"), scale)
+      assertTrue(view.contentDescription.toString().contains("4:08 g.s."))
+      assertTrue(view.contentDescription.toString().contains("Şabran (Dəvəçi)"))
+      assertEquals(view.width, view.findViewById<ImageView>(R.id.widget_artwork).width)
+      save(view, "$variant-narrow-$scale")
     }
   }
-
-  @Test fun anUnavailableCalendarClearsPreviewTimesAndProgress() {
-    for ((variant, width, height) in listOf(Triple("large", 340, 240), Triple("compact", 340, 76), Triple("small", 160, 168))) {
+  @Test fun unavailableCalendarsClearEveryTimeAndProgress() {
+    val snapshot = PrayerWidgetModel.snapshot(null, now)
+    val values = PrayerWidgetArtwork.values(null, snapshot, now)
+    assertNull(snapshot.progress)
+    assertTrue(PrayerWidgetModel.fields.all { values[it] == "—" })
+    for (variant in PrayerWidgetState.providers.keys) {
+      val (width, height) = dimensions(variant)
       val view = inflate(variant, width, height, null)
-      assertEquals("Təqvim yoxdur", view.findViewById<TextView>(R.id.widget_prayer).text.toString())
-      assertEquals("—", view.findViewById<TextView>(R.id.widget_remaining).text.toString())
-      assertFalse(texts(view).any { it.text.toString() in listOf("05:39", "16:08", "18:04") })
-      if (variant != "compact") assertEquals(View.INVISIBLE, view.findViewById<View>(R.id.widget_progress).visibility)
+      val label = view.contentDescription.toString()
+      assertTrue(label.contains("Təqvim yoxdur"))
+      assertFalse(listOf("05:39", "16:08", "18:04").any { label.contains(it) })
       save(view, "$variant-unavailable")
+    }
+  }
+
+  @Test fun resizedHostsHaveNoTransparentBandsAboveBelowOrBesideTheCard() {
+    for (variant in PrayerWidgetState.providers.keys) {
+      val (width, height) = dimensions(variant)
+      for ((w, h, name) in listOf(Triple(width, height + 60, "tall"), Triple(width + 100, height, "wide"))) {
+        val view = inflate(variant, w, h)
+        val image = view.findViewById<ImageView>(R.id.widget_artwork)
+        val bitmap = (image.drawable as BitmapDrawable).bitmap
+        assertEquals(ImageView.ScaleType.FIT_XY, image.scaleType)
+        for ((x, y) in listOf(
+          bitmap.width / 2 to 3, bitmap.width / 2 to bitmap.height - 4,
+          3 to bitmap.height / 2, bitmap.width - 4 to bitmap.height / 2,
+        )) {
+          assertTrue("$variant $name leaves an empty band at $x,$y",
+            Color.alpha(bitmap.getPixel(x, y)) > 240)
+        }
+        save(view, "$variant-fit-$name")
+      }
     }
   }
 }

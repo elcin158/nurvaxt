@@ -3,21 +3,28 @@ package az.nurvaxt.alarm
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
+import android.content.ComponentCallbacks
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
-import android.os.Bundle
 import android.util.Log
 import org.json.JSONObject
 
 object PrayerWidgetState {
   private fun prefs(context: Context) = context.getSharedPreferences("nurvaxt-widgets", Context.MODE_PRIVATE)
-  private val providers = mapOf(
-    "large" to LargePrayerWidget::class.java,
-    "compact" to CompactPrayerWidget::class.java,
-    "small" to SmallPrayerWidget::class.java,
+  // Keep the previous light components registered for already placed widgets.
+  internal val providers = mapOf(
+    "large" to listOf(LargePrayerWidget::class.java, LightLargePrayerWidget::class.java),
+    "compact" to listOf(CompactPrayerWidget::class.java, LightCompactPrayerWidget::class.java),
+    "small" to listOf(SmallPrayerWidget::class.java, LightSmallPrayerWidget::class.java),
+    "vertical" to listOf(VerticalPrayerWidget::class.java, LightVerticalPrayerWidget::class.java),
+    "compactProgress" to listOf(CompactProgressPrayerWidget::class.java, LightCompactProgressPrayerWidget::class.java),
+    "strip" to listOf(StripPrayerWidget::class.java, LightStripPrayerWidget::class.java),
+    "list" to listOf(ListPrayerWidget::class.java, LightListPrayerWidget::class.java),
   )
+  private var watchesNightMode = false
 
   private fun decode(json: JSONObject): WidgetPlan {
     require(json.getInt("version") == 1)
@@ -70,13 +77,29 @@ object PrayerWidgetState {
 
   @Synchronized fun update(context: Context) {
     val manager = AppWidgetManager.getInstance(context)
-    val active = providers.mapValues { (_, provider) ->
-      manager.getAppWidgetIds(ComponentName(context, provider))
+    val active = providers.mapValues { (_, components) ->
+      components.flatMap { manager.getAppWidgetIds(ComponentName(context, it)).asList() }
     }
     val alarm = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     if (active.values.all { it.isEmpty() }) {
       alarm.cancel(refreshIntent(context))
       return
+    }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && !watchesNightMode) {
+      val application = context.applicationContext
+      application.registerComponentCallbacks(object : ComponentCallbacks {
+        private var nightMode = application.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+
+        override fun onConfigurationChanged(newConfig: Configuration) {
+          val updated = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK
+          if (updated == nightMode) return
+          nightMode = updated
+          PrayerWidgetUpdater.enqueue(application)
+        }
+
+        override fun onLowMemory() = Unit
+      })
+      watchesNightMode = true
     }
     val plan = read(context)
     val now = System.currentTimeMillis()
@@ -99,18 +122,5 @@ object PrayerWidgetState {
       // Exact access can be revoked between checking and scheduling.
       alarm.set(AlarmManager.RTC, next, refreshIntent(context))
     }
-  }
-
-  fun pin(context: Context, variant: String): Boolean {
-    val provider = providers[variant] ?: return false
-    if (Build.VERSION.SDK_INT < 26) return false
-    val manager = AppWidgetManager.getInstance(context)
-    if (!manager.isRequestPinAppWidgetSupported) return false
-    val now = System.currentTimeMillis()
-    val plan = read(context)
-    val preview = PrayerWidgetViews.build(context, variant, plan, PrayerWidgetModel.snapshot(plan, now), now)
-    return manager.requestPinAppWidget(ComponentName(context, provider), Bundle().apply {
-      putParcelable(AppWidgetManager.EXTRA_APPWIDGET_PREVIEW, preview)
-    }, null)
   }
 }
