@@ -17,6 +17,26 @@ export type ReleaseNotes = {
 // Never substitute these installed-release notes for an unknown future Play update.
 export const releases: readonly ReleaseNotes[] = [
   {
+    versionCode: 29,
+    version: '1.0.24',
+    date: '2026-11-25',
+    important: true,
+    items: [
+      {
+        icon: 'sparkles-outline',
+        title: 'Ana ekran vidcetləri',
+        description:
+          'Yeddi vidcetin açıq və tünd görünüşü yeniləndi. Tünd rejimdə künclərdə görünən mavi haşiyə götürüldü.',
+      },
+      {
+        icon: 'time-outline',
+        title: 'Yeni 1×1 ölçü',
+        description:
+          'Kiçik vidcet növbəti namazın adını və vaxtını göstərir. Vidceti böyüdəndə şəhəri, geri sayımı və irəliləyiş xəttini də görə bilərsiniz.',
+      },
+    ],
+  },
+  {
     versionCode: 28,
     version: '1.0.23',
     date: '2026-11-24',

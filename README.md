@@ -141,7 +141,7 @@ mode and azan recordings are deliberately deferred. No guessed dates or sunset/M
 
 ## Builds and checks
 
-Google Play test bundle (version 1.0.23, Android versionCode 28):
+Google Play test bundle (version 1.0.24, Android versionCode 29):
 
 ```bash
 npm run release:notes
@@ -153,10 +153,10 @@ Keep all four default architectures (`armeabi-v7a`, `arm64-v8a`, `x86`, `x86_64`
 to preserve the CPU coverage of the previous Play release. The verifier rejects
 bundles with missing architectures.
 
-The verifier saves the signed upload file to `artifacts/nurvaxt-1.0.23-v28.aab`
+The verifier saves the signed upload file to `artifacts/nurvaxt-1.0.24-v29.aab`
 and records its signature, checksum, packaged permissions and 16 KB alignment
-checks in `artifacts/nurvaxt-1.0.23-v28.validation.json`. Azerbaijani release notes
-for the Play test track are in `artifacts/google-play/release-notes-1.0.23-az.txt`.
+checks in `artifacts/nurvaxt-1.0.24-v29.validation.json`. Azerbaijani release notes
+for the Play test track are in `artifacts/google-play/release-notes-1.0.24-az.txt`.
 The generator uses the same release items as the app and checks Play's
 500-character limit.
 
