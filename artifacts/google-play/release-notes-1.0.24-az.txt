@@ -1,0 +1,5 @@
+Ana ekran vidcetləri
+Yeddi vidcetin açıq və tünd görünüşü yeniləndi. Tünd rejimdə künclərdə görünən mavi haşiyə götürüldü.
+
+Yeni 1×1 ölçü
+Kiçik vidcet növbəti namazın adını və vaxtını göstərir. Vidceti böyüdəndə şəhəri, geri sayımı və irəliləyiş xəttini də görə bilərsiniz.

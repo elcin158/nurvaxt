@@ -12,8 +12,8 @@ import android.widget.RemoteViews
 
 object PrayerWidgetViews {
   fun build(context: Context, variant: String, plan: WidgetPlan?, snapshot: WidgetSnapshot, now: Long, options: Bundle = Bundle()): RemoteViews {
-    val design = PrayerWidgetArtwork.design(context, variant)
-    val defaultWidth = when (variant) { "small", "list" -> 170; "vertical" -> 190; else -> 340 }
+    val design = PrayerWidgetArtwork.design(context, if (variant == "small") "mini" else variant)
+    val defaultWidth = when (variant) { "small" -> 64; "list" -> 170; "vertical" -> 190; else -> 340 }
     val defaultHeight = (defaultWidth * design.getDouble("height") / design.getDouble("width")).toInt()
     val minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, defaultWidth).coerceIn(40, 1200)
     val maxWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minWidth).coerceIn(40, 1200)

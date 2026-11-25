@@ -40,7 +40,7 @@ output = ROOT / "docs/widgets"
 output.mkdir(parents=True, exist_ok=True)
 (output / "instrumentation.txt").write_text(result)
 print(result)
-if "4 tests, 0 failures" not in result:
+if "5 tests, 0 failures" not in result:
     raise SystemExit("Native widget checks failed; see docs/widgets/instrumentation.txt.")
 folder = output / "native-previews"
 folder.mkdir(exist_ok=True)
@@ -52,7 +52,7 @@ for name in files:
 (output / "native-result.json").write_text(json.dumps({
     "serial": args.serial,
     "androidApi": adb("shell", "getprop", "ro.build.version.sdk").strip(),
-    "instrumentation": "4 tests, 0 failures",
+    "instrumentation": "5 tests, 0 failures",
     "captures": sorted(path.name for path in folder.glob("*.png")),
-    "scope": "Real parcelled RemoteViews; seven designs in both system themes, normal/narrow/tall/wide hosts without transparent bands, 12/24-hour format, 200% fonts, missing calendar. Launcher lifecycle is checked separately.",
+    "scope": "Real parcelled RemoteViews; seven designs in both system themes, 1×1 and expanded small cards, normal/narrow/tall/wide hosts without transparent bands, 12/24-hour format, 200% fonts, missing calendar. Launcher lifecycle is checked separately.",
 }, ensure_ascii=False, indent=2) + "\n")

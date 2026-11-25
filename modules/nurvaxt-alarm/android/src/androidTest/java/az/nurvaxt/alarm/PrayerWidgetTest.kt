@@ -89,7 +89,7 @@ class PrayerWidgetTest {
         view.resources.getDimensionPixelSize(android.R.dimen.system_app_widget_background_radius).toFloat()
       } else 28f * view.resources.displayMetrics.density
       assertEquals(expectedRadius, (view.background as GradientDrawable).cornerRadius, 0.5f)
-      assertEquals(expectedRadius, (view.foreground as GradientDrawable).cornerRadius, 0.5f)
+      assertNull("A separate rim can be cropped by the launcher", view.foreground)
       val label = view.contentDescription.toString()
       listOf("Bakı", "Əsr", "16:08", "38 dəq", "05:39", "18:04").forEach { assertTrue("$variant: $it", label.contains(it)) }
       assertFalse(label.contains("qalıb"))
@@ -107,6 +107,23 @@ class PrayerWidgetTest {
       save(view, if (light) "${variant}_light" else variant)
     }
   }
+  @Test fun smallWidgetSwitchesBetweenMiniAndExpandedArtwork() {
+    val format12 = plan.copy(timeFormat = "12")
+    val snapshot = PrayerWidgetModel.snapshot(format12, now)
+    val values = PrayerWidgetArtwork.values(format12, snapshot, now)
+    assertEquals("4:08", values["clock"])
+    assertEquals("g.s.", values["clockNote"])
+    assertEquals("Sabah · g.s.", PrayerWidgetArtwork.values(format12, snapshot.copy(tomorrow = true), now)["clockNote"])
+
+    for ((width, height) in listOf(48 to 48, 80 to 76, 152 to 56, 144 to 140)) {
+      val view = inflate("small", width, height, format12)
+      val bitmap = (view.findViewById<ImageView>(R.id.widget_artwork).drawable as BitmapDrawable).bitmap
+      val expected = PrayerWidgetArtwork.render(context, "mini", false, values, snapshot.next?.field, snapshot.progress, width, height)
+      assertEquals("Unexpected layout at ${width}x${height}", height < 92, bitmap.sameAs(expected))
+      save(view, "small-${width}x${height}")
+    }
+  }
+
   @Test fun narrowHostsLongCitiesAndLargeFontsStillRender() {
     for (variant in PrayerWidgetState.providers.keys) for (scale in listOf(1f, 2f)) {
       val (width, height) = dimensions(variant)
