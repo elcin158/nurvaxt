@@ -17,6 +17,19 @@ export type ReleaseNotes = {
 // Never substitute these installed-release notes for an unknown future Play update.
 export const releases: readonly ReleaseNotes[] = [
   {
+    versionCode: 28,
+    version: '1.0.23',
+    date: '2026-11-24',
+    important: false,
+    items: [
+      {
+        icon: 'checkmark-circle-outline',
+        title: 'Test buraxılışı',
+        description: 'Google Play test kanalı üçün yeni versiya hazırlanıb.',
+      },
+    ],
+  },
+  {
     versionCode: 27,
     version: '1.0.22',
     date: '2026-11-20',
