@@ -22,7 +22,13 @@ object PrayerWidgetArtwork {
     val format = plan?.timeFormat ?: "24"
     val prayer = snapshot.next
     val time = prayer?.let { PrayerWidgetModel.time(it.time, format) } ?: "Tətbiqi açın"
+    val clock = if (prayer == null) time else time.substringBefore(' ')
+    val clockNote = listOfNotNull(
+      "Sabah".takeIf { snapshot.tomorrow },
+      time.substringAfter(' ', "").takeIf { prayer != null && it.isNotEmpty() },
+    ).joinToString(" · ")
     return mutableMapOf(
+      "clock" to clock, "clockNote" to clockNote,
       "location" to (plan?.location ?: "Şəhər seçin"), "date" to PrayerWidgetModel.displayDate(now),
       "prayer" to (prayer?.name ?: "Təqvim yoxdur"),
       "time" to (if (snapshot.tomorrow) "Sabah · $time" else time),
@@ -36,7 +42,8 @@ object PrayerWidgetArtwork {
 
   fun render(context: Context, variant: String, light: Boolean, values: Map<String, String>, selected: String?, progress: Float?, width: Int, height: Int): Bitmap {
     val source = source(context)
-    val design = design(context, variant)
+    val layout = if (variant == "small" && (width < 100 || height < 92)) "mini" else variant
+    val design = design(context, layout)
     val palette = source.getJSONObject("palettes").getJSONObject(if (light) "light" else "dark")
     if (bold == null) bold = Typeface.createFromAsset(context.assets, "Manrope-ExtraBold.ttf")
     if (semi == null) semi = Typeface.createFromAsset(context.assets, "Manrope-Bold.ttf")
@@ -71,16 +78,10 @@ object PrayerWidgetArtwork {
       canvas.drawPath(path, paint)
       canvas.restore()
     }
-    // The widget layout clips the artwork and draws the frame at the actual host size.
+    // The launcher-sized root clips the artwork using the system corner radius.
     val bounds = RectF(0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat())
     fill(design.getString("background"), bounds)
     canvas.drawRect(bounds, paint)
-    if (!light) {
-      paint.shader = RadialGradient(bitmap.width.toFloat(), 0f, min(bitmap.width * 0.85f, bitmap.height * 1.6f),
-        intArrayOf(Color.parseColor("#F200D4EA"), Color.parseColor("#59007CF0"), Color.parseColor("#00007CF0")),
-        floatArrayOf(0f, 0.55f, 1f), Shader.TileMode.CLAMP)
-      canvas.drawRect(bounds, paint)
-    }
     val elements = design.getJSONArray("elements")
     for (index in 0 until elements.length()) {
       val e = elements.getJSONObject(index)
@@ -111,11 +112,10 @@ object PrayerWidgetArtwork {
         "icon" -> icon(e.getString("name"), x + (number("size") * scaleX - size) / 2,
           y + (number("size") * scaleY - size) / 2, size, e.getString("fill"))
         "progress" -> if (progress != null) {
-          val end = x + 7 * scale + (w - 14 * scale) * progress.coerceIn(0f, 1f)
-          val half = 4.5f * scale
-          fill("track", bounds); canvas.drawRoundRect(x, y - half, x + w, y + half, half, half, paint)
-          fill("accent", bounds); canvas.drawRoundRect(x, y - half, end, y + half, half, half, paint)
-          fill("#FFFFFF", bounds); canvas.drawCircle(end, y, 7f * scale, paint)
+          val half = 2.5f * scale
+          val end = x + w * progress.coerceIn(0f, 1f)
+          fill("track", box); canvas.drawRoundRect(x, y - half, x + w, y + half, half, half, paint)
+          fill("accent", box); canvas.drawRoundRect(x, y - half, end, y + half, half, half, paint)
         }
         "text" -> {
           val value = Regex("\\{(\\w+)\\}").replace(e.getString("value")) { values[it.groupValues[1]] ?: "—" }

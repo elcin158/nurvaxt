@@ -1,18 +1,18 @@
 <resources>
   <string name="nurvaxt_widget_large_name">NurVaxt · Geniş</string>
-  <string name="nurvaxt_widget_large_description">Geniş · 4×3</string>
+  <string name="nurvaxt_widget_large_description">Geniş · 4×2</string>
   <string name="nurvaxt_widget_compact_name">NurVaxt · Kompakt</string>
-  <string name="nurvaxt_widget_compact_description">Kompakt · 4×1</string>
+  <string name="nurvaxt_widget_compact_description">Kompakt · 3×1</string>
   <string name="nurvaxt_widget_small_name">NurVaxt · Kiçik</string>
-  <string name="nurvaxt_widget_small_description">Kiçik · 2×2</string>
+  <string name="nurvaxt_widget_small_description">Kiçik · 1×1</string>
   <string name="nurvaxt_widget_vertical_name">NurVaxt · Şaquli</string>
-  <string name="nurvaxt_widget_vertical_description">Şaquli · 2×4</string>
+  <string name="nurvaxt_widget_vertical_description">Şaquli · 2×3</string>
   <string name="nurvaxt_widget_compact_progress_name">NurVaxt · İrəliləyişli</string>
   <string name="nurvaxt_widget_compact_progress_description">İrəliləyişli · 4×1</string>
   <string name="nurvaxt_widget_strip_name">NurVaxt · Üfüqi vaxtlar</string>
   <string name="nurvaxt_widget_strip_description">Üfüqi vaxtlar · 5×1</string>
   <string name="nurvaxt_widget_list_name">NurVaxt · Siyahı</string>
-  <string name="nurvaxt_widget_list_description">Siyahı · 2×3</string>
+  <string name="nurvaxt_widget_list_description">Siyahı · 2×2</string>
   <string name="nurvaxt_widget_open">NurVaxt-ı aç</string>
   <style name="NurvaxtWidgetText">
     <item name="android:fontFamily">sans-serif</item>

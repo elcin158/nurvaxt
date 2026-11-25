@@ -1,0 +1,9 @@
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@android:id/background"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@drawable/nurvaxt_widget_initial_background"
+  android:scaleType="center"
+  android:src="@drawable/nurvaxt_widget_crescent"
+  android:tint="@color/nurvaxt_widget_initial_ink"
+  android:contentDescription="@string/nurvaxt_widget_brand" />

@@ -2,7 +2,11 @@ import { mkdirSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import sharp from 'sharp';
-import { widgetSvg, type WidgetArtworkData } from '../src/features/widgets/artwork';
+import {
+  widgetSvg,
+  type WidgetArtworkData,
+  type WidgetLayout,
+} from '../src/features/widgets/artwork';
 import { WIDGET_VARIANTS, type WidgetTheme } from '../src/features/widgets/domain';
 
 async function main() {
@@ -20,6 +24,8 @@ async function main() {
       prayer: 'Əsr',
       time: '16:08',
       remaining: '38 dəq',
+      clock: '16:08',
+      clockNote: '',
       fajr: '05:39',
       dhuhr: '12:25',
       asr: '16:08',
@@ -33,46 +39,50 @@ async function main() {
   const resources = 'modules/nurvaxt-alarm/android/src/main/res';
   mkdirSync(folder, { recursive: true });
   mkdirSync(`${resources}/drawable-night-nodpi`, { recursive: true });
-  for (const variant of WIDGET_VARIANTS) {
-    for (const theme of ['dark', 'light'] as WidgetTheme[]) {
-      const svg = widgetSvg(variant, theme, data);
-      writeFileSync(`${folder}/${variant}-${theme}.svg`, svg);
-      const png = await sharp(Buffer.from(svg)).png().toBuffer();
-      writeFileSync(`${folder}/${variant}-${theme}.png`, png);
-      const name = variant === 'compactProgress' ? 'compact_progress' : variant;
+  const layouts: WidgetLayout[] = [...WIDGET_VARIANTS, 'mini'];
+  for (const layout of layouts) {
+    for (const theme of ['dark', 'light'] as const) {
+      const svg = widgetSvg(layout, theme, data);
+      writeFileSync(`${folder}/${layout}-${theme}.svg`, svg);
+      const png = await sharp(Buffer.from(svg), { density: layout === 'mini' ? 216 : 72 })
+        .png()
+        .toBuffer();
+      writeFileSync(`${folder}/${layout}-${theme}.png`, png);
+      // The small provider opens at 1×1 and switches to its expanded scene on resize.
+      if (layout === 'small') continue;
+      const name =
+        layout === 'mini' ? 'small' : layout === 'compactProgress' ? 'compact_progress' : layout;
       const drawableFolder = theme === 'dark' ? 'drawable-night-nodpi' : 'drawable-nodpi';
       writeFileSync(`${resources}/${drawableFolder}/nurvaxt_widget_preview_${name}.png`, png);
     }
   }
+
   const placements = [
-    ['large', 'dark', 48, 187, 610],
-    ['compactProgress', 'light', 48, 595, 610],
-    ['strip', 'dark', 44, 717, 626],
-    ['strip', 'light', 44, 807, 626],
-    ['vertical', 'dark', 686, 141, 304],
-    ['compact', 'dark', 1016, 141, 476],
-    ['compact', 'light', 1016, 253, 476],
-    ['small', 'dark', 1016, 366, 224],
-    ['small', 'light', 1268, 366, 224],
-    ['list', 'dark', 1017, 592, 228],
-    ['list', 'light', 1266, 592, 228],
+    ['large', 0, 0, 520],
+    ['vertical', 0, 305, 205],
+    ['list', 222, 305, 165],
+    ['mini', 408, 305, 100],
+    ['small', 222, 487, 165],
+    ['compact', 0, 656, 404],
+    ['compactProgress', 0, 772, 518],
+    ['strip', 0, 889, 520],
   ] as const;
+  const themes: WidgetTheme[] = ['light', 'dark'];
   const cards = await Promise.all(
-    placements.map(async ([variant, theme, left, top, width]) => ({
-      input: await sharp(`${folder}/${variant}-${theme}.png`).resize({ width }).toBuffer(),
-      left,
-      top,
-    })),
+    themes.flatMap((theme, i) =>
+      placements.map(async ([layout, x, y, width]) => ({
+        input: await sharp(`${folder}/${layout}-${theme}.svg`).resize({ width }).png().toBuffer(),
+        left: 38 + i * 580 + x,
+        top: 140 + y,
+      })),
+    ),
   );
-  const heading = Buffer.from(
-    '<svg width="1536" height="1024"><text x="57" y="65" font-family="Manrope_700Bold, sans-serif" font-size="40" fill="#112854">☾ NurVaxt</text><text x="59" y="106" font-family="Manrope_700Bold, sans-serif" font-size="29" fill="#112854">Widget dizaynları</text><text x="59" y="965" font-family="Manrope_600SemiBold, sans-serif" font-size="20" fill="#112854">Üfüqi geniş   ·   Üfüqi kompakt   ·   Şaquli   ·   Kompakt (2×2)   ·   Siyahı   ·   Açıq və tünd tema</text></svg>',
+  const sheet = Buffer.from(
+    '<svg width="1160" height="1140"><rect width="580" height="1140" fill="#DAE5E7"/><rect x="580" width="580" height="1140" fill="#283844"/><g font-family="Manrope, sans-serif" font-weight="700"><text x="38" y="62" font-size="32" fill="#18333F">NurVaxt</text><text x="618" y="62" font-size="32" fill="#F0F6FA">NurVaxt</text><text x="38" y="102" font-size="21" fill="#46616D">Açıq rejim</text><text x="618" y="102" font-size="21" fill="#BAD1DC">Tünd rejim</text></g></svg>',
   );
-  await sharp({ create: { width: 1536, height: 1024, channels: 4, background: '#E7F3FF' } })
-    .composite([{ input: heading }, ...cards])
-    .png()
-    .toFile(`${folder}/reference-layout.png`);
+  await sharp(sheet).composite(cards).png().toFile(`${folder}/reference-layout.png`);
   console.log(
-    `${WIDGET_VARIANTS.length * 2} previews and reference-layout.png written to ${folder}`,
+    `${layouts.length * themes.length} previews and reference-layout.png written to ${folder}`,
   );
   rmSync(fontConfig, { recursive: true, force: true });
 }

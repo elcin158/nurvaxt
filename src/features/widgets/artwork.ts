@@ -1,5 +1,5 @@
 import artwork from '../../../assets/widgets/designs.json';
-import type { WidgetTheme, WidgetVariant } from './domain';
+import type { WidgetTheme } from './domain';
 
 export type WidgetElement = {
   type: string;
@@ -26,9 +26,10 @@ export type WidgetArtworkData = {
   progress: number | null;
 };
 export const widgetDesigns = artwork.designs;
+export type WidgetLayout = keyof typeof widgetDesigns;
 export const widgetIcons = artwork.icons;
 export const widgetPalettes = artwork.palettes;
-export function visibleElements(variant: WidgetVariant, data: WidgetArtworkData): WidgetElement[] {
+export function visibleElements(variant: WidgetLayout, data: WidgetArtworkData): WidgetElement[] {
   return (widgetDesigns[variant].elements as WidgetElement[]).filter(
     (element) =>
       (!element.when || element.when === data.selected) &&
@@ -55,7 +56,7 @@ const escape = (value: string) =>
 
 /** The same artwork supplies the gallery, launcher thumbnails and exported review sheet. */
 export function widgetSvg(
-  variant: WidgetVariant,
+  variant: WidgetLayout,
   theme: WidgetTheme,
   data: WidgetArtworkData,
 ): string {
@@ -86,8 +87,8 @@ export function widgetSvg(
         return `<circle cx="${x}" cy="${y}" r="${radius}" fill="${fill(element.fill)}"/>`;
       if (element.type === 'icon') return pathIcon(element.name!, x, y, size, element.fill!);
       if (element.type === 'progress') {
-        const end = x + 7 + (width - 14) * Math.max(0, Math.min(1, data.progress!));
-        return `<rect x="${x}" y="${y - 4.5}" width="${width}" height="9" rx="4.5" fill="${fill('track')}"/><rect x="${x}" y="${y - 4.5}" width="${end - x}" height="9" rx="4.5" fill="${fill('accent')}"/><circle cx="${end}" cy="${y}" r="7" fill="#FFFFFF"/>`;
+        const end = x + width * Math.max(0, Math.min(1, data.progress!));
+        return `<rect x="${x}" y="${y - 2.5}" width="${width}" height="5" rx="2.5" fill="${fill('track')}"/><rect x="${x}" y="${y - 2.5}" width="${end - x}" height="5" rx="2.5" fill="${fill('accent')}"/>`;
       }
       if (element.type === 'text') {
         const value = resolveWidgetText(element.value!, data);
@@ -106,7 +107,5 @@ export function widgetSvg(
       return '';
     })
     .join('');
-  const glow =
-    theme === 'dark' ? `<rect width="100%" height="100%" fill="url(#${prefix}glow)"/>` : '';
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${design.width}" height="${design.height}" viewBox="0 0 ${design.width} ${design.height}"><defs>${defs}<radialGradient id="${prefix}glow" cx="${design.width}" cy="0" r="${Math.min(design.width * 0.85, design.height * 1.6)}" gradientUnits="userSpaceOnUse"><stop stop-color="#00D4EA" stop-opacity="0.95"/><stop offset="0.55" stop-color="#007CF0" stop-opacity="0.35"/><stop offset="1" stop-color="#007CF0" stop-opacity="0"/></radialGradient><clipPath id="${prefix}clip"><rect x="0.75" y="0.75" width="${design.width - 1.5}" height="${design.height - 1.5}" rx="${design.radius}"/></clipPath></defs><g clip-path="url(#${prefix}clip)"><rect width="100%" height="100%" fill="${fill(design.background)}"/>${glow}${elements}</g><rect x="0.75" y="0.75" width="${design.width - 1.5}" height="${design.height - 1.5}" rx="${design.radius}" fill="none" stroke="${theme === 'dark' ? '#56D9FF' : '#FFFFFF'}" stroke-width="1.5"/></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${design.width}" height="${design.height}" viewBox="0 0 ${design.width} ${design.height}"><defs>${defs}<clipPath id="${prefix}clip"><rect width="${design.width}" height="${design.height}" rx="${design.radius}"/></clipPath></defs><g clip-path="url(#${prefix}clip)"><rect width="100%" height="100%" fill="${fill(design.background)}"/>${elements}</g></svg>`;
 }

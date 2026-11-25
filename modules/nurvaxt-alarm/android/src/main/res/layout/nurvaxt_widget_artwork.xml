@@ -4,7 +4,6 @@
   android:layout_height="match_parent"
   android:background="@drawable/nurvaxt_widget_initial_background"
   android:clipToOutline="true"
-  android:foreground="@drawable/nurvaxt_widget_frame"
   android:layoutDirection="ltr"
   android:importantForAccessibility="yes"
   android:descendantFocusability="blocksDescendants">

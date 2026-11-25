@@ -1,14 +1,19 @@
 # Android home-screen widgets
 
-Seven designs follow the supplied reference artwork and adapt to Android's light and dark system themes.
+Seven borderless cards adapt to the Android system theme. The launcher clips each card to its own corner radius.
+The picker requests these initial grid sizes:
 
-- **Üfüqi geniş (4×3):** brand, city, date, large prayer/time and countdown, progress and five daily prayers.
-- **Şaquli (2×4):** crescent and mosque silhouette, prayer/time, countdown, progress and five prayer rows.
-- **Üfüqi kompakt (4×1):** crescent, prayer/time, countdown and city, separated by fine rules.
-- **Üfüqi irəliləyişli (4×1):** the compact horizontal design with a progress track.
-- **Üfüqi vaxtlar (5×1):** five prayer times with the upcoming prayer highlighted.
-- **Kompakt (2×2):** city, large prayer/time, progress and countdown.
-- **Siyahı (2×3):** brand, city and five prayer rows without leading icons.
+| Design | Size | Contents |
+| --- | --- | --- |
+| Geniş | 4×2 | City, date, next prayer, countdown, progress and five daily times |
+| Şaquli | 2×3 | Upcoming prayer, progress and five timetable rows |
+| Kompakt | 3×1 | Prayer, time, countdown and city |
+| İrəliləyişli | 4×1 | Horizontal summary with a progress track |
+| Üfüqi vaxtlar | 5×1 | Five times and city, with the upcoming prayer highlighted |
+| Kiçik | 1×1 | Prayer and time, with a separate line for tomorrow or the 12-hour suffix when needed |
+| Siyahı | 2×2 | City and five aligned timetable rows |
+
+Resize **Kiçik** to at least 100 × 92 dp to show city, countdown and progress as well.
 
 Each design appears once in the Android widget picker. Widgets already placed from earlier
 builds also adopt the system theme. On Android 12 and later, the launcher applies the theme
