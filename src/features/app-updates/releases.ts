@@ -17,6 +17,20 @@ export type ReleaseNotes = {
 // Never substitute these installed-release notes for an unknown future Play update.
 export const releases: readonly ReleaseNotes[] = [
   {
+    versionCode: 30,
+    version: '1.0.25',
+    date: '2026-11-25',
+    important: false,
+    items: [
+      {
+        icon: 'time-outline',
+        title: 'Ana ekran vidjetləri',
+        description:
+          'Namaz vaxtlarını və növbəti namaza nə qədər qaldığını ana ekranda görə bilərsiniz. NurVaxt-ın yeddi vidjetindən istədiyinizi seçib ana ekranınıza əlavə edin.',
+      },
+    ],
+  },
+  {
     versionCode: 29,
     version: '1.0.24',
     date: '2026-11-25',
