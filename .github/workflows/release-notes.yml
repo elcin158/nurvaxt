@@ -10,7 +10,7 @@ on:
       - 'scripts/generate-release-notes.ts'
       - 'tests/*release*.test.ts'
       - 'tests/app-update*.test.*'
-      - 'app.config.ts'
+      - 'app.config.js'
       - 'android/app/build.gradle'
       - 'package.json'
       - 'package-lock.json'

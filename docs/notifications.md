@@ -306,7 +306,7 @@ an HTML audio element on web, without microphone permission or background playba
 native build is required after adding the module or notification resources.
 
 To add another tone, add its ID and metadata to `src/features/notifications/sounds.ts`, a static
-asset require to `previewSources.ts`, its filename to `app.config.ts`, and its ID to Android's
+asset require to `previewSources.ts`, its filename to `app.config.js`, and its ID to Android's
 `ReminderSounds.kt`. Add or generate the PCM WAV, then run Expo prebuild to copy it into the native
 projects before building. Keep the sound below iOS's 30-second notification sound limit. The
 preference schema accepts the shared ID list; planned notifications and reconciliation retain

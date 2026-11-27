@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "ios": {
+      "buildNumber": "2"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c133ce0d-c6dd-47e5-98fa-6084d446c98a"
+      }
+    },
+    "owner": "elchinaghali"
+  }
+}

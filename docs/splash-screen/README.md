@@ -10,7 +10,7 @@ Five density variants are generated for each theme. The night variants match the
 navy splash background, avoiding a light circle around the badge. The source badge
 is 576 px to support 144 dp at 4x density; iOS images retain their 144 pt size.
 `npm run assets:generate` recreates the source, and `npx expo prebuild --no-install`
-synchronizes platform resources from `app.config.ts`.
+synchronizes platform resources from `app.config.js`.
 
 Verification passed: TypeScript, focused ESLint/Prettier, release assembly, APK
 signature and all ten packaged splash images. Their decoded pixels match the

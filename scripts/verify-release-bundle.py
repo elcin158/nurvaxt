@@ -18,7 +18,7 @@ args = parser.parse_args()
 root = pathlib.Path(__file__).resolve().parents[1]
 bundle = root / 'android/app/build/outputs/bundle/release/app-release.aab'
 version = json.loads((root / 'package.json').read_text())['version']
-version_code = int(re.search(r'versionCode:\s*(\d+)', (root / 'app.config.ts').read_text())[1])
+version_code = int(re.search(r'versionCode:\s*(\d+)', (root / 'app.config.js').read_text())[1])
 artifact = root / f'artifacts/nurvaxt-{version}-v{version_code}.aab'
 
 

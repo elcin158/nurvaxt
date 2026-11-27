@@ -21,7 +21,7 @@ npm run prayer:import -- --year 2027 \
   --review data/review/baku-2027-01.review.json --version 2027.01-baku.1
 npm run prayer:validate -- --year 2027
 npm run prayer:build-db -- --year 2027
-# package.json, lockfile və app.config.ts versiyası / versionCode artırılır.
+# package.json, lockfile və app.config.js versiyası / versionCode artırılır.
 npx expo prebuild --no-install
 npm run android:release -- -PreactNativeArchitectures=arm64-v8a,armeabi-v7a,x86_64
 python3 scripts/verify-release-apk.py

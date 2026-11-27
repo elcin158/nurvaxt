@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import config from '../app.config';
+import { config } from '../app.config';
 import { releaseFeedSchema } from '../src/features/app-updates/release-feed';
 import { findRelease, releaseNotesText, releases } from '../src/features/app-updates/releases';
 

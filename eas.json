@@ -7,6 +7,20 @@
       "android": { "buildType": "apk" }
     },
     "preview": { "distribution": "internal", "android": { "buildType": "apk" } },
-    "production": { "autoIncrement": true }
+    "production": {
+      "autoIncrement": true,
+      "ios": { "env": { "NURVAXT_BUILD_PLATFORM": "ios" } }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "6838872938",
+        "appleTeamId": "99X9355TFC",
+        "ascApiKeyId": "NBV7XP27XJ",
+        "ascApiKeyIssuerId": "d964c58e-2349-4786-8a58-3d24746494c8",
+        "ascApiKeyPath": "/home/elchinaghali/Downloads/AuthKey_NBV7XP27XJ.p8"
+      }
+    }
   }
 }

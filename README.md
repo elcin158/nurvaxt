@@ -80,7 +80,7 @@ npm run android:dev
 ```
 
 Expo Go does not include `NurvaxtAlarm`; use a development build. Keep reproducible
-changes in app.config.ts, plugins and modules, because clean prebuild regenerates native files.
+changes in app.config.js, plugins and modules, because clean prebuild regenerates native files.
 
 ## Official data
 
@@ -236,9 +236,21 @@ to this release; uninstalling removes its local preferences.
 `npm run web` provides a browser UI preview; it uses the same verified records and a
 preview repository, not native SQLite or notifications. Android and iOS are the intended products.
 
-`eas.json` includes development, preview and production profiles. Configure your own EAS
-project and store credentials before using EAS. iOS source generation works on Linux;
-native iOS compilation/testing requires macOS/Xcode or EAS and a real iOS test environment.
+### Upload the iOS build to TestFlight
+
+In App Store Connect, open NurVaxt under **Apps → App Information**.
+Check that its Bundle ID matches the iOS target (`az.nurvaxt.app`). Copy the numeric **Apple ID**
+into `submit.production.ios.ascAppId` in `eas.json` to select that app record.
+
+```bash
+npx eas-cli login
+npx eas-cli init
+npx eas-cli build --platform ios --profile production --auto-submit
+```
+
+During setup, select the Expo account for NurVaxt and the Apple Developer team that owns the app.
+EAS builds the signed archive on macOS and uploads it to TestFlight. Keep the project link and
+incremented build number written by EAS in version control for subsequent uploads.
 
 See [architecture](docs/architecture.md), [notification restrictions](docs/notifications.md),
 [manual test matrix](docs/native-test-matrix.md), [release checklist](docs/release-checklist.md)

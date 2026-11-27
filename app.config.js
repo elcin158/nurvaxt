@@ -1,5 +1,6 @@
-import type { ExpoConfig } from 'expo/config';
-const config: ExpoConfig = {
+// @ts-check
+/** @type {import('expo/config').ExpoConfig} */
+const config = {
   name: 'NurVaxt',
   slug: 'nurvaxt',
   version: '1.0.25',
@@ -8,6 +9,7 @@ const config: ExpoConfig = {
   userInterfaceStyle: 'automatic',
   icon: './assets/icon.png',
   ios: {
+    version: '1.0',
     bundleIdentifier: 'az.nurvaxt.app',
     supportsTablet: false,
     infoPlist: { CFBundleDisplayName: 'NurVaxt', ITSAppUsesNonExemptEncryption: false },
@@ -46,6 +48,13 @@ const config: ExpoConfig = {
     'expo-router',
     'expo-sqlite',
     'expo-localization',
+    [
+      'expo-sensors',
+      {
+        motionPermission:
+          'Qiblə kompası istiqaməti göstərmək üçün telefonun hərəkət sensorlarından istifadə edir.',
+      },
+    ],
     [
       'expo-font',
       {
@@ -103,4 +112,17 @@ const config: ExpoConfig = {
   ],
   experiments: { typedRoutes: true },
 };
-export default config;
+// EAS writes the project ID, owner and incremented iOS build number to app.json.
+/**
+ * @param {import('expo/config').ConfigContext} context
+ * @returns {import('expo/config').ExpoConfig}
+ */
+module.exports = ({ config: stored }) => ({
+  ...stored,
+  ...config,
+  // EAS local auto-increment also writes the root version into the iOS Info.plist.
+  version: process.env.NURVAXT_BUILD_PLATFORM === 'ios' ? config.ios?.version : config.version,
+  ios: { ...config.ios, ...stored.ios },
+});
+
+module.exports.config = config;
